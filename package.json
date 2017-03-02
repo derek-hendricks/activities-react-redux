@@ -127,6 +127,7 @@
     "express": "^4.14.0",
     "karma": "^1.0.0",
     "karma-coverage": "^1.0.0",
+    "karma-log-reporter": "0.0.4",
     "karma-mocha": "^1.0.1",
     "karma-mocha-reporter": "^2.0.0",
     "karma-phantomjs-launcher": "^1.0.2",

@@ -77,6 +77,6 @@ function activitiesDeleted(state, action) {
   const activityIndex = getIndex(state, action);
   return [
     ...state.slice(0, activityIndex),
-    ...state.slice(activityIndex + 1, state.length),
+    ...state.slice(activityIndex + 1, state.length)
   ];
 }
