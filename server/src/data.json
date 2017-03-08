@@ -1,0 +1,57 @@
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Sports",
+      "description": "Sports description"
+    }, {
+      "id": 2,
+      "name": "Work",
+      "description": "Work description"
+    }, {
+      "id": 3,
+      "name": "Events",
+      "description": "Outdoor Activities description"
+    }, {
+      "id": 4,
+      "name": "Board Games",
+      "description": "Monopoly, etc."
+    }
+  ],
+
+  "activities": [
+    {
+      "id": 1,
+      "category_id": 1,
+      "name": "Hockey Practice",
+      "date": "2018-01-11",
+      "about": "---",
+      "location": "hockey arena?",
+      "created_at": "2017-03-01"
+    }, {
+      "id": 2,
+      "category_id": 3,
+      "name": "Volunteering",
+      "location": "Animal Shelter",
+      "date": "2017-06-11",
+      "about": "---",
+      "created_at": "2017-03-02"
+    }, {
+      "id": 3,
+      "category_id": 3,
+      "name": "Campaign Fundraiser",
+      "location": "Town Hall",
+      "date": "2019-06-11",
+      "about": "---",
+      "created_at": "2017-04-03"
+    }, {
+      "id": 4,
+      "category_id": 2,
+      "name": "Demo Presentation",
+      "location": "Work",
+      "date": "2018-06-02",
+      "about": "Present new updates to CEO",
+      "created_at": "2017-03-31"
+    }
+  ]
+}

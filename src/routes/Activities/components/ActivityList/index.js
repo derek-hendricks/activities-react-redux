@@ -1,31 +1,25 @@
 import React from 'react'
 import './styles.scss'
-import Activity from '../../containers/Activity'
+import Link from 'react-router/Link';
 
 export const ActivityList = (props) => {
   return (
     <div className='activity-list'>
       {
         props.activities.map((activity, index) => (
-          <div
-            className='activity'
-            key={index}
-            onClick={() => props.onActivityClick(activity.id)}
-          >
-            <div className='text'>
+          <div className='text' key={index}>
+            <Link to={`/activity/${activity.id}`}>
               {activity.text}
-            </div>
+            </Link>
           </div>
         ))
       }
-      <Activity />
     </div>
   );
 };
 
 ActivityList.propTypes = {
-  activities: React.PropTypes.array.isRequired,
-  onActivityClick: React.PropTypes.func.isRequired,
+  activities: React.PropTypes.array.isRequired
 };
 
 export default ActivityList

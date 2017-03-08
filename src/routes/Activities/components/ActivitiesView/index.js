@@ -10,4 +10,5 @@ export const ActivitiesView = () => (
   </div>
 );
 
+
 export default ActivitiesView

@@ -12,7 +12,7 @@ const mapStateToTabsProps = (state) => {
   ));
 
   return {
-    categories,
+    categories
   };
 };
 
@@ -26,5 +26,5 @@ const mapDispatchToTabsProps = (dispatch) => (
 
 export default connect(
   mapStateToTabsProps,
-  mapDispatchToTabsProps
+  mapDispatchToTabsProps,
 )(Categories);

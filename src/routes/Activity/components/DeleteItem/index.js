@@ -1,18 +1,15 @@
 import React from 'react'
 import './styles.scss'
+import Link from 'react-router/Link';
 
 export const DeleteItem = (props) => {
     return (
       <div className='delete-item'>
-        <button
-          onClick={() => {
-            props.onSubmit(props.activityId);
-          }}
-          className='.btn'
-          type='delete'
-        >
-          Delete
-        </button>
+        <Link to={`/activities`} onClick={() => {
+          props.onSubmit(props.activityId);
+        }}>
+         Delete
+        </Link>
       </div>
     )
 };

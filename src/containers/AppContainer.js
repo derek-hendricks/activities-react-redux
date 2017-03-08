@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react'
-import {Provider} from 'react-redux'
 import Router from 'react-router/BrowserRouter';
+import { ApolloProvider } from 'react-apollo';
 
 class AppContainer extends Component {
   static propTypes = {
@@ -8,21 +8,21 @@ class AppContainer extends Component {
     store: PropTypes.object.isRequired
   };
 
-  shouldComponentUpdate() {
+  static shouldComponentUpdate() {
     return false
   }
 
   render() {
-    const {store, routes} = this.props;
+    const {store, routes, client} = this.props;
 
     return (
-      <Provider store={store}>
+      <ApolloProvider store={store} client={client}>
         <div style={{height: '100%'}}>
           <Router>
             {routes}
           </Router>
         </div>
-      </Provider>
+      </ApolloProvider>
     )
   }
 }

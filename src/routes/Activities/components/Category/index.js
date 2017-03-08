@@ -9,6 +9,7 @@ export const Category = (props) => {
       <ActivityList
         activities={props.category.activities}
         onActivityClick={props.onActivityClick}
+        activeActivityId={props.activeActivityId}
       />
       <ActivityInput
         onSubmit={props.onActivitySubmit}
@@ -16,12 +17,12 @@ export const Category = (props) => {
         placeholder={"New Activity"}
       />
     </div>
+
   );
 };
 
 Category.propTypes = {
   onActivitySubmit: React.PropTypes.func.isRequired,
-  onActivityClick: React.PropTypes.func.isRequired,
   category: React.PropTypes.object.isRequired
 };
 

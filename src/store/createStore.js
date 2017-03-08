@@ -1,14 +1,11 @@
-import { applyMiddleware, compose, createStore } from 'redux'
+import {applyMiddleware, compose, createStore} from 'redux'
 import thunk from 'redux-thunk'
 import makeRootReducer from './reducers'
-import { updateLocation } from './location'
 
-export default (initialState = {}) => {
+export default (initialState = {}, client) => {
 
-  const middleware = [thunk];
-
+  const middleware = [thunk, client.middleware()];
   const enhancers = [];
-
   let composeEnhancers = compose;
 
   if (__DEV__) {
@@ -19,7 +16,7 @@ export default (initialState = {}) => {
   }
 
   const store = createStore(
-    makeRootReducer(),
+    makeRootReducer(client),
     initialState,
     composeEnhancers(
       applyMiddleware(...middleware),
@@ -28,7 +25,6 @@ export default (initialState = {}) => {
   );
   store.asyncReducers = {};
 
-  // store.unsubscribeHistory = History.listen(updateLocation(store));
 
   if (module.hot) {
     module.hot.accept('./reducers', () => {

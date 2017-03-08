@@ -1,6 +1,5 @@
 import {connect} from 'react-redux'
 import {addActivity} from '../../../store/activities'
-import {openActivity} from '../../../store/activeActivity'
 import Category from '../components/Category'
 
 const mapStateToCategoryProps = (state) => {
@@ -13,18 +12,11 @@ const mapStateToCategoryProps = (state) => {
   );
 };
 
-const mapDispatchToCategoryProps = (dispatch) => {
-  return (
+const mapDispatchToCategoryProps = (dispatch) => (
     {
-      onActivityClick: (id) => {
-        return (
-          dispatch(openActivity(id))
-        );
-      },
       dispatch
     }
-  );
-};
+);
 
 const mergeCategoryProps = (stateProps, dispatchProps) => {
   return (
