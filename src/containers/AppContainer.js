@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react'
+import React, { Component, PropTypes } from 'react'
 import Router from 'react-router/BrowserRouter';
 import { ApolloProvider } from 'react-apollo';
 
@@ -13,11 +13,11 @@ class AppContainer extends Component {
   }
 
   render() {
-    const {store, routes, client} = this.props;
+    const { store, routes, client } = this.props;
 
     return (
       <ApolloProvider store={store} client={client}>
-        <div style={{height: '100%'}}>
+        <div style={{ height: '100%' }}>
           <Router>
             {routes}
           </Router>

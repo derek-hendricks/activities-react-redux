@@ -66,7 +66,7 @@ if (project.env === 'development') {
       if (err) {
         return next(err)
       }
-      res.set('content-type', 'text/html');
+      res.set("content-type", "text/html");
       res.send(result);
       res.end()
     })

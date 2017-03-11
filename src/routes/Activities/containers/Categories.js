@@ -1,11 +1,11 @@
-import {connect} from 'react-redux'
-import {openCategory} from '../../../store/activeCategory'
+import { connect } from 'react-redux'
+import { openCategory } from '../../../store/activeCategory'
 import Categories from '../components/Categories'
 
 const mapStateToTabsProps = (state) => {
   const categories = state.categories.map((category) => (
     {
-      title: category.title,
+      name: category.name,
       active: category.id === state.activeCategoryId,
       id: category.id,
     }

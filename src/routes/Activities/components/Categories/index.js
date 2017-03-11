@@ -11,7 +11,7 @@ export const Categories = (props) => {
             className={category.active ? 'active item' : 'item'}
             onClick={() => props.onClick(category.id)}
           >
-            {category.title}
+            {category.name}
           </div>
         ))
       }

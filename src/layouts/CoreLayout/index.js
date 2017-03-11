@@ -13,7 +13,7 @@ export const CoreLayout = (props) => {
 };
 
 CoreLayout.propTypes = {
-  children : React.PropTypes.array.isRequired
+  children: React.PropTypes.array.isRequired
 };
 
 export default CoreLayout

@@ -1,5 +1,5 @@
-import {connect} from 'react-redux'
-import {addActivity} from '../../../store/activities'
+import { connect } from 'react-redux'
+import { addActivity } from '../../../store/activities'
 import Category from '../components/Category'
 
 const mapStateToCategoryProps = (state) => {
@@ -13,9 +13,9 @@ const mapStateToCategoryProps = (state) => {
 };
 
 const mapDispatchToCategoryProps = (dispatch) => (
-    {
-      dispatch
-    }
+  {
+    dispatch
+  }
 );
 
 const mergeCategoryProps = (stateProps, dispatchProps) => {
