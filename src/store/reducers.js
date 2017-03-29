@@ -11,4 +11,3 @@ export const makeRootReducer = (client) => {
 };
 
 export default makeRootReducer
-

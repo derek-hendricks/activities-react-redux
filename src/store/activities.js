@@ -1,29 +1,26 @@
-import uuidV1 from 'uuid/v1';
-
 export const ADD_ACTIVITY = 'ADD_ACTIVITY';
 export const DELETE_ACTIVITY = 'DELETE_ACTIVITY';
-export const MODIFY_ACTIVITY = 'MODIFY_ACTIVITY';
+export const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
 
 export function deleteActivity(id) {
+  debugger;
   return {
     type: DELETE_ACTIVITY,
     id
   };
 }
 
-export function addActivity(categoryId, text) {
+export function addActivity(activity) {
   return {
     type: ADD_ACTIVITY,
-    text,
-    categoryId
+    ...activity
   };
 }
 
-export function modifyActivity(id, text) {
+export function updateActivity(activity) {
   return {
-    type: MODIFY_ACTIVITY,
-    id,
-    text
+    type: UPDATE_ACTIVITY,
+    ...activity
   }
 }
 
@@ -34,8 +31,8 @@ export default function activitiesReducer(state = initialState, action) {
     case ADD_ACTIVITY: {
       return activitiesAdded(state, action);
     }
-    case MODIFY_ACTIVITY: {
-      return activitiesModified(state, action);
+    case UPDATE_ACTIVITY: {
+      return activitiesUpdated(state, action);
     }
     case DELETE_ACTIVITY: {
       return activitiesDeleted(state, action);
@@ -46,26 +43,22 @@ export default function activitiesReducer(state = initialState, action) {
   }
 }
 
-function getIndex(state, action) {
-  return state.findIndex((activity) => activity.id === action.id);
+function getIndex(state, {id}) {
+  return state.findIndex((activity) => activity.id === id);
 }
 
-function activitiesAdded(state, action) {
-  const newActivity = {
-    text: action.text,
-    timestamp: Date.now(),
-    id: uuidV1(),
-  };
-  return state.concat(newActivity);
+function activitiesAdded(state, { type, __typename, ...activity }) {
+  return state.concat(activity);
 }
 
-function activitiesModified(state, action) {
-  const activityIndex = getIndex(state, action);
-  const previousActivity = state[activityIndex];
+function activitiesUpdated(state, { type, __typename, ...activity }) {
+  const activityIndex = getIndex(state, activity);
+  const previousActivity = state[getIndex(state, activity)];
   const modifiedActivity = {
     ...previousActivity,
-    text: action.text
+    ...activity
   };
+
   return [
     ...state.slice(0, activityIndex),
     modifiedActivity,
@@ -74,7 +67,9 @@ function activitiesModified(state, action) {
 }
 
 function activitiesDeleted(state, action) {
+  debugger;
   const activityIndex = getIndex(state, action);
+
   return [
     ...state.slice(0, activityIndex),
     ...state.slice(activityIndex + 1, state.length)

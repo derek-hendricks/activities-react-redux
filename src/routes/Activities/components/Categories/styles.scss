@@ -1,6 +1,22 @@
 .categories {
+  margin: 15px 0px 10px 0px;
   .item {
     display: inline;
     padding: 10px;
+    &:hover {
+      cursor: pointer;
+      text-decoration: underline;
+      color: #337ab7;
+    }
+    span {
+      padding: 2px;
+      border-radius: 2px;
+    }
+  }
+  .active {
+    span {
+      color: #337ab7;
+      font-weight: bold;
+    }
   }
 }

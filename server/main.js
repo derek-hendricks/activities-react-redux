@@ -1,3 +1,4 @@
+"use strict";
 const express = require('express');
 const debug = require('debug')('app:server');
 const path = require('path');
@@ -5,34 +6,120 @@ const webpack = require('webpack');
 const webpackConfig = require('../config/webpack.config');
 const project = require('../config/project.config');
 const compress = require('compression');
-const app = express();
 const cors = require('cors');
+
 const graphqlHTTP = require('express-graphql');
 const GraphQLSchema = require('graphql').GraphQLSchema;
-const GraphQLObjectType =  require('graphql').GraphQLObjectType;
+const GraphQLObjectType = require('graphql').GraphQLObjectType;
+const GraphQLNonNull = require('graphql').GraphQLNonNull;
+const GraphQLID = require('graphql').GraphQLID;
+const GraphQLString = require('graphql').GraphQLString;
 
-app.use(compress());
-
-const CategoriesType = require('./src/types').CategoriesType;
-const CategoryType = require('./src/types').CategoryType;
+const types = require('./src/types');
 const loaders = require('./src/loaders');
+
+const app = express();
+app.use(compress());
 
 const RootQuery = new GraphQLObjectType({
   name: 'RootQuery',
   description: 'The root query',
   fields: {
     categoryList: {
-      type: CategoriesType,
-      resolve(source, args, context, info) {
+      type: types.CategoriesType,
+      resolve() {
         return loaders.getCategories();
+      }
+    },
+    categoryInterface: {
+      type: types.CategoryInterface,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve(source, args) {
+        return loaders.getNodeById(args.id);
+      }
+    }
+  }
+});
+
+const RootMutation = new GraphQLObjectType({
+  name: 'RootMutation',
+  description: 'Activity Root Mutation',
+  fields: {
+    createActivity: {
+      type: types.ActivityType,
+      args: {
+        name: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        categoryId: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        about: {
+          type: GraphQLString
+        },
+        location: {
+          type: GraphQLString
+        },
+        date: {
+          type: GraphQLString
+        }
+      },
+      resolve(source, args, context) {
+        return loaders.createActivity(args, context).then((result) => {
+          return loaders.nodeLoaders[result.table].load(result.id);
+        });
+      }
+    },
+    deleteActivity: {
+      type: types.ActivityType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID)
+        }
+      },
+      resolve(source, args) {
+        return loaders.deleteRow(args);
+      }
+    },
+    updateActivity: {
+      type: types.ActivityType,
+      args: {
+        id: {
+          type: new GraphQLNonNull(GraphQLID)
+        },
+        name: {
+          type: GraphQLString
+        },
+        categoryId: {
+          type: GraphQLString
+        },
+        about: {
+          type: GraphQLString
+        },
+        location: {
+          type: GraphQLString
+        },
+        date: {
+          type: GraphQLString
+        }
+      },
+      resolve(source, args, context) {
+        return loaders.updateRow(args, context).then((result) => {
+          return loaders.getNodeById(args.id);
+        })
       }
     }
   }
 });
 
 const Schema = new GraphQLSchema({
-  types: [CategoriesType, CategoryType],
-  query: RootQuery
+  types: [types.CategoriesType, types.CategoryType, types.CategoryInterface, types.ActivityType],
+  query: RootQuery,
+  mutation: RootMutation
 });
 
 app.use('/graphql', cors(), graphqlHTTP(() => ({
@@ -45,13 +132,13 @@ if (project.env === 'development') {
 
   debug('Enabling webpack dev and HMR middleware');
   app.use(require('webpack-dev-middleware')(compiler, {
-    publicPath  : webpackConfig.output.publicPath,
-    contentBase : project.paths.client(),
-    hot         : true,
-    quiet       : project.compiler_quiet,
-    noInfo      : project.compiler_quiet,
-    lazy        : false,
-    stats       : project.compiler_stats
+    publicPath: webpackConfig.output.publicPath,
+    contentBase: project.paths.client(),
+    hot: true,
+    quiet: project.compiler_quiet,
+    noInfo: project.compiler_quiet,
+    lazy: false,
+    stats: project.compiler_stats
   }));
 
   app.use(require('webpack-hot-middleware')(compiler, {

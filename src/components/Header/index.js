@@ -5,8 +5,8 @@ import './styles.scss'
 export const Header = () => (
   <div>
     <h1>Activities</h1>
-    <Link to='/home' activeClassName='route--active'>
-      Home
+    <Link to='/about' activeClassName='route--active'>
+      About
     </Link>
     {' · '}
     <Link to='/activities' activeClassName='route--active'>

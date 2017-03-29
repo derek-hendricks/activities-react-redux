@@ -2,10 +2,23 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import createStore from './store/createStore'
 import AppContainer from './containers/AppContainer'
-import ApolloClient, { createNetworkInterface } from 'apollo-client';
+import ApolloClient, {
+  createNetworkInterface
+} from 'apollo-client';
 
 const client = new ApolloClient({
-  networkInterface: createNetworkInterface({ uri: "http://localhost:3000/graphql" }),
+  networkInterface: createNetworkInterface({
+    uri: "http://localhost:3000/graphql",
+    dataIdFromObject: (result) => {
+      if (result.id && result.__typename) {
+        return result.__typename + result.id;
+      }
+      return null;
+    },
+    initialState: window.__APOLLO_STATE__, // eslint-disable-line no-underscore-dangle
+    ssrForceFetchDelay: 100,
+    connectToDevTools: true
+  }),
 });
 
 const initialState = window.___INITIAL_STATE__;

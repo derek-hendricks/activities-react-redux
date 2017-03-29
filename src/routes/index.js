@@ -1,7 +1,7 @@
 import React from 'react'
 import CoreLayout from '../layouts/CoreLayout'
 import ActivitiesRoute from './Activities'
-import HomeRoute from './Home'
+import AboutRoute from './Home'
 import ActivityRoute from'./Activity'
 import NotFound from '../components/NotFound'
 import Match from 'react-router/Match';
@@ -10,18 +10,14 @@ import Miss from 'react-router/Miss';
 
 export const createMatches = (store) => (
   <CoreLayout>
-    <Match exactly pattern='/activities' component={ActivitiesRoute}/>
-    <Match pattern='/home' component={HomeRoute}/>
-    <Match exactly pattern='/' render={() => (
-      <Redirect
-        to='/activities'
-      />
+    <Match exactly pattern='/activity/:id' render={(props) => (
+      <ActivityRoute id={props.params.id}/>
     )}/>
-    <Match exactly pattern='/activity/:id' render={(props) => {
-      return (
-        <ActivityRoute id={props.params.id}/>
-      )
-    }}/>
+    <Match pattern='/' render={() => (
+      <Redirect to='/activities'/>
+    )}/>
+    <Match pattern='/activities' render={ActivitiesRoute}/>
+    <Match exactly pattern='/about' render={AboutRoute}/>
     <Miss component={NotFound}/>
   </CoreLayout>
 );

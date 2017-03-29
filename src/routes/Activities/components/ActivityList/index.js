@@ -9,7 +9,7 @@ export const ActivityList = (props) => {
         props.activities.map((activity, index) => (
           <div className='text' key={index}>
             <Link to={`/activity/${activity.id}`}>
-              {activity.text}
+              {activity.name}
             </Link>
           </div>
         ))
@@ -19,7 +19,7 @@ export const ActivityList = (props) => {
 };
 
 ActivityList.propTypes = {
-  activities: React.PropTypes.array.isRequired
+  activities: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
 };
 
 export default ActivityList

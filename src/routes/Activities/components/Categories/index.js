@@ -1,27 +1,34 @@
-import React from 'react'
-import './styles.scss'
+import React from "react"
+import "./styles.scss"
 
-export const Categories = (props) => {
-  return (
-    <nav className='categories'>
-      {
-        props.categories.map((category, index) => (
+export const Categories = ({ loading, error, categories, onClick }) => {
+  if (loading) {
+    return (<div>loading</div>)
+  } else if (error) {
+    return (<p>Error!</p>);
+  } else {
+
+    return (
+      <nav className='categories'>
+        {categories.map((category, index) => (
           <div
             key={index}
             className={category.active ? 'active item' : 'item'}
-            onClick={() => props.onClick(category.id)}
+            onClick={() => onClick(category.id)}
           >
-            {category.name}
+            <span>{category.name}</span>
           </div>
-        ))
-      }
-    </nav>
-  );
+        ))}
+      </nav>
+    );
+  }
 };
 
 Categories.propTypes = {
   onClick: React.PropTypes.func.isRequired,
-  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired
+  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  loading: React.PropTypes.bool.isRequired,
+  error: React.PropTypes.bool.isRequired
 };
 
 export default Categories

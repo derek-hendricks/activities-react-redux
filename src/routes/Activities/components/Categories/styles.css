@@ -1,5 +1,17 @@
-.categories .item {
-  display: inline;
-  padding: 10px; }
+.categories {
+  margin: 15px 0px 10px 0px; }
+  .categories .item {
+    display: inline;
+    padding: 10px; }
+    .categories .item:hover {
+      cursor: pointer;
+      text-decoration: underline;
+      color: #337ab7; }
+    .categories .item span {
+      padding: 2px;
+      border-radius: 2px; }
+  .categories .active span {
+    color: #337ab7;
+    font-weight: bold; }
 
 /*# sourceMappingURL=styles.css.map */

@@ -12,7 +12,7 @@ function sequencePromises(promises) {
 }
 
 function createDatabase() {
-  let promises = [tables.categories].map(function (table) {
+  const promises = [tables.categories, tables.activities].map(function (table) {
     return function () {
       return database.getSql(table.create().toQuery());
     };
@@ -22,10 +22,12 @@ function createDatabase() {
 }
 
 function insertData() {
-  let categories = data.categories;
-  let queries = [tables.categories.insert(categories).toQuery()];
+  const queries = [
+    tables.categories.insert(data.categories).toQuery(),
+    tables.activities.insert(data.activities).toQuery()
+  ];
 
-  let promises = queries.map(function (query) {
+  const promises = queries.map(function (query) {
     return function () {
       return database.getSql(query);
     };
@@ -37,5 +39,5 @@ function insertData() {
 createDatabase().then(function () {
   return insertData();
 }).then(function () {
-  console.log({done: true});
+  console.log({ done: true });
 });

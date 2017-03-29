@@ -1,33 +1,8 @@
 import { applyMiddleware, compose, createStore } from 'redux'
-import thunk from 'redux-thunk'
 import makeRootReducer from './reducers'
-import * as asyncInitialState from 'redux-async-initial-state';
-const fetch = require('graphql-fetch')("http://localhost:3000/graphql");
 
 export default (initialState = {}, client) => {
-
-  const loadStore = () => {
-    let query = `{
-      categoryList { 
-        categories { 
-          id 
-          description 
-          name 
-        } 
-      } 
-    }`;
-
-    return new Promise(resolve => {
-      fetch(query).then(results => {
-        if (results.errors) {
-          return
-        }
-        return results.data.categoryList;
-      }).then(resolve);
-    });
-  };
-
-  const middleware = [thunk, client.middleware(), asyncInitialState.middleware(loadStore)];
+  const middleware = [client.middleware()];
   const enhancers = [];
   let composeEnhancers = compose;
 
@@ -46,15 +21,6 @@ export default (initialState = {}, client) => {
       ...enhancers
     )
   );
-
-  store.asyncReducers = {};
-
-  if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      const reducers = require('./reducers').default;
-      store.replaceReducer(reducers(store.asyncReducers))
-    })
-  }
 
   return store
 }

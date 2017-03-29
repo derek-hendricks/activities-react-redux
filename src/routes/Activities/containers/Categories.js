@@ -1,19 +1,25 @@
 import { connect } from 'react-redux'
 import { openCategory } from '../../../store/activeCategory'
-import Categories from '../components/Categories'
+import Categories from '../components/Categories/index'
+import { graphql, compose } from 'react-apollo';
+import gql from 'graphql-tag';
 
-const mapStateToTabsProps = (state) => {
-  const categories = state.categories.map((category) => (
+const initialState = { categories: [] };
+
+const mapStateToTabsProps = (state = initialState) => {
+  const categories = state.categories.slice().map((category) => ({
+    ...category,
+    active: category.id === state.activeCategoryId
+  }));
+
+  return (
     {
-      name: category.name,
-      active: category.id === state.activeCategoryId,
-      id: category.id,
+      categories: [
+        ...initialState.categories,
+        ...categories
+      ]
     }
-  ));
-
-  return {
-    categories
-  };
+  )
 };
 
 const mapDispatchToTabsProps = (dispatch) => (
@@ -24,7 +30,32 @@ const mapDispatchToTabsProps = (dispatch) => (
   }
 );
 
-export default connect(
-  mapStateToTabsProps,
-  mapDispatchToTabsProps,
+const queryOptions = {
+  options: ({ activeCategoryId }) => {
+    return { skip: activeCategoryId };
+  },
+  props: ({ data: { loading = true, error = false } }) => {
+    return {
+      loading,
+      error
+    }
+  }
+};
+
+const CategoriesQuery = gql`
+  query CategoriesQuery {
+    categoryList {
+      categories {
+        id
+        description
+        name
+      }
+    }
+  }`;
+
+export default compose(
+  graphql(CategoriesQuery, queryOptions),
+  connect(
+    (state) => mapStateToTabsProps(state),
+    (dispatch) => mapDispatchToTabsProps(dispatch))
 )(Categories);

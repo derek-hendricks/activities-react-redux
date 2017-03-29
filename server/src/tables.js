@@ -17,8 +17,34 @@ const categories = sql.define({
   }]
 });
 
+const activities = sql.define({
+  name: 'activities',
+  columns: [{
+    name: 'id',
+    dataType: 'INTEGER',
+    primaryKey: true
+  }, {
+    name: 'categoryId',
+    dataType: 'int'
+  }, {
+    name: 'name',
+    dataType: 'text'
+  }, {
+    name: 'about',
+    dataType: 'text'
+  }, {
+    name: 'location',
+    dataType: 'text'
+  }, {
+    name: 'createdAt',
+    dataType: 'datetime default current_timestamp'
+  }, {
+    name: 'date',
+    dataType: 'datetime'
+  }]
+});
+
 module.exports = {
-  categories: categories
+  categories,
+  activities
 };
-
-

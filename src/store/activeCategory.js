@@ -1,4 +1,5 @@
 export const OPEN_CATEGORY = 'OPEN_CATEGORY';
+export const APOLLO_QUERY_RESULT = 'APOLLO_QUERY_RESULT';
 
 export function openCategory(id) {
   return {
@@ -6,11 +7,16 @@ export function openCategory(id) {
     id
   };
 }
-const initialState = "1";
+
+const initialState = null;
 
 export default function activeCategoryIdReducer(state = initialState, action) {
-  if (action.type === OPEN_CATEGORY) {
-    return action.id;
+  const { type, id, operationName } = action;
+  if (type === OPEN_CATEGORY) {
+    return id;
+  } else if (type === APOLLO_QUERY_RESULT && "CategoriesQuery" === operationName) {
+    const { result: { data: { categoryList: { categories } } } } = action;
+    return categories[0].id;
   } else {
     return state;
   }
