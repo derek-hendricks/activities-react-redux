@@ -2,32 +2,38 @@ import { connect } from 'react-redux'
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag'
 import { setProperties } from '../../../utils';
-import { deleteActivity, updateActivity } from '../../../store/activities'
-import { openCategory } from '../../../store/activeCategory'
-import { addActivity } from '../../../store/activities'
 import Activity from '../components/Activity/index'
 
-const mapStateToActivityProps = ({ activeCategoryId, ...state }, { id: activityId }) => {
+const initialState = {activity: {}, categories: []};
+
+const mapStateToActivityProps = (state = initialState, { id: activityId }) => {
+  const {activeCategoryId} = state;
   const categories = state.categories.slice().sort((category) => {
+
     return category.id !== activeCategoryId;
   });
   const index = categories.findIndex((category) => {
+
     return category.id === activeCategoryId;
   });
   const activities = categories[index].activities;
   const activity = activities[activities.findIndex((activity) => {
+
     return activityId === activity.id;
   })];
+
   return (
     {
       activity,
-      categories
+      categories,
+      activeCategoryId
     }
   );
 };
 
 const mapDispatchToActivityProps = (dispatch) => ({
   handleActivityDelete: (id, onActivityDelete) => {
+
     return (
       onActivityDelete(id)
     );
@@ -35,18 +41,14 @@ const mapDispatchToActivityProps = (dispatch) => ({
   dispatch
 });
 
-function moveActivity(updated, dispatch, id, previousActivity) {
-  dispatch(deleteActivity(id));
-  dispatch(openCategory(updated.categoryId));
-  dispatch(addActivity({ ...previousActivity, ...updated }));
-}
-
 const mergeActivityProps = (stateProps, dispatchProps) => {
+
   return ({
     ...stateProps,
     ...dispatchProps,
     handleActivityUpdate: ({ id, ...activity }, onActivityUpdate, previousActivity) => {
       const updated = { ...setProperties(activity), id };
+
       return (
         onActivityUpdate(updated, previousActivity)
       );
@@ -64,6 +66,7 @@ const activityDelete = gql`
 const activityDeleteOptions = {
   props: ({ ownProps, mutate }) => ({
     onActivityDelete: (id) => {
+
       return (
         mutate(
           {
@@ -83,8 +86,8 @@ const activityDeleteOptions = {
   })
 };
 
-const activityUpdate = gql`mutation updateActivity($id: ID!, $name: String, $categoryId: String, $about: String, $location: String, $date: String) {
-  updateActivity(id: $id, name: $name, about: $about, location: $location, date: $date, categoryId: $categoryId) {
+const activityUpdate = gql`mutation UPDATE_ACTIVITY_MUTATION($id: ID!, $name: String, $categoryId: String, $about: String, $location: String, $date: String) {
+  UPDATE_ACTIVITY_MUTATION(id: $id, name: $name, about: $about, location: $location, date: $date, categoryId: $categoryId) {
     id
   }
 }`;
@@ -92,6 +95,7 @@ const activityUpdate = gql`mutation updateActivity($id: ID!, $name: String, $cat
 const activityUpdateOptions = {
   props: ({ ownProps, mutate }) => ({
     onActivityUpdate: ({ id, ...activity }, previousActivity) => {
+
       return (
         mutate({
           variables: {

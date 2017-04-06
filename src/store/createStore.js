@@ -13,14 +13,12 @@ export default (initialState = {}, client) => {
     }
   }
 
-  const store = createStore(
+  return createStore(
     makeRootReducer(client),
     initialState,
     composeEnhancers(
       applyMiddleware(...middleware),
       ...enhancers
     )
-  );
-
-  return store
+  )
 }

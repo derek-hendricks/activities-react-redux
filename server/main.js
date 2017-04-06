@@ -85,7 +85,7 @@ const RootMutation = new GraphQLObjectType({
         return loaders.deleteRow(args);
       }
     },
-    updateActivity: {
+    UPDATE_ACTIVITY_MUTATION: {
       type: types.ActivityType,
       args: {
         id: {

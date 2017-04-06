@@ -5,8 +5,10 @@ import './styles.scss'
 
 export const Category = ({ loading, error, category, onActivitySubmit, handleActivitySubmit, categories, activeCategoryId }) => {
   if (loading) {
+
     return (<div>loading</div>)
   } else if (error) {
+
     return (<p>Error!</p>);
   }
 
@@ -22,8 +24,8 @@ export const Category = ({ loading, error, category, onActivitySubmit, handleAct
         }
         categories={categories}
         activeCategoryId={activeCategoryId}
-        buttonText={"Create"}
-        placeholder={"New Activity"}
+        buttonText={"Create Activity"}
+        placeholder={"Add"}
       />
     </div>
   )

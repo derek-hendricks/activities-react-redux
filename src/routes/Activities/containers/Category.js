@@ -2,10 +2,9 @@ import {connect} from 'react-redux'
 import {graphql, compose} from 'react-apollo';
 import gql from 'graphql-tag';
 import {setProperties} from '../../../utils/index';
-import {addActivity} from '../../../store/activities'
 import Category from '../components/Category/index'
 
-const initialState = {loading: true, error: false, category: {}, categories: []};
+const initialState = {loading: true, error: false, category: {}, activity: {}, categories: []};
 
 const mapStateToCategoryProps = (state = initialState) => {
   const {activeCategoryId, categories}  = state;
@@ -27,11 +26,13 @@ const mapStateToCategoryProps = (state = initialState) => {
 };
 
 const mapDispatchToCategoryProps = (dispatch) => ({dispatch});
+
 const mergeCategoryProps = (stateProps, dispatchProps) => ({
   ...stateProps,
   ...dispatchProps,
   handleActivitySubmit: (activity, categoryId, onActivitySubmit) => {
     const newActivity = setProperties(activity);
+
     return onActivitySubmit({...newActivity, categoryId});
   }
 });
@@ -54,6 +55,7 @@ const query = gql`query ActivitiesQuery($id: ID!) {
 
 const queryOptions = {
   options: ({category: {activities = []}, activeCategoryId}) => {
+
     return ({
       skip: !activeCategoryId,
       variables: {

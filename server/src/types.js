@@ -9,6 +9,7 @@ const GraphQLInterfaceType = require('graphql').GraphQLInterfaceType;
 const loaders = require('./loaders');
 const tables = require('./tables');
 
+let CategoryType, ActivityType;
 
 const CategoryInterface = new GraphQLInterfaceType({
   name: 'CategoryInterface',
@@ -19,14 +20,16 @@ const CategoryInterface = new GraphQLInterfaceType({
   },
   resolveType: (source) => {
     if (source.__tableName === "categories") {
+
       return CategoryType;
     } else if (source.__tableName === "activities") {
+
       return ActivityType;
     }
   }
 });
 
-const ActivityType = new GraphQLObjectType({
+ActivityType = new GraphQLObjectType({
   name: 'Activity',
   interfaces: [CategoryInterface],
   fields: {
@@ -54,14 +57,16 @@ const ActivityType = new GraphQLObjectType({
   }
 });
 
-const CategoryType = new GraphQLObjectType({
+CategoryType = new GraphQLObjectType({
   name: 'Category',
   interfaces: [CategoryInterface],
   fields: () => {
+
     return {
       id: {
         type: new GraphQLNonNull(GraphQLID),
         resolve(source) {
+
           return `${source.__tableName}: ${source.id}`;
         }
       },
@@ -74,6 +79,7 @@ const CategoryType = new GraphQLObjectType({
       activities: {
         type: new GraphQLList(ActivityType),
         resolve(source) {
+
           return loaders.getActivities(source);
         }
       }
@@ -84,6 +90,7 @@ const CategoryType = new GraphQLObjectType({
 const CategoryWithoutInterfaceType = new GraphQLObjectType({
   name: 'CategoryWithoutInterface',
   fields: () => {
+
     return {
       id: {
         type: new GraphQLNonNull(GraphQLID)
@@ -101,6 +108,7 @@ const CategoryWithoutInterfaceType = new GraphQLObjectType({
 const CategoriesType = new GraphQLObjectType({
   name: 'Categories',
   fields: () => {
+
     return {
       categories: {
         type: new GraphQLList(CategoryWithoutInterfaceType)

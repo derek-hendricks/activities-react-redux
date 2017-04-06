@@ -1,23 +1,15 @@
-export const setProperties = (obj, property, value) => {
+export const setProperties = (obj, property) => {
   const keys = Object.keys(obj);
   let data = {};
-  for (let key of keys) {
-    if (obj[key] === property) continue;
-    if (!obj[key].value.trim()) continue;
+  for (const key of keys) {
+    if (obj[key] === property || !obj[key].value.trim()) {
+      continue;
+    }
     data[key] = obj[key].value;
   }
+
   return data;
 };
-
-export function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-    s4() + '-' + s4() + s4() + s4();
-}
 
 export const initialFetch = () => {
   const categoryListQuery = `{
@@ -51,8 +43,10 @@ export const initialFetch = () => {
     return fetch(activitiesQuery(activeCategory.id)).then((results) => {
       const { errors, data: { categoryInterface } } = results;
       if (errors) {
+
         return categoryList;
       }
+
       return {
         activeCategory: activeCategory.id,
         categories: [
@@ -69,9 +63,11 @@ export const initialFetch = () => {
       const { errors, data: { categoryList } } = results;
       const index = 0;
       if (errors) {
+
         return errors;
       }
       const category = categoryList.categories[index];
+
       return loadActivities(categoryList.categories, index, category);
     }).then(resolve);
   });
