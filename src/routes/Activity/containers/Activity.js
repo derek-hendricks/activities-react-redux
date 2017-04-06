@@ -4,23 +4,20 @@ import gql from 'graphql-tag'
 import { setProperties } from '../../../utils';
 import Activity from '../components/Activity/index'
 
-const initialState = {activity: {}, categories: []};
+const initialState = { activity: {}, categories: [] };
 
 const mapStateToActivityProps = (state = initialState, { id: activityId }) => {
-  const {activeCategoryId} = state;
-  const categories = state.categories.slice().sort((category) => {
-
-    return category.id !== activeCategoryId;
-  });
-  const index = categories.findIndex((category) => {
-
-    return category.id === activeCategoryId;
-  });
+  const { activeCategoryId } = state;
+  const categories = state.categories.slice().sort((category) => (
+    category.id !== activeCategoryId
+  ));
+  const index = categories.findIndex((category) => (
+    category.id === activeCategoryId
+  ));
   const activities = categories[index].activities;
-  const activity = activities[activities.findIndex((activity) => {
-
-    return activityId === activity.id;
-  })];
+  const activity = activities[activities.findIndex((activity) => (
+    activityId === activity.id
+  ))];
 
   return (
     {
@@ -57,32 +54,29 @@ const mergeActivityProps = (stateProps, dispatchProps) => {
 };
 
 const activityDelete = gql`
-  mutation deleteActivity($id: ID!) {
-    deleteActivity(id: $id) {
+  mutation DELETE_ACTIVITY_MUTATION($id: ID!) {
+    DELETE_ACTIVITY_MUTATION(id: $id) {
       id
     }
   }`;
 
 const activityDeleteOptions = {
   props: ({ ownProps, mutate }) => ({
-    onActivityDelete: (id) => {
-
-      return (
-        mutate(
-          {
-            variables: {
-              "id": `activities: ${id}`
-            },
-            optimisticResponse: {
-              __typename: "Mutation",
-              activity: {
-                id,
-                __typename: "activities"
-              }
+    onActivityDelete: (id) => (
+      mutate(
+        {
+          variables: {
+            "id": `activities: ${id}`
+          },
+          optimisticResponse: {
+            __typename: "Mutation",
+            activity: {
+              id,
+              __typename: "activities"
             }
-          })
-      );
-    }
+          }
+        })
+    )
   })
 };
 
@@ -94,10 +88,9 @@ const activityUpdate = gql`mutation UPDATE_ACTIVITY_MUTATION($id: ID!, $name: St
 
 const activityUpdateOptions = {
   props: ({ ownProps, mutate }) => ({
-    onActivityUpdate: ({ id, ...activity }, previousActivity) => {
-
-      return (
-        mutate({
+    onActivityUpdate: ({ id, ...activity }, previousActivity) => (
+      mutate(
+        {
           variables: {
             id: `activities: ${id}`,
             ...activity
@@ -111,9 +104,9 @@ const activityUpdateOptions = {
             },
             previousActivity
           }
-        })
-      );
-    }
+        }
+      )
+    )
   })
 };
 

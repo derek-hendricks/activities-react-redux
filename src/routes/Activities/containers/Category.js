@@ -70,8 +70,8 @@ const queryOptions = {
 };
 
 const createActivity = gql`
-  mutation createActivityMutation($name: String!, $categoryId: String!, $about: String, $location: String, $date: String) {
-    createActivity(name: $name, categoryId: $categoryId, about: $about, location: $location, date: $date) {
+  mutation CREATE_ACTIVITY_MUTATION($name: String!, $categoryId: String!, $about: String, $location: String, $date: String) {
+    CREATE_ACTIVITY_MUTATION(name: $name, categoryId: $categoryId, about: $about, location: $location, date: $date) {
     __typename
       name
       id

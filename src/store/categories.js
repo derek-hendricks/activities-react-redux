@@ -10,22 +10,21 @@ export const APOLLO_MUTATION_RESULT = "APOLLO_MUTATION_RESULT";
 
 export const APOLLO_CATEGORIES_QUERY = "CategoriesQuery";
 export const APOLLO_ACTIVITIES_QUERY = "ActivitiesQuery";
-export const APOLLO_DELETE_ACTIVITY = "deleteActivity";
-export const APOLLO_CREATE_ACTIVITY_MUTATION = "createActivityMutation";
+
+export const APOLLO_DELETE_ACTIVITY = "DELETE_ACTIVITY_MUTATION";
+export const APOLLO_CREATE_ACTIVITY_MUTATION = "CREATE_ACTIVITY_MUTATION";
 export const APOLLO_UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
 
 function getIndex(categories, id) {
-  return categories.findIndex(
-    (category) => category.id === id
-  );
+  return categories.findIndex(category => category.id === id);
 }
 
 function getIndexByActivity(categories, activityId) {
-  return categories.findIndex((category) => {
-    return category.activities.find((activity) => {
-      return activityId === activity.id;
-    });
-  });
+  return categories.findIndex((category) => (
+    category.activities.find((activity) => (
+      activityId === activity.id
+    ))
+  ))
 }
 
 function findCategoryIndex(categories, action) {
@@ -35,14 +34,18 @@ function findCategoryIndex(categories, action) {
   switch (type) {
     case APOLLO_MUTATION_INIT:
     case APOLLO_MUTATION_RESULT:
+
       return getIndex(categories, categoryId);
     case APOLLO_QUERY_RESULT:
       const { data: { categoryInterface: { id: cId } } } = result;
+
       return getIndex(categories, cId.split(": ")[1]);
     case DELETE_ACTIVITY:
     case UPDATE_ACTIVITY:
+
       return getIndexByActivity(categories, activityId);
     default:
+
       return;
   }
 }
@@ -50,6 +53,7 @@ function findCategoryIndex(categories, action) {
 function categorySetup(state, action, index) {
   const previousCategory = state[index];
   const activities = activitiesReducer(previousCategory.activities, action);
+
   return {
     ...previousCategory,
     activities
@@ -57,6 +61,7 @@ function categorySetup(state, action, index) {
 }
 
 function stateSetup(state, category, index) {
+
   return [
     ...state.slice(0, index),
     category,
@@ -127,16 +132,16 @@ const initialState = [];
 
 export default function categoriesReducer(state = initialState, action) {
   const { type, operationName, optimisticResponse } = action;
-  const initOptimistic = type === APOLLO_MUTATION_INIT;
+  const optimisticMutation = type === APOLLO_MUTATION_INIT;
   const mutationResult = type === APOLLO_MUTATION_RESULT;
 
-  if (initOptimistic && APOLLO_CREATE_ACTIVITY_MUTATION === operationName) {
+  if (optimisticMutation && APOLLO_CREATE_ACTIVITY_MUTATION === operationName) {
 
     return optimisticActivityAddedStateSetup(state, action, optimisticResponse);
-  } else if (initOptimistic && APOLLO_DELETE_ACTIVITY === operationName) {
+  } else if (optimisticMutation && APOLLO_DELETE_ACTIVITY === operationName) {
 
     return optimisticActivityRemovedStateSetup(state, optimisticResponse);
-  } else if (initOptimistic && APOLLO_UPDATE_ACTIVITY_MUTATION === operationName) {
+  } else if (optimisticMutation && APOLLO_UPDATE_ACTIVITY_MUTATION === operationName) {
 
     return updateCategoryStateSetup(state, action);
   } else if (mutationResult && APOLLO_CREATE_ACTIVITY_MUTATION === operationName) {
