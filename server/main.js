@@ -28,7 +28,6 @@ const RootQuery = new GraphQLObjectType({
     categoryList: {
       type: types.CategoriesType,
       resolve() {
-
         return loaders.getCategories();
       }
     },
@@ -40,7 +39,6 @@ const RootQuery = new GraphQLObjectType({
         }
       },
       resolve(source, args) {
-
         return loaders.getNodeById(args.id);
       }
     }
@@ -71,9 +69,7 @@ const RootMutation = new GraphQLObjectType({
         }
       },
       resolve(source, args, context) {
-
         return loaders.createActivity(args, context).then((result) => {
-
           return loaders.nodeLoaders[result.table].load(result.id);
         });
       }
@@ -86,7 +82,6 @@ const RootMutation = new GraphQLObjectType({
         }
       },
       resolve(source, args) {
-
         return loaders.deleteRow(args);
       }
     },
@@ -113,9 +108,7 @@ const RootMutation = new GraphQLObjectType({
         }
       },
       resolve(source, args, context) {
-
         return loaders.updateRow(args, context).then(() => {
-
           return loaders.getNodeById(args.id);
         })
       }

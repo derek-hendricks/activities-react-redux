@@ -25,7 +25,7 @@ export const Category = ({ loading, error, category, onActivitySubmit, handleAct
         categories={categories}
         activeCategoryId={activeCategoryId}
         buttonText={"Create Activity"}
-        placeholder={"Add"}
+        placeholder={""}
       />
     </div>
   )

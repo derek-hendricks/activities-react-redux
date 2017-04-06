@@ -31,13 +31,11 @@ const dbIdNodeId = (data) => {
 
 const getNodeById = (data) => {
   const nodeId = dbIdNodeId(data);
-
   return nodeLoaders[nodeId[0]].load(nodeId[1]);
 };
 
 const clearCacheById = (data) => {
   const nodeId = dbIdNodeId(data);
-
   return nodeLoaders[nodeId[0]].clear(nodeId[1]);
 };
 
@@ -105,9 +103,7 @@ const getActivities = (source) => {
   const query = table.select(table.star()).from(table).where(table.categoryId.equals(source.id)).order(table.createdAt.desc).toQuery();
 
   return database.getSql(query).then((rows) => {
-
     return rows.map((row) => {
-
       return {
         id: row.id,
         name: row.name,
@@ -127,10 +123,8 @@ const deleteRow = (data) => {
 
   return database.getSql(query).then(() => {
     clearCacheById(data.id);
-
     return data;
   }).catch((error) => {
-
     return error;
   })
 };
@@ -152,7 +146,6 @@ const updateRow = (data) => {
   const query = { text: updateQuery(db, activity) };
 
   return database.getSql(query).then(() => {
-
     return clearCacheById(data.id);
   }).catch((error) => {
 
@@ -174,14 +167,12 @@ const createActivity = (activity) => {
   ).toQuery();
 
   return database.getSql(query).then(() => {
-
     return database.getSql(
       {
         text: 'SELECT last_insert_rowid() AS id FROM activities LIMIT 1'
       }
     );
   }).then((activity) => {
-
     return {
       table: tables.activities.getName(),
       id: activity[0].id

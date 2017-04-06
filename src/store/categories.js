@@ -45,7 +45,6 @@ function findCategoryIndex(categories, action) {
 
       return getIndexByActivity(categories, activityId);
     default:
-
       return;
   }
 }
@@ -61,7 +60,6 @@ function categorySetup(state, action, index) {
 }
 
 function stateSetup(state, category, index) {
-
   return [
     ...state.slice(0, index),
     category,
