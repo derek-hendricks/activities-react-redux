@@ -9,6 +9,7 @@ const GraphQLInterfaceType = require('graphql').GraphQLInterfaceType;
 const loaders = require('./loaders');
 const tables = require('./tables');
 
+
 const CategoryInterface = new GraphQLInterfaceType({
   name: 'CategoryInterface',
   fields: {

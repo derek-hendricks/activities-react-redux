@@ -108,7 +108,7 @@ const RootMutation = new GraphQLObjectType({
         }
       },
       resolve(source, args, context) {
-        return loaders.updateRow(args, context).then((result) => {
+        return loaders.updateRow(args, context).then(() => {
           return loaders.getNodeById(args.id);
         })
       }

@@ -25,6 +25,11 @@ const nodeLoaders = {
   activities: createNodeLoader(tables.activities),
 };
 
+const dbIdNodeId = (data) => {
+  return data.replace(/ /g, '').split(':');
+};
+
+
 const getNodeById = (data) => {
   const nodeId = dbIdNodeId(data);
   return nodeLoaders[nodeId[0]].load(nodeId[1]);
@@ -35,9 +40,6 @@ const clearCacheById = (data) => {
   return nodeLoaders[nodeId[0]].clear(nodeId[1]);
 };
 
-const dbIdNodeId = (data) => {
-  return data.replace(/ /g, '').split(':');
-};
 
 const removeProperties = (obj, property) => {
   const keys = Object.keys(obj);
@@ -123,6 +125,8 @@ const deleteRow = (data) => {
 
   return database.getSql(query).then(() => {
     return data;
+  }).then(() => {
+    clearCacheById(data.id);
   }).catch((e) => {
     return e;
   })
@@ -144,7 +148,7 @@ const updateRow = (data) => {
   const db = data.id.split(":");
   const query = { text: updateQuery(db, activity) };
 
-  return database.getSql(query).then((res) => {
+  return database.getSql(query).then(() => {
     return clearCacheById(data.id);
   }).catch((e) => {
     return e;

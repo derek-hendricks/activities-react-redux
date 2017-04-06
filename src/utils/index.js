@@ -1,4 +1,4 @@
-export const setProperties = (obj, property) => {
+export const setProperties = (obj, property, value) => {
   const keys = Object.keys(obj);
   let data = {};
   for (let key of keys) {
@@ -8,6 +8,16 @@ export const setProperties = (obj, property) => {
   }
   return data;
 };
+
+export function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+    s4() + '-' + s4() + s4() + s4();
+}
 
 export const initialFetch = () => {
   const categoryListQuery = `{
@@ -57,13 +67,12 @@ export const initialFetch = () => {
   return new Promise((resolve) => {
     fetch(categoryListQuery).then((results) => {
       const { errors, data: { categoryList } } = results;
-      if (errors) {
-        return;
-      }
-      const categories = results.data.categoryList;
       const index = 0;
-      const category = categories.categories[index];
-      return loadActivities(categories, index, category);
+      if (errors) {
+        return errors;
+      }
+      const category = categoryList.categories[index];
+      return loadActivities(categoryList.categories, index, category);
     }).then(resolve);
   });
 };

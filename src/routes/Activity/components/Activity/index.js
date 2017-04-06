@@ -22,7 +22,7 @@ export const Activity = (props) => {
       <p>{activity.date}</p>
 
       <ActivityInput
-        onSubmit={(...props) => {
+        onSubmit={(props) => {
           handleActivityUpdate({ ...props, id: activity.id }, onActivityUpdate, activity, dispatch)
         }}
         buttonText={"Edit"}

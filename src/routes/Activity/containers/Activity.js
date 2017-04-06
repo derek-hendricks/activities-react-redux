@@ -27,15 +27,11 @@ const mapStateToActivityProps = ({ activeCategoryId, ...state }, { id: activityI
 };
 
 const mapDispatchToActivityProps = (dispatch) => ({
-  handleActivityDelete: (id, onActivityDelete) => (
-    onActivityDelete(id).then(({ data: { deleteActivity: { id } } }) => {
-      return (
-        dispatch(deleteActivity(id.split(": ")[1]))
-      )
-    }).catch((e) => {
-      return e;
-    })
-  ),
+  handleActivityDelete: (id, onActivityDelete) => {
+    return (
+      onActivityDelete(id)
+    );
+  },
   dispatch
 });
 
@@ -51,17 +47,8 @@ const mergeActivityProps = (stateProps, dispatchProps) => {
     ...dispatchProps,
     handleActivityUpdate: ({ id, ...activity }, onActivityUpdate, previousActivity) => {
       const updated = { ...setProperties(activity), id };
-      if (updated.categoryId) {
-        moveActivity(updated, dispatchProps.dispatch, id, previousActivity);
-      } else {
-        dispatchProps.dispatch(updateActivity(updated));
-      }
       return (
-        onActivityUpdate(updated).then(({ data: { updateActivity: activity } }) => {
-          console.log('updated:', activity);
-        }).catch((err) => {
-          console.log('err', err);
-        })
+        onActivityUpdate(updated, previousActivity)
       );
     }
   });
@@ -82,6 +69,13 @@ const activityDeleteOptions = {
           {
             variables: {
               "id": `activities: ${id}`
+            },
+            optimisticResponse: {
+              __typename: "Mutation",
+              activity: {
+                id,
+                __typename: "activities"
+              }
             }
           })
       );
@@ -97,12 +91,21 @@ const activityUpdate = gql`mutation updateActivity($id: ID!, $name: String, $cat
 
 const activityUpdateOptions = {
   props: ({ ownProps, mutate }) => ({
-    onActivityUpdate: ({ id, ...activity }) => {
+    onActivityUpdate: ({ id, ...activity }, previousActivity) => {
       return (
         mutate({
           variables: {
             id: `activities: ${id}`,
             ...activity
+          },
+          optimisticResponse: {
+            __typename: "Mutation",
+            activity: {
+              id,
+              __typename: "activities",
+              ...activity,
+            },
+            previousActivity
           }
         })
       );

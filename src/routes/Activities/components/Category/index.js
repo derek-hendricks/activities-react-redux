@@ -1,6 +1,6 @@
 import React from 'react'
-import ActivityList from '../ActivityList'
-import ActivityInput from '../../../../components/ActivityInput'
+import ActivityList from '../ActivityList/index'
+import ActivityInput from '../../../../components/ActivityInput/index'
 import './styles.scss'
 
 export const Category = ({ loading, error, category, onActivitySubmit, handleActivitySubmit, categories, activeCategoryId }) => {
@@ -17,7 +17,8 @@ export const Category = ({ loading, error, category, onActivitySubmit, handleAct
       />
       <ActivityInput
         onSubmit={(activity, activeCategoryId) => {
-          handleActivitySubmit(activity, activity.categoryId || activeCategoryId, onActivitySubmit)}
+          handleActivitySubmit(activity, (activity.categoryId || {}).value || activeCategoryId, onActivitySubmit)
+        }
         }
         categories={categories}
         activeCategoryId={activeCategoryId}

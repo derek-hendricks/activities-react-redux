@@ -1,9 +1,9 @@
 export const ADD_ACTIVITY = 'ADD_ACTIVITY';
 export const DELETE_ACTIVITY = 'DELETE_ACTIVITY';
 export const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
+export const APOLLO_MUTATION_RESULT = 'APOLLO_MUTATION_RESULT';
 
 export function deleteActivity(id) {
-  debugger;
   return {
     type: DELETE_ACTIVITY,
     id
@@ -28,18 +28,23 @@ const initialState = [];
 
 export default function activitiesReducer(state = initialState, action) {
   switch (action.type) {
-    case ADD_ACTIVITY: {
+    case ADD_ACTIVITY:
       return activitiesAdded(state, action);
-    }
-    case UPDATE_ACTIVITY: {
-      return activitiesUpdated(state, action);
-    }
-    case DELETE_ACTIVITY: {
+
+    case UPDATE_ACTIVITY:
+      const activityIndex = getIndex(state, action);
+      return activitiesUpdated(state, action, activityIndex);
+
+    case DELETE_ACTIVITY:
       return activitiesDeleted(state, action);
-    }
-    default: {
+
+    case APOLLO_MUTATION_RESULT:
+      const {result: {data: {createActivity: {id, name, categoryId}}}} = action;
+      const index = getIndex(state, {id: `${categoryId}:${name}`});
+      return activitiesUpdated(state, {id}, index);
+
+    default:
       return state;
-    }
   }
 }
 
@@ -51,9 +56,8 @@ function activitiesAdded(state, { type, __typename, ...activity }) {
   return state.concat(activity);
 }
 
-function activitiesUpdated(state, { type, __typename, ...activity }) {
-  const activityIndex = getIndex(state, activity);
-  const previousActivity = state[getIndex(state, activity)];
+function activitiesUpdated(state, activity, activityIndex) {
+  const previousActivity = state[activityIndex];
   const modifiedActivity = {
     ...previousActivity,
     ...activity
@@ -67,7 +71,6 @@ function activitiesUpdated(state, { type, __typename, ...activity }) {
 }
 
 function activitiesDeleted(state, action) {
-  debugger;
   const activityIndex = getIndex(state, action);
 
   return [
