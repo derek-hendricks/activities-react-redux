@@ -17,9 +17,9 @@ export const createMatches = (store) => (
         <ActivityRoute id={props.params.id} store={store} props={props}/>
       );
     }}/>
-    {/*<Match pattern='/' render={() => (*/}
-    {/*<Redirect to='/about'/>*/}
-    {/*)}/>*/}
+    <Match exactly pattern='/' render={() => (
+    <Redirect to='/activities'/>
+    )}/>
     <Miss component={NotFound}/>
   </CoreLayout>
 );

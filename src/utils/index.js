@@ -1,6 +1,6 @@
 export const setProperties = (obj, property) => {
   const keys = Object.keys(obj);
-  let data = {};
+  const data = {};
   for (const key of keys) {
     if (obj[key] === property || !obj[key].value.trim()) {
       continue;

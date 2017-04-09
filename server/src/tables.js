@@ -44,9 +44,6 @@ const activities = sql.define({
   }]
 });
 
-// todo:
-// create join table so activities and categories have many-to-many relationship
-
 module.exports = {
   categories,
   activities

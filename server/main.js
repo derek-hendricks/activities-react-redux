@@ -21,22 +21,6 @@ const loaders = require('./src/loaders');
 const app = express();
 app.use(compress());
 
-/*
-
-
-
- followersList: {
- type: new GraphQLList(UserType),
- resolve: (user, args, { loaders }) => {
- return fetch('https://api.github.com/users/' + user.login + '/followers?client_id=f64f7957d1ad23b29a94&client_secret=7f8c1767535a86c48efc2fe34a03558d91f94eb4')
- .then(res => res.json())
- .then(followers => followers.map(follower => follower.url))
- .then(urls => loaders.user.loadMany(urls))
- },
- },
-
- */
-
 const RootQuery = new GraphQLObjectType({
   name: 'RootQuery',
   description: 'The root query',

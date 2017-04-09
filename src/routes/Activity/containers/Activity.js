@@ -3,8 +3,6 @@ import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag'
 import { setProperties } from '../../../utils';
 import Activity from '../components/Activity/index'
-import { openActivity } from '../../../store/activity'
-import { openCategory } from '../../../store/activeCategory'
 
 const initialState = { activity: {}, categories: [] };
 
@@ -143,7 +141,6 @@ const activityQueryOptions = {
     });
   },
   props: (props) => {
-    console.log('props', props);
     const { data: { loading, error } } = props;
     return ({
       loading,

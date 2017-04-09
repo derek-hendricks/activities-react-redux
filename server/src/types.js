@@ -23,8 +23,6 @@ const CategoryInterface = new GraphQLInterfaceType({
       return CategoryType;
     } else if (source.__tableName === "activities") {
       return ActivitiesType;
-    } else if (source.__tableName === "activity") {
-      return ActivitiesType;
     }
   }
 });
