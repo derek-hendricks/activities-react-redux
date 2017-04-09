@@ -2,10 +2,10 @@ import React from 'react'
 import './styles.scss'
 import Activity from '../../containers/Activity'
 
-export const ActivityView = ({ id }) => {
+export const ActivityView = ({ id, store, props }) => {
   return (
     <div className='activity-view'>
-      <Activity id={id}/>
+      <Activity id={id} store={store} props={props}/>
     </div>
   )
 };

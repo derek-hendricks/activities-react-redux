@@ -4,11 +4,11 @@ import ActivityInput from '../../../../components/ActivityInput/index'
 import './styles.scss'
 
 export const Category = ({ loading, error, category, onActivitySubmit, handleActivitySubmit, categories, activeCategoryId }) => {
-  if (loading) {
 
+
+  if (loading) {
     return (<div>loading</div>)
   } else if (error) {
-
     return (<p>Error!</p>);
   }
 
@@ -19,6 +19,9 @@ export const Category = ({ loading, error, category, onActivitySubmit, handleAct
       />
       <ActivityInput
         onSubmit={(activity, activeCategoryId) => {
+          console.log('activeCategoryId', activeCategoryId)
+          console.log('activity.categoryId', activity.categoryId)
+          console.log('activity.categoryId || {}).value || activeCategoryId', (activity.categoryId || {}).value || activeCategoryId);
           handleActivitySubmit(activity, (activity.categoryId || {}).value || activeCategoryId, onActivitySubmit)
         }
         }
@@ -36,7 +39,8 @@ Category.propTypes = {
   error: React.PropTypes.bool.isRequired,
   category: React.PropTypes.object.isRequired,
   onActivitySubmit: React.PropTypes.func.isRequired,
-  handleActivitySubmit: React.PropTypes.func.isRequired
+  handleActivitySubmit: React.PropTypes.func.isRequired,
+  activeCategoryId: React.PropTypes.string
 };
 
 export default Category

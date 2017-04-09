@@ -10,7 +10,7 @@
     .categories .item span {
       padding: 2px;
       border-radius: 2px; }
-  .categories .active span {
+  .categories .active {
     color: #337ab7;
     font-weight: bold; }
 

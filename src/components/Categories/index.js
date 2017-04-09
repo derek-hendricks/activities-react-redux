@@ -1,4 +1,5 @@
 import React from "react"
+import Link from 'react-router/Link';
 import "./styles.scss"
 
 export const Categories = ({ loading, error, categories, onClick }) => {
@@ -10,15 +11,20 @@ export const Categories = ({ loading, error, categories, onClick }) => {
 
     return (
       <nav className='categories'>
-        {categories.map((category, index) => (
-          <div
-            key={index}
-            className={category.active ? 'active item' : 'item'}
-            onClick={() => onClick(category.id)}
-          >
-            <span>{category.name}</span>
-          </div>
-        ))}
+        {categories.map((category, index) => {
+          return (
+              <Link key={index} to='/activities'>
+                <div
+                  key={index}
+                  className={category.active ? 'active item' : 'item'}
+                  onClick={() => onClick(category.id)}
+                >
+                  {category.name}
+                </div>
+              </Link>
+
+          );
+        })}
       </nav>
     );
   }
@@ -32,3 +38,6 @@ Categories.propTypes = {
 };
 
 export default Categories
+
+
+

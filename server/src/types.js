@@ -9,7 +9,7 @@ const GraphQLInterfaceType = require('graphql').GraphQLInterfaceType;
 const loaders = require('./loaders');
 const tables = require('./tables');
 
-let CategoryType, ActivityType;
+let CategoryType, ActivitiesType;
 
 const CategoryInterface = new GraphQLInterfaceType({
   name: 'CategoryInterface',
@@ -20,16 +20,16 @@ const CategoryInterface = new GraphQLInterfaceType({
   },
   resolveType: (source) => {
     if (source.__tableName === "categories") {
-
       return CategoryType;
     } else if (source.__tableName === "activities") {
-
-      return ActivityType;
+      return ActivitiesType;
+    } else if (source.__tableName === "activity") {
+      return ActivitiesType;
     }
   }
 });
 
-ActivityType = new GraphQLObjectType({
+ActivitiesType = new GraphQLObjectType({
   name: 'Activity',
   interfaces: [CategoryInterface],
   fields: {
@@ -61,12 +61,10 @@ CategoryType = new GraphQLObjectType({
   name: 'Category',
   interfaces: [CategoryInterface],
   fields: () => {
-
     return {
       id: {
         type: new GraphQLNonNull(GraphQLID),
         resolve(source) {
-
           return `${source.__tableName}: ${source.id}`;
         }
       },
@@ -77,9 +75,8 @@ CategoryType = new GraphQLObjectType({
         type: GraphQLString
       },
       activities: {
-        type: new GraphQLList(ActivityType),
+        type: new GraphQLList(ActivitiesType),
         resolve(source) {
-
           return loaders.getActivities(source);
         }
       }
@@ -90,7 +87,6 @@ CategoryType = new GraphQLObjectType({
 const CategoryWithoutInterfaceType = new GraphQLObjectType({
   name: 'CategoryWithoutInterface',
   fields: () => {
-
     return {
       id: {
         type: new GraphQLNonNull(GraphQLID)
@@ -108,7 +104,6 @@ const CategoryWithoutInterfaceType = new GraphQLObjectType({
 const CategoriesType = new GraphQLObjectType({
   name: 'Categories',
   fields: () => {
-
     return {
       categories: {
         type: new GraphQLList(CategoryWithoutInterfaceType)
@@ -121,5 +116,5 @@ module.exports = {
   CategoryType,
   CategoriesType,
   CategoryInterface,
-  ActivityType
+  ActivitiesType
 };

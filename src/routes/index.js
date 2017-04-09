@@ -8,16 +8,18 @@ import Match from 'react-router/Match';
 import Redirect from 'react-router/Redirect';
 import Miss from 'react-router/Miss';
 
-export const createMatches = () => (
+export const createMatches = (store) => (
   <CoreLayout>
-    <Match exactly pattern='/activity/:id' render={(props) => (
-      <ActivityRoute id={props.params.id}/>
-    )}/>
-    <Match pattern='/activities' render={ActivitiesRoute}/>
-    <Match exactly pattern='/about' render={AboutRoute}/>
-    <Match pattern='/' render={() => (
-      <Redirect to='/activities'/>
-    )}/>
+    <Match exactly pattern='/activities' render={ActivitiesRoute}/>
+    <Match pattern='/about' render={AboutRoute}/>
+    <Match pattern='/activity/:id' render={(props) => {
+      return (
+        <ActivityRoute id={props.params.id} store={store} props={props}/>
+      );
+    }}/>
+    {/*<Match pattern='/' render={() => (*/}
+    {/*<Redirect to='/about'/>*/}
+    {/*)}/>*/}
     <Miss component={NotFound}/>
   </CoreLayout>
 );

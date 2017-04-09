@@ -3,9 +3,9 @@ export const APOLLO_QUERY_RESULT = 'APOLLO_QUERY_RESULT';
 export const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
 export const APOLLO_CATEGORIES_QUERY = "CategoriesQuery";
 export const APOLLO_UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
+export const APOLLO_ACTIVITY_QUERY = "ACTIVITY_QUERY";
 
 export function openCategory(id) {
-
   return {
     type: OPEN_CATEGORY,
     id
@@ -15,10 +15,8 @@ export function openCategory(id) {
 function optimisticMutationStateSetup(state, optimisticResponse) {
   const { activity: { categoryId }, previousActivity: previousCategoryId } = optimisticResponse;
   if (categoryId && categoryId !== previousCategoryId) {
-
     return categoryId;
   } else {
-
     return state;
   }
 }
@@ -26,14 +24,19 @@ function optimisticMutationStateSetup(state, optimisticResponse) {
 const initialState = null;
 
 export default function activeCategoryIdReducer(state = initialState, action) {
-  const { type, id, operationName, optimisticResponse } = action;
+  const { type, id, operationName, optimisticResponse, result } = action;
   const queryResult = type === APOLLO_QUERY_RESULT;
   const optimisticMutation = type === APOLLO_MUTATION_INIT;
+  const categoriesQuery = APOLLO_CATEGORIES_QUERY === operationName;
 
   if (OPEN_CATEGORY === type) {
-
     return id;
-  } else if (queryResult && APOLLO_CATEGORIES_QUERY === operationName) {
+
+  } else if (APOLLO_ACTIVITY_QUERY === operationName) {
+    const { data: { categoryInterface: { categoryId } } }  = result;
+
+    return categoryId;
+  } else if (queryResult && categoriesQuery && !state) {
     const { result: { data: { categoryList: { categories } } } } = action;
 
     return categories[0].id;

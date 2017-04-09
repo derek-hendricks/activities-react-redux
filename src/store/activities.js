@@ -13,7 +13,7 @@ export default function activitiesReducer(state = initialState, action) {
     case UPDATE_ACTIVITY:
       const activityIndex = getIndex(state, action);
 
-      return activitiesUpdated(state, action, activityIndex);
+      return activityUpdated(state, action, activityIndex);
     case DELETE_ACTIVITY:
 
       return activitiesDeleted(state, action);
@@ -21,7 +21,7 @@ export default function activitiesReducer(state = initialState, action) {
       const {result: {data: {createActivity: {id, name, categoryId}}}} = action;
       const index = getIndex(state, {id: `${categoryId}:${name}`});
 
-      return activitiesUpdated(state, {id}, index);
+      return activityUpdated(state, {id}, index);
     default:
 
       return state;
@@ -36,7 +36,7 @@ function activitiesAdded(state, { type, __typename, ...activity }) {
   return state.concat(activity);
 }
 
-function activitiesUpdated(state, activity, activityIndex) {
+function activityUpdated(state, activity, activityIndex) {
   const previousActivity = state[activityIndex];
   const modifiedActivity = {
     ...previousActivity,

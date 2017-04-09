@@ -9,7 +9,7 @@ export const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
 export const APOLLO_MUTATION_RESULT = "APOLLO_MUTATION_RESULT";
 
 export const APOLLO_CATEGORIES_QUERY = "CategoriesQuery";
-export const APOLLO_ACTIVITIES_QUERY = "ActivitiesQuery";
+export const APOLLO_ACTIVITIES_QUERY = "ACTIVITIES_QUERY";
 
 export const APOLLO_DELETE_ACTIVITY = "DELETE_ACTIVITY_MUTATION";
 export const APOLLO_CREATE_ACTIVITY_MUTATION = "CREATE_ACTIVITY_MUTATION";
@@ -20,6 +20,7 @@ function getIndex(categories, id) {
 }
 
 function getIndexByActivity(categories, activityId) {
+
   return categories.findIndex((category) => (
     category.activities.find((activity) => (
       activityId === activity.id
@@ -67,6 +68,15 @@ function stateSetup(state, category, index) {
   ];
 }
 
+function apolloCategoriesStateSetup(state, action) {
+  const { result: { data: { categoryList: { categories } } } } = action;
+
+  return categories.slice().map((category) => ({
+    ...category,
+    activities: []
+  }))
+}
+
 function categoryActivitiesQueryResultStateSetup(state, action) {
   const { result: { data: { categoryInterface: { activities } } } } = action;
   const index = findCategoryIndex(state, action);
@@ -79,11 +89,11 @@ function categoryActivitiesQueryResultStateSetup(state, action) {
 }
 
 function moveCategoryStateSetup(state, activity, previousActivity) {
-  const previousCategoryIndex = findCategoryIndex(state, { type: DELETE_ACTIVITY, id: previousActivity.id });
+  const previousCategoryIndex = state.findIndex(category => category.id === previousActivity.categoryId);
   const categoryWithActivityRemoved = categorySetup(state, { id: previousActivity.id, type: DELETE_ACTIVITY }, previousCategoryIndex);
   const stateWithActivityRemoved = stateSetup(state, categoryWithActivityRemoved, previousCategoryIndex);
 
-  const newCategoryIndex = findCategoryIndex(stateWithActivityRemoved, { ...activity, type: APOLLO_MUTATION_INIT });
+  const newCategoryIndex = stateWithActivityRemoved.findIndex(category => category.id === activity.categoryId);
   const categoryWithActivityAdded = categorySetup(stateWithActivityRemoved, { ...previousActivity, ...activity, type: ADD_ACTIVITY }, newCategoryIndex);
 
   return stateSetup(stateWithActivityRemoved, categoryWithActivityAdded, newCategoryIndex);
@@ -92,9 +102,9 @@ function moveCategoryStateSetup(state, activity, previousActivity) {
 function updateCategoryStateSetup(state, action) {
   const { optimisticResponse: { activity, previousActivity } } = action;
   if (activity.categoryId && activity.categoryId !== previousActivity.categoryId) {
-
     return moveCategoryStateSetup(state, activity, previousActivity);
   }
+
   const updateAction = { ...activity, type: UPDATE_ACTIVITY };
   const index = findCategoryIndex(state, updateAction);
   const category = categorySetup(state, updateAction, index);
@@ -146,9 +156,8 @@ export default function categoriesReducer(state = initialState, action) {
 
     return newActivityStateSetup(state, action);
   } else if (APOLLO_CATEGORIES_QUERY === operationName) {
-    const { result: { data: { categoryList: { categories } } } } = action;
 
-    return categories.slice();
+    return apolloCategoriesStateSetup(state, action)
   } else if (APOLLO_ACTIVITIES_QUERY === operationName) {
 
     return categoryActivitiesQueryResultStateSetup(state, action);

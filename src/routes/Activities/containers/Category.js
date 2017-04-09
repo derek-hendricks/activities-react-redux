@@ -1,13 +1,13 @@
-import {connect} from 'react-redux'
-import {graphql, compose} from 'react-apollo';
+import { connect } from 'react-redux'
+import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
-import {setProperties} from '../../../utils/index';
+import { setProperties } from '../../../utils/index';
 import Category from '../components/Category/index'
 
-const initialState = {loading: true, error: false, category: {}, activity: {}, categories: []};
+const initialState = { loading: true, error: false, category: {}, activity: {}, categories: [] };
 
 const mapStateToCategoryProps = (state = initialState) => {
-  const {activeCategoryId, categories}  = state;
+  const { activeCategoryId, categories }  = state;
   const category = categories.slice().find((category) => (
     category.id === activeCategoryId
   ));
@@ -25,7 +25,7 @@ const mapStateToCategoryProps = (state = initialState) => {
   };
 };
 
-const mapDispatchToCategoryProps = (dispatch) => ({dispatch});
+const mapDispatchToCategoryProps = (dispatch) => ({ dispatch });
 
 const mergeCategoryProps = (stateProps, dispatchProps) => ({
   ...stateProps,
@@ -33,37 +33,35 @@ const mergeCategoryProps = (stateProps, dispatchProps) => ({
   handleActivitySubmit: (activity, categoryId, onActivitySubmit) => {
     const newActivity = setProperties(activity);
 
-    return onActivitySubmit({...newActivity, categoryId});
+    return onActivitySubmit({ ...newActivity, categoryId });
   }
 });
 
-const query = gql`query ActivitiesQuery($id: ID!) {
-  categoryInterface(id: $id) {
-    ... on Category {
-      id,
-      activities {
-        id
-        name
-        about
-        date
-        location
-        categoryId
+const query = gql`
+  query ACTIVITIES_QUERY($id: ID!) {
+    categoryInterface(id: $id) {
+      ... on Category {
+        id,
+        activities {
+          id
+          name
+          about
+          date
+          location
+          categoryId
+        }
       }
     }
-  }
-}`;
+  }`;
 
 const queryOptions = {
-  options: ({category: {activities = []}, activeCategoryId}) => {
-
-    return ({
-      skip: !activeCategoryId,
-      variables: {
-        "id": `categories: ${activeCategoryId}`
-      },
-    });
-  },
-  props: ({data: {loading, error = false}}) => ({
+  options: ({ category: { activities = [] }, activeCategoryId }) => ({
+    skip: !activeCategoryId,
+    variables: {
+      "id": `categories: ${activeCategoryId}`
+    }
+  }),
+  props: ({ data: { loading, error = false } }) => ({
     loading,
     error
   })
@@ -72,7 +70,7 @@ const queryOptions = {
 const createActivity = gql`
   mutation CREATE_ACTIVITY_MUTATION($name: String!, $categoryId: String!, $about: String, $location: String, $date: String) {
     CREATE_ACTIVITY_MUTATION(name: $name, categoryId: $categoryId, about: $about, location: $location, date: $date) {
-    __typename
+      __typename
       name
       id
       categoryId
@@ -84,11 +82,11 @@ const createActivity = gql`
   }`;
 
 const createActivityOptions = {
-  props: ({ownProps: {activeCategoryId: categoryId}, mutate}) => ({
+  props: ({ ownProps: { activeCategoryId: categoryId }, mutate }) => ({
     onActivitySubmit: (activity) => (
       mutate(
         {
-          variables: {...activity},
+          variables: { ...activity },
           optimisticResponse: {
             __typename: "Mutation",
             createActivity: {

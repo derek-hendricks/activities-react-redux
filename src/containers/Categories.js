@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { openCategory } from '../../../store/activeCategory'
+import { openCategory } from '../store/activeCategory'
 import Categories from '../components/Categories/index'
 import { graphql, compose } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -12,14 +12,12 @@ const mapStateToTabsProps = (state = initialState) => {
     active: category.id === state.activeCategoryId
   }));
 
-  return (
-    {
-      categories: [
-        ...initialState.categories,
-        ...categories
-      ]
-    }
-  )
+  return {
+    categories: [
+      ...initialState.categories,
+      ...categories
+    ]
+  }
 };
 
 const mapDispatchToTabsProps = (dispatch) => (
@@ -29,6 +27,17 @@ const mapDispatchToTabsProps = (dispatch) => (
     )
   }
 );
+
+const CategoriesQuery = gql`
+  query CategoriesQuery {
+    categoryList {
+      categories {
+        id
+        description
+        name
+      }
+    }
+  }`;
 
 const queryOptions = {
   options: ({ activeCategoryId }) => {
@@ -41,17 +50,6 @@ const queryOptions = {
     }
   }
 };
-
-const CategoriesQuery = gql`
-  query CategoriesQuery {
-    categoryList {
-      categories {
-        id
-        description
-        name
-      }
-    }
-  }`;
 
 export default compose(
   graphql(CategoriesQuery, queryOptions),

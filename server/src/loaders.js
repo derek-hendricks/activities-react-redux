@@ -11,10 +11,8 @@ const createNodeLoader = (table) => {
       rows.forEach((row) => {
         row.__tableName = table.getName();
       });
-
       return rows;
     }).catch((error) => {
-
       return error;
     });
   });
@@ -41,7 +39,7 @@ const clearCacheById = (data) => {
 
 const setProperties = (obj, property) => {
   const keys = Object.keys(obj);
-  let data = {};
+  const data = {};
   for (const key of keys) {
     const keyIsProperty = key === property;
     const valueIsNotUpdated = !obj[key].trim();
@@ -75,8 +73,13 @@ const getCategories = () => {
 };
 
 const getCategoryActivities = () => {
-  const query = tables.categories.select(tables.categories.id, tables.categories.name, tables.activities.name, tables.activities.categoryId).from(
-    tables.categories.leftJoin(tables.activities).on(tables.categories.id.equals(tables.activities.categoryId))
+  const query = tables.categories.select(
+    tables.categories.id,
+    tables.categories.name,
+    tables.activities.name,
+    tables.activities.categoryId).from(
+    tables.categories.leftJoin(
+      tables.activities).on(tables.categories.id.equals(tables.activities.categoryId))
   ).toQuery();
 
   return database.getSql(query).then((rows) => {
@@ -97,6 +100,7 @@ const getCategoryActivities = () => {
     return { categories };
   });
 };
+
 
 const getActivities = (source) => {
   const table = tables.activities;

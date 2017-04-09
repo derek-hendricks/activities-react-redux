@@ -1,8 +1,9 @@
 import React from 'react'
+import Link from 'react-router/Link';
 import './styles.scss'
 
 export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, activeCategoryId }) => {
-  let activityObject = {};
+  const activityObject = {};
   return (
     <div className='activity-input'>
       <input
@@ -40,14 +41,12 @@ export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, a
         ))}
       </select>
 
-      <button
-        onClick={() => {
-          onSubmit(activityObject, activeCategoryId);
-          activityObject = {};
-        }}
-      >
-        {buttonText}
-      </button>
+      <div onClick={() => onSubmit(activityObject, activeCategoryId) }>
+        <Link to='/activities'>
+          {buttonText}
+        </Link>
+      </div>
+
     </div>
   );
 };
@@ -56,8 +55,9 @@ ActivityInput.propTypes = {
   onSubmit: React.PropTypes.func.isRequired,
   placeholder: React.PropTypes.string.isRequired,
   buttonText: React.PropTypes.string.isRequired,
-  activeCategoryId: React.PropTypes.string.isRequired,
+  activeCategoryId: React.PropTypes.string,
   categories: React.PropTypes.array.isRequired
 };
 
 export default ActivityInput
+
