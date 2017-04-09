@@ -39,9 +39,10 @@ describe('(Categories Component) Categories', () => {
       loading: false,
       error: false,
       categories: _category_props,
-      ...bindActionCreators({
-                              onClick: (_spies.onClick = sinon.spy())
-                            }, _spies.dispatch = sinon.spy())
+      ...bindActionCreators(
+        { onClick: _spies.onClick = sinon.spy() },
+        _spies.dispatch = sinon.spy()
+      )
     };
     _wrapper = shallow(<Categories {..._props} />)
   });
@@ -115,7 +116,7 @@ describe('(Categories Component) Categories', () => {
 
       expect(_wrapper.find('div')).to.have.length(0);
       expect(_wrapper.find('div.item')).to.have.length(0);
-      expect(_wrapper.find('active item')).to.have.length(0);
+      expect(_wrapper.find('div.active item')).to.have.length(0);
     });
 
   });
@@ -138,16 +139,15 @@ describe('(Categories Component) Categories', () => {
     it('Should remove active class from div if other category is selected', () => {
       const { volleyball, running } = getCategories(_wrapper);
 
-      expect(volleyball.hasClass('active item')).to.be.true;
-      expect(running.hasClass('active item')).to.not.be.true;
+      expect(volleyball.hasClass('active item')).to.equal(true);
+      expect(running.hasClass('active item')).to.equal(false);
 
       _wrapper.setProps({ categories });
 
-      const volleyballNotActive = _wrapper.find('div').filterWhere((category) => category.text() === 'Volleyball');
-      const runningActive = _wrapper.find('div').filterWhere((category) => category.text() === 'Running');
+      const { volleyball: volleyballNotActive, running: runningActive } = getCategories(_wrapper);
 
-      expect(volleyballNotActive.hasClass("active item")).to.not.be.true;
-      expect(runningActive.hasClass("active item")).to.be.true;
+      expect(volleyballNotActive.hasClass("active item")).to.equal(false);
+      expect(runningActive.hasClass("active item")).to.equal(true);
     });
   });
 
@@ -159,11 +159,11 @@ describe('(Categories Component) Categories', () => {
     });
 
     it('has item class', () => {
-      expect(category.hasClass('item')).to.be.true;
+      expect(category.hasClass('item')).to.equal(true);
     });
 
     it('does not have active class', () => {
-      expect(category.hasClass('active item')).to.not.be.true;
+      expect(category.hasClass('active item')).to.equal(false);
     });
 
     it('Should dispatch an onClick action when clicked', () => {
