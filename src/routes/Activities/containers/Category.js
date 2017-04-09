@@ -82,22 +82,26 @@ const createActivity = gql`
   }`;
 
 const createActivityOptions = {
-  props: ({ ownProps: { activeCategoryId: categoryId }, mutate }) => ({
-    onActivitySubmit: (activity) => (
-      mutate(
-        {
-          variables: { ...activity },
-          optimisticResponse: {
-            __typename: "Mutation",
-            createActivity: {
-              ...activity,
-              id: `${categoryId}:${activity.name}`,
-              __typename: "activities"
+  props: ({ mutate }) => ({
+    onActivitySubmit: (activity) => {
+      const { categoryId, name } = activity;
+
+      return (
+        mutate(
+          {
+            variables: { ...activity },
+            optimisticResponse: {
+              __typename: "Mutation",
+              createActivity: {
+                ...activity,
+                id: `${categoryId}:${name}`,
+                __typename: "activities"
+              }
             }
           }
-        }
-      )
-    )
+        )
+      );
+    }
   })
 };
 

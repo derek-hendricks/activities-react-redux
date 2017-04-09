@@ -4,12 +4,10 @@ import ActivityInput from '../../../../components/ActivityInput/index'
 import './styles.scss'
 
 export const Category = ({ loading, error, category, onActivitySubmit, handleActivitySubmit, categories, activeCategoryId }) => {
-
-
   if (loading) {
-    return (<div>loading</div>)
+    return (<div>Activity list loading</div>)
   } else if (error) {
-    return (<p>Error!</p>);
+    return (<p>Error</p>);
   }
 
   return (
@@ -19,12 +17,8 @@ export const Category = ({ loading, error, category, onActivitySubmit, handleAct
       />
       <ActivityInput
         onSubmit={(activity, activeCategoryId) => {
-          console.log('activeCategoryId', activeCategoryId)
-          console.log('activity.categoryId', activity.categoryId)
-          console.log('activity.categoryId || {}).value || activeCategoryId', (activity.categoryId || {}).value || activeCategoryId);
-          handleActivitySubmit(activity, (activity.categoryId || {}).value || activeCategoryId, onActivitySubmit)
-        }
-        }
+          handleActivitySubmit(activity, activeCategoryId, onActivitySubmit)
+        }}
         categories={categories}
         activeCategoryId={activeCategoryId}
         buttonText={"Create Activity"}

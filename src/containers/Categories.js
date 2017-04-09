@@ -29,7 +29,7 @@ const mapDispatchToTabsProps = (dispatch) => (
 );
 
 const CategoriesQuery = gql`
-  query CategoriesQuery {
+  query CATEGORIES_QUERY {
     categoryList {
       categories {
         id

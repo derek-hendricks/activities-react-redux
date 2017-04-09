@@ -8,7 +8,7 @@ export const APOLLO_QUERY_RESULT = "APOLLO_QUERY_RESULT";
 export const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
 export const APOLLO_MUTATION_RESULT = "APOLLO_MUTATION_RESULT";
 
-export const APOLLO_CATEGORIES_QUERY = "CategoriesQuery";
+export const APOLLO_CATEGORIES_QUERY = "CATEGORIES_QUERY";
 export const APOLLO_ACTIVITIES_QUERY = "ACTIVITIES_QUERY";
 
 export const APOLLO_DELETE_ACTIVITY = "DELETE_ACTIVITY_MUTATION";
@@ -113,7 +113,7 @@ function updateCategoryStateSetup(state, action) {
 }
 
 function newActivityStateSetup(state, action) {
-  const { result: { data: { createActivity: activity } } }  = action;
+  const { result: { data: { CREATE_ACTIVITY_MUTATION: activity } } }  = action;
   const index = findCategoryIndex(state, { ...action, categoryId: activity.categoryId });
   const updatedCategory = categorySetup(state, action, index);
 

@@ -21,7 +21,6 @@ const mapStateToActivityProps = (state = initialState, action) => {
   });
 
   return {
-    ...initialState,
     activity: loadedActivity || activity,
     categories,
     activeCategoryId,
@@ -143,8 +142,7 @@ const activityQueryOptions = {
     const { data: { loading, error } } = props;
     return ({
       loading,
-      error,
-      test: true
+      error
     });
   }
 };

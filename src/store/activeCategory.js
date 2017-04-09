@@ -1,7 +1,7 @@
 export const OPEN_CATEGORY = 'OPEN_CATEGORY';
 export const APOLLO_QUERY_RESULT = 'APOLLO_QUERY_RESULT';
 export const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
-export const APOLLO_CATEGORIES_QUERY = "CategoriesQuery";
+export const APOLLO_CATEGORIES_QUERY = "CATEGORIES_QUERY";
 export const APOLLO_UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
 export const APOLLO_ACTIVITY_QUERY = "ACTIVITY_QUERY";
 
@@ -30,8 +30,8 @@ export default function activeCategoryIdReducer(state = initialState, action) {
   const categoriesQuery = APOLLO_CATEGORIES_QUERY === operationName;
 
   if (OPEN_CATEGORY === type) {
-    return id;
 
+    return id;
   } else if (APOLLO_ACTIVITY_QUERY === operationName) {
     const { data: { categoryInterface: { categoryId } } }  = result;
 
