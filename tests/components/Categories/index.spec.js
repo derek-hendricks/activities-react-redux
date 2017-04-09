@@ -17,7 +17,7 @@ function getCategories(wrapper) {
   return { volleyball, running, soccer }
 }
 
-const _category_props = [{
+const categoryProps = [{
   name: 'Volleyball',
   active: true,
   id: 1,
@@ -32,42 +32,45 @@ const _category_props = [{
 }];
 
 describe('(Categories Component) Categories', () => {
-  let _spies, _wrapper, _props;
+  let spies, wrapper, props;
+
   beforeEach(() => {
-    _spies = {};
-    _props = {
+    spies = {};
+
+    props = {
       loading: false,
       error: false,
-      categories: _category_props,
+      categories: categoryProps,
       ...bindActionCreators(
-        { onClick: _spies.onClick = sinon.spy() },
-        _spies.dispatch = sinon.spy()
+        { onClick: spies.onClick = sinon.spy() },
+        spies.dispatch = sinon.spy()
       )
     };
-    _wrapper = shallow(<Categories {..._props} />)
+
+    wrapper = shallow(<Categories {...props} />)
   });
 
   it('Should render as a nav.', () => {
-    expect(_wrapper.is('nav')).to.equal(true)
+    expect(wrapper.is('nav')).to.equal(true)
   });
 
   it('Should render nav ', () => {
-    const categories = (_wrapper.find('nav'));
+    const categories = (wrapper.find('nav'));
     expect(categories).to.exist;
     expect(categories.hasClass('categories')).to.equal(true);
   });
 
   it('Should render three divs', () => {
-    expect(_wrapper.find('div')).to.have.length(3);
+    expect(wrapper.find('div')).to.have.length(3);
   });
 
   describe('loading state', () => {
     beforeEach(() => {
-      _wrapper.setProps({ loading: true });
+      wrapper.setProps({ loading: true });
     });
 
     it('should display message if loading set to true', () => {
-      const loading = _wrapper.find('div').filterWhere((category) => (
+      const loading = wrapper.find('div').filterWhere((category) => (
         category.text() === 'Categories Loading'
       ));
 
@@ -76,47 +79,47 @@ describe('(Categories Component) Categories', () => {
     });
 
     it('should not display categories if loading is set to true', () => {
-      const categories = (_wrapper.find('nav'));
-      const { soccer, volleyball, running } = getCategories(_wrapper);
+      const categories = (wrapper.find('nav'));
+      const { soccer, volleyball, running } = getCategories(wrapper);
 
       expect(categories).to.not.exist;
       expect(soccer).to.not.exist;
       expect(volleyball).to.not.exist;
       expect(running).to.not.exist;
 
-      expect(_wrapper.find('div.item')).to.have.length(0);
-      expect(_wrapper.find('active item')).to.have.length(0);
+      expect(wrapper.find('div.item')).to.have.length(0);
+      expect(wrapper.find('active item')).to.have.length(0);
 
     });
   });
 
   describe('error state', () => {
     beforeEach(() => {
-      _wrapper.setProps({ error: true });
+      wrapper.setProps({ error: true });
     });
 
     it('should display message if error set to true', () => {
-      const error = _wrapper.find('p').filterWhere((error) => (
+      const error = wrapper.find('p').filterWhere((error) => (
         error.text() === 'Error'
       ));
 
       expect(error).to.exist;
       expect(error.text()).to.equal('Error');
-      expect(_wrapper.find('p')).to.have.length(1);
+      expect(wrapper.find('p')).to.have.length(1);
     });
 
     it('should not display categories if error is set to true', () => {
-      const categories = (_wrapper.find('nav'));
-      const { soccer, volleyball, running } = getCategories(_wrapper);
+      const categories = (wrapper.find('nav'));
+      const { soccer, volleyball, running } = getCategories(wrapper);
 
       expect(categories).to.not.exist;
       expect(soccer).to.not.exist;
       expect(volleyball).to.not.exist;
       expect(running).to.not.exist;
 
-      expect(_wrapper.find('div')).to.have.length(0);
-      expect(_wrapper.find('div.item')).to.have.length(0);
-      expect(_wrapper.find('div.active item')).to.have.length(0);
+      expect(wrapper.find('div')).to.have.length(0);
+      expect(wrapper.find('div.item')).to.have.length(0);
+      expect(wrapper.find('div.active item')).to.have.length(0);
     });
 
   });
@@ -137,14 +140,14 @@ describe('(Categories Component) Categories', () => {
     }];
 
     it('Should remove active class from div if other category is selected', () => {
-      const { volleyball, running } = getCategories(_wrapper);
+      const { volleyball, running } = getCategories(wrapper);
 
       expect(volleyball.hasClass('active item')).to.equal(true);
       expect(running.hasClass('active item')).to.equal(false);
 
-      _wrapper.setProps({ categories });
+      wrapper.setProps({ categories });
 
-      const { volleyball: volleyballNotActive, running: runningActive } = getCategories(_wrapper);
+      const { volleyball: volleyballNotActive, running: runningActive } = getCategories(wrapper);
 
       expect(volleyballNotActive.hasClass("active item")).to.equal(false);
       expect(runningActive.hasClass("active item")).to.equal(true);
@@ -155,7 +158,7 @@ describe('(Categories Component) Categories', () => {
     let category;
 
     beforeEach(() => {
-      category = _wrapper.find('div').filterWhere(category => category.text() === 'Running')
+      category = wrapper.find('div').filterWhere(category => category.text() === 'Running')
     });
 
     it('has item class', () => {
@@ -167,12 +170,12 @@ describe('(Categories Component) Categories', () => {
     });
 
     it('Should dispatch an onClick action when clicked', () => {
-      _spies.dispatch.should.have.not.been.called;
+      spies.dispatch.should.have.not.been.called;
 
       category.simulate('click');
 
-      _spies.dispatch.should.have.been.called
-      _spies.onClick.should.have.been.called
+      spies.dispatch.should.have.been.called
+      spies.onClick.should.have.been.called
     })
 
   });
