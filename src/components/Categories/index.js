@@ -4,9 +4,9 @@ import "./styles.scss"
 
 export const Categories = ({ loading, error, categories, onClick }) => {
   if (loading) {
-    return (<div>loading</div>)
+    return (<div>Categories Loading</div>)
   } else if (error) {
-    return (<p>Error!</p>);
+    return (<p>Error</p>);
   } else {
 
     return (

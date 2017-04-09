@@ -25,13 +25,13 @@ describe('(Route) Home', () => {
     });
 
     it('Renders a message', () => {
-      let message = _component.find('h2');
+      const message = _component.find('h2');
       expect(message).to.exist;
       expect(message.text()).to.match(/Home/)
     });
 
     it('Does not render h1 element', () => {
-      let not_message = _component.find('h1');
+      const not_message = _component.find('h1');
       expect(not_message).to.not.exist;
     });
 

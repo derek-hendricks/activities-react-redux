@@ -20,7 +20,6 @@ const mapStateToActivityProps = (state = initialState, action) => {
     return id === activity.id
   });
 
-
   return {
     ...initialState,
     activity: loadedActivity || activity,
