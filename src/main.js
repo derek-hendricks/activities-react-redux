@@ -18,7 +18,7 @@ const client = new ApolloClient({
     initialState: window.__APOLLO_STATE__, // eslint-disable-line no-underscore-dangle
     ssrForceFetchDelay: 100,
     connectToDevTools: true
-  }),
+  })
 });
 
 const initialState = window.___INITIAL_STATE__;

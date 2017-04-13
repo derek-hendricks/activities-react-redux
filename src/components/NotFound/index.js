@@ -10,4 +10,8 @@ export const NoMatch = ({ location }) => (
   </div>
 );
 
+NoMatch.propTypes = {
+  location: React.PropTypes.string.isRequired
+};
+
 export default NoMatch

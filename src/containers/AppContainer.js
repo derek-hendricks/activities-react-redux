@@ -5,7 +5,8 @@ import { ApolloProvider } from 'react-apollo';
 class AppContainer extends Component {
   static propTypes = {
     routes: PropTypes.object.isRequired,
-    store: PropTypes.object.isRequired
+    store: PropTypes.object.isRequired,
+    client: PropTypes.object.isRequired
   };
 
   static shouldComponentUpdate() {

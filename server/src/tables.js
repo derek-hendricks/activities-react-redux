@@ -10,10 +10,14 @@ const categories = sql.define({
     primaryKey: true
   }, {
     name: 'name',
-    dataType: 'text'
+    dataType: 'text',
+    unique: true
   }, {
     name: 'description',
     dataType: 'text'
+  }, {
+    name: 'createdAt',
+    dataType: 'datetime default current_timestamp'
   }]
 });
 

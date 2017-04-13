@@ -18,7 +18,7 @@ export const createMatches = (store) => (
       );
     }}/>
     <Match exactly pattern='/' render={() => (
-    <Redirect to='/activities'/>
+      <Redirect to='/activities'/>
     )}/>
     <Miss component={NotFound}/>
   </CoreLayout>

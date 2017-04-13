@@ -12,9 +12,7 @@ const createNodeLoader = (table) => {
         row.__tableName = table.getName();
       });
       return rows;
-    }).catch((error) => {
-      return error;
-    });
+    }).catch(error => error)
   });
 };
 
@@ -56,20 +54,13 @@ const setProperties = (obj, property) => {
 const getCategories = () => {
   const query = tables.categories.select(tables.categories.star()).toQuery();
 
-  return database.getSql(query).then((rows) => {
-    const categories = rows.map((row) => {
-
-      return {
-        id: row.id,
-        name: row.name,
-        description: row.description
-      };
-    });
-
-    return {
-      categories
-    }
-  });
+  return database.getSql(query).then((rows) => ({
+    categories: rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description
+    }))
+  }));
 };
 
 const getCategoryActivities = () => {
@@ -78,59 +69,54 @@ const getCategoryActivities = () => {
     tables.categories.name,
     tables.activities.name,
     tables.activities.categoryId).from(
-    tables.categories.leftJoin(
-      tables.activities).on(tables.categories.id.equals(tables.activities.categoryId))
-  ).toQuery();
+    tables.categories.leftJoin(tables.activities)
+      .on(tables.categories.id.equals(tables.activities.categoryId)))
+    .toQuery();
 
   return database.getSql(query).then((rows) => {
-    const categories = rows.map((row) => {
+    const categories = rows.map((row) => ({
+      categoryDescription: row.categoryDescription,
+      categoryId: row.categoryId,
+      id: row.id,
+      name: row.name,
+      about: row.about,
+      createdAt: row.createdAt,
+      date: row.date,
+      location: row.location
+    }));
 
-      return {
-        categoryDescription: row.categoryDescription,
-        categoryId: row.categoryId,
-        id: row.id,
-        name: row.name,
-        about: row.about,
-        createdAt: row.createdAt,
-        date: row.date,
-        location: row.location
-      }
-    });
-
-    return { categories };
+    return {categories};
   });
 };
 
-
 const getActivities = (source) => {
   const table = tables.activities;
-  const query = table.select(table.star()).from(table).where(table.categoryId.equals(source.id)).order(table.createdAt.desc).toQuery();
+  const query = table.select(table.star()).from(table)
+    .where(table.categoryId.equals(source.id))
+    .order(table.createdAt.desc)
+    .toQuery();
 
-  return database.getSql(query).then((rows) => {
-    return rows.map((row) => {
-      return {
-        id: row.id,
-        name: row.name,
-        about: row.about,
-        categoryId: row.categoryId,
-        createdAt: row.createdAt,
-        date: row.date,
-        location: row.location
-      }
-    });
-  });
+  return database.getSql(query).then((rows) => (
+    rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      about: row.about,
+      categoryId: row.categoryId,
+      createdAt: row.createdAt,
+      date: row.date,
+      location: row.location
+    }))
+  ));
 };
 
 const deleteRow = (data) => {
   const db = data.id.split(":");
-  const query = { text: `delete from ${db[0]} where id = ${db[1]};` };
+  const query = {text: `delete from ${db[0]} where id = ${db[1]};`};
 
   return database.getSql(query).then(() => {
     clearCacheById(data.id);
     return data;
-  }).catch((error) => {
-    return error;
-  })
+  }).catch(error => error)
 };
 
 const updateQuery = (db, data) => {
@@ -147,41 +133,41 @@ const updateQuery = (db, data) => {
 const updateRow = (data) => {
   const activity = setProperties(data, "id");
   const db = data.id.split(":");
-  const query = { text: updateQuery(db, activity) };
+  const query = {text: updateQuery(db, activity)};
 
-  return database.getSql(query).then(() => {
-    return clearCacheById(data.id);
-  }).catch((error) => {
-
-    return error;
-  })
+  return database.getSql(query).then(() => (
+    clearCacheById(data.id)
+  )).catch(error => error)
 };
 
-const createActivity = (activity) => {
-  const query = tables.activities.insert(
-    [
-      {
-        name: activity.name,
-        categoryId: activity.categoryId,
-        about: activity.about,
-        location: activity.location,
-        date: activity.date
-      }
-    ]
-  ).toQuery();
+const insertRow = (table, query) => (
+  database.getSql(query).then(() => (
+    database.getSql({text: `SELECT last_insert_rowid() AS id FROM ${table} LIMIT 1`})
+  )).then((row) => ({
+    table: table,
+    id: row[0].id
+  })).catch(error => error)
+);
 
-  return database.getSql(query).then(() => {
-    return database.getSql(
-      {
-        text: 'SELECT last_insert_rowid() AS id FROM activities LIMIT 1'
-      }
-    );
-  }).then((activity) => {
-    return {
-      table: tables.activities.getName(),
-      id: activity[0].id
-    }
-  });
+const createActivity = (activity) => {
+  const query = tables.activities.insert([{
+    name: activity.name,
+    categoryId: activity.categoryId,
+    about: activity.about,
+    location: activity.location,
+    date: activity.date
+  }]).toQuery();
+
+  return insertRow(tables.activities.getName(), query);
+};
+
+const createCategory = (category) => {
+  const query = tables.categories.insert([{
+    name: category.name,
+    description: category.categoryId,
+  }]).toQuery();
+
+  return insertRow(tables.categories.getName(), query);
 };
 
 module.exports = {
@@ -190,6 +176,7 @@ module.exports = {
   getNodeById,
   getCategoryActivities,
   createActivity,
+  createCategory,
   deleteRow,
   updateRow,
   nodeLoaders

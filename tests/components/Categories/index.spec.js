@@ -154,29 +154,24 @@ describe('(Categories Component) Categories', () => {
     });
   });
 
-  describe('Running category', () => {
+  describe('onClick dispatch', () => {
     let category;
 
     beforeEach(() => {
       category = wrapper.find('div').filterWhere(category => category.text() === 'Running')
     });
 
-    it('has item class', () => {
-      expect(category.hasClass('item')).to.equal(true);
-    });
-
-    it('does not have active class', () => {
-      expect(category.hasClass('active item')).to.equal(false);
-    });
-
-    it('Should dispatch an onClick action when clicked', () => {
+    it('should not dispatch an onClick action', () => {
       spies.dispatch.should.have.not.been.called;
+      spies.onClick.should.have.not.been.called;
 
+    });
+
+    it('should dispatch an onClick action when clicked', () => {
       category.simulate('click');
-
-      spies.dispatch.should.have.been.called
-      spies.onClick.should.have.been.called
-    })
+      spies.dispatch.should.have.been.called;
+      spies.onClick.should.have.been.called;
+    });
 
   });
 });

@@ -18,21 +18,20 @@ export default function activitiesReducer(state = initialState, action) {
 
       return activitiesDeleted(state, action);
     case APOLLO_MUTATION_RESULT:
-      const { result: { data: { CREATE_ACTIVITY_MUTATION: { id, name, categoryId } } } } = action;
-      const index = getIndex(state, { id: `${categoryId}:${name}` });
+      const {result: {data: {CREATE_ACTIVITY_MUTATION: {id, name, categoryId}}}} = action;
+      const index = getIndex(state, {id: `${categoryId}:${name}`});
 
-      return activityUpdated(state, { id }, index);
+      return activityUpdated(state, {id}, index);
     default:
-
       return state;
   }
 }
 
-function getIndex(state, { id }) {
+function getIndex(state, {id}) {
   return state.findIndex((activity) => activity.id === id);
 }
 
-function activitiesAdded(state, { type, __typename, ...activity }) {
+function activitiesAdded(state, {type, __typename, ...activity}) {
   return state.concat(activity);
 }
 

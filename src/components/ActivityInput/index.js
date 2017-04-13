@@ -4,6 +4,8 @@ import './styles.scss'
 
 export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, activeCategoryId }) => {
   const activityObject = {};
+  let categoryId = {value: activeCategoryId};
+
   return (
     <div className='activity-input'>
       <input
@@ -33,7 +35,7 @@ export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, a
       >
       </input>
 
-      <select value={activityObject.categoryId} onChange={({ target }) => activityObject.categoryId = target }>
+      <select value={activityObject.categoryId} onChange={({ target }) => categoryId = target }>
         {categories.map((category, index) => (
           <option key={index} value={category.id}>
             {category.name}
@@ -41,7 +43,9 @@ export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, a
         ))}
       </select>
 
-      <div onClick={() => onSubmit(activityObject, activeCategoryId) }>
+      <div onClick={() => {
+        return onSubmit({ ...activityObject, categoryId }, activeCategoryId);
+      } }>
         <Link to='/activities'>
           {buttonText}
         </Link>
@@ -56,7 +60,7 @@ ActivityInput.propTypes = {
   placeholder: React.PropTypes.string.isRequired,
   buttonText: React.PropTypes.string.isRequired,
   activeCategoryId: React.PropTypes.string,
-  categories: React.PropTypes.array.isRequired
+  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired
 };
 
 export default ActivityInput

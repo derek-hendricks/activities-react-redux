@@ -1,5 +1,6 @@
 "use strict";
 const express = require('express');
+const bodyParser = require('body-parser');
 const debug = require('debug')('app:server');
 const path = require('path');
 const webpack = require('webpack');
@@ -69,9 +70,25 @@ const RootMutation = new GraphQLObjectType({
         }
       },
       resolve(source, args, context) {
-        return loaders.createActivity(args, context).then((result) => {
-          return loaders.nodeLoaders[result.table].load(result.id);
-        });
+        return loaders.createActivity(args, context).then((result) => (
+          loaders.nodeLoaders[result.table].load(result.id)
+        ));
+      }
+    },
+    CREATE_CATEGORY_MUTATION: {
+      type: types.CategoryType,
+      args: {
+        name: {
+          type: new GraphQLNonNull(GraphQLString)
+        },
+        description: {
+          type: GraphQLString
+        }
+      },
+      resolve(source, args, context) {
+        return loaders.createCategory(args, context).then((result) => (
+          loaders.nodeLoaders[result.table].load(result.id)
+        ));
       }
     },
     DELETE_ACTIVITY_MUTATION: {
@@ -146,6 +163,9 @@ if (project.env === 'development') {
   }));
 
   app.use(express.static(project.paths.public()));
+
+  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.json());
 
   app.use('*', function (req, res, next) {
     const filename = path.join(compiler.outputPath, 'index.html');

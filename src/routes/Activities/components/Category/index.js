@@ -3,11 +3,17 @@ import ActivityList from '../ActivityList/index'
 import ActivityInput from '../../../../components/ActivityInput/index'
 import './styles.scss'
 
-export const Category = ({ loading, error, category, onActivitySubmit, handleActivitySubmit, categories, activeCategoryId }) => {
+export const Category = (props) => {
+  const {
+    loading, error, category,
+    onActivitySubmit, handleActivitySubmit, categories,
+    activeCategoryId
+  } = props;
+
   if (loading) {
     return (<div>Activity list loading</div>)
   } else if (error) {
-    return (<p>Error</p>);
+    return (<p>Error</p>)
   }
 
   return (
@@ -32,6 +38,7 @@ Category.propTypes = {
   loading: React.PropTypes.bool.isRequired,
   error: React.PropTypes.bool.isRequired,
   category: React.PropTypes.object.isRequired,
+  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
   onActivitySubmit: React.PropTypes.func.isRequired,
   handleActivitySubmit: React.PropTypes.func.isRequired,
   activeCategoryId: React.PropTypes.string

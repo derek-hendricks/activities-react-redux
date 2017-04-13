@@ -11,7 +11,9 @@ export const ActivityView = ({ id, store, props }) => {
 };
 
 ActivityView.propTypes = {
-  id: React.PropTypes.string.isRequired
+  id: React.PropTypes.string.isRequired,
+  store: React.PropTypes.object.isRequired,
+  props: React.PropTypes.object.isRequired
 };
 
 export default ActivityView

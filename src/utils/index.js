@@ -2,7 +2,7 @@ export const setProperties = (obj, property) => {
   const keys = Object.keys(obj);
   const data = {};
   for (const key of keys) {
-    if (obj[key] === property || !obj[key].value.trim()) {
+    if (obj[key] === property || !((obj[key] || {}).value || '').trim()) {
       continue;
     }
     data[key] = obj[key].value;
@@ -41,9 +41,8 @@ export const initialFetch = () => {
 
   function loadActivities(categoryList, activeIndex, activeCategory) {
     return fetch(activitiesQuery(activeCategory.id)).then((results) => {
-      const { errors, data: { categoryInterface } } = results;
+      const {errors, data: {categoryInterface}} = results;
       if (errors) {
-
         return categoryList;
       }
 
@@ -60,10 +59,9 @@ export const initialFetch = () => {
 
   return new Promise((resolve) => {
     fetch(categoryListQuery).then((results) => {
-      const { errors, data: { categoryList } } = results;
+      const {errors, data: {categoryList}} = results;
       const index = 0;
       if (errors) {
-
         return errors;
       }
       const category = categoryList.categories[index];

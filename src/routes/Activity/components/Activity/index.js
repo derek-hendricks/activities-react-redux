@@ -20,8 +20,9 @@ export const Activity = (props) => {
   if (loading && !(activity || {}).id) {
     return (<div>loading</div>)
   } else if (error) {
-    return (<p>Error!</p>);
+    return (<p>Error!</p>)
   } else {
+
     return (
       <div className="activity">
         <p>Name: {activity.name}</p>
@@ -47,15 +48,20 @@ export const Activity = (props) => {
           id={activity.id}
         />
       </div>
-    );
+    )
   }
-
 };
+
 Activity.propTypes = {
   handleActivityUpdate: React.PropTypes.func.isRequired,
   onActivityUpdate: React.PropTypes.func.isRequired,
   handleActivityDelete: React.PropTypes.func.isRequired,
-  onActivityDelete: React.PropTypes.func.isRequired
+  onActivityDelete: React.PropTypes.func.isRequired,
+  activity: React.PropTypes.object.isRequired,
+  dispatch: React.PropTypes.func.isRequired,
+  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  loading: React.PropTypes.bool.isRequired,
+  activeCategoryId: React.PropTypes.string
 };
 
 export default Activity
