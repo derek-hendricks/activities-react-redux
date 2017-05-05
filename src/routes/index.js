@@ -8,7 +8,7 @@ import Match from 'react-router/Match';
 import Redirect from 'react-router/Redirect';
 import Miss from 'react-router/Miss';
 
-export const createMatches = (store) => (
+export const CreateMatches = (store) => (
   <CoreLayout>
     <Match exactly pattern='/activities' render={ActivitiesRoute}/>
     <Match pattern='/about' render={AboutRoute}/>
@@ -20,4 +20,4 @@ export const createMatches = (store) => (
   </CoreLayout>
 );
 
-export default createMatches
+export default CreateMatches

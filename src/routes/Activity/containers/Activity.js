@@ -5,8 +5,9 @@ import gql from "graphql-tag"
 import Activity from "../components/Activity/index"
 import {
   setProperties,
+  clearInputFields,
   sortCategories,
-  getActivity
+  getActivityByCategoryId
 } from "../../../utils";
 
 const initialState = { activity: {}, categories: [] };
@@ -16,7 +17,7 @@ const mapStateToActivityProps = (state = initialState, action) => {
   const { activeCategoryId, categories: categoryList = [], activity = {} } = state;
 
   const categories = sortCategories(categoryList, activeCategoryId);
-  const loadedActivity = getActivity(activeCategoryId, id, categories);
+  const loadedActivity = getActivityByCategoryId(activeCategoryId, id, categories);
 
   return {
     activity: loadedActivity || activity,
@@ -32,12 +33,15 @@ const mapDispatchToActivityProps = (dispatch) => ({ dispatch });
 const mergeActivityProps = (stateProps, dispatchProps) => ({
   ...stateProps,
   ...dispatchProps,
-  handleActivityUpdate: ({ id, ...activity }, onActivityUpdate, previousActivity) => {
+  handleActivityUpdate: ({ id: activityId, ...activity }, onActivityUpdate, previousActivity) => {
     const { categoryId: { value: categoryId } } = activity;
-    let updatedActivity = { ...setProperties(activity, 'categoryId'), id };
+    const { data, inputReferences } = setProperties(activity, 'categoryId');
+    let updatedActivity = { ...data, id: activityId };
     if (categoryId.trim()) {
       updatedActivity = { ...updatedActivity, categoryId }
     }
+    clearInputFields(inputReferences);
+
     return (
       onActivityUpdate(updatedActivity, previousActivity)
     );
@@ -120,7 +124,7 @@ const activityQuery = gql`query ACTIVITY_QUERY($id: ID!) {
 const activityQueryOptions = {
   options: ({ id, store }) => {
     const { categories = [], activeCategoryId } = store.getState();
-    const activity = getActivity(activeCategoryId, id, categories);
+    const activity = getActivityByCategoryId(activeCategoryId, id, categories);
 
     return ({
       skip: !id || activity,

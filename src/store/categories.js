@@ -2,20 +2,20 @@ import activitiesReducer from './activities';
 import categoryReducer from './category';
 import {isInteger} from '../utils'
 
-export const ADD_ACTIVITY = "ADD_ACTIVITY";
-export const DELETE_ACTIVITY = "DELETE_ACTIVITY";
-export const UPDATE_ACTIVITY = "UPDATE_ACTIVITY";
+const ADD_ACTIVITY = "ADD_ACTIVITY";
+const DELETE_ACTIVITY = "DELETE_ACTIVITY";
+const UPDATE_ACTIVITY = "UPDATE_ACTIVITY";
 
-export const APOLLO_QUERY_RESULT = "APOLLO_QUERY_RESULT";
-export const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
-export const APOLLO_MUTATION_RESULT = "APOLLO_MUTATION_RESULT";
+const APOLLO_QUERY_RESULT = "APOLLO_QUERY_RESULT";
+const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
+const APOLLO_MUTATION_RESULT = "APOLLO_MUTATION_RESULT";
 
-export const APOLLO_CATEGORIES_QUERY = "CATEGORIES_QUERY";
-export const APOLLO_ACTIVITIES_QUERY = "ACTIVITIES_QUERY";
+const APOLLO_CATEGORIES_QUERY = "CATEGORIES_QUERY";
+const APOLLO_ACTIVITIES_QUERY = "ACTIVITIES_QUERY";
 
-export const APOLLO_DELETE_ACTIVITY_MUTATION = "DELETE_ACTIVITY_MUTATION";
-export const APOLLO_CREATE_ACTIVITY_MUTATION = "CREATE_ACTIVITY_MUTATION";
-export const APOLLO_UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
+const APOLLO_DELETE_ACTIVITY_MUTATION = "DELETE_ACTIVITY_MUTATION";
+const APOLLO_CREATE_ACTIVITY_MUTATION = "CREATE_ACTIVITY_MUTATION";
+const APOLLO_UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
 
 const CREATE_CATEGORY_MUTATION = "CREATE_CATEGORY_MUTATION";
 const UPDATE_CATEGORY_MUTATION = "UPDATE_CATEGORY_MUTATION";
@@ -66,12 +66,18 @@ function categorySetup(state, action, index) {
   };
 }
 
-export function stateSetup(state, category, index) {
+export function stateSetup(state, index, category, operation) {
+  if (DELETE_CATEGORY_MUTATION === operation) {
+    return [
+      ...state.slice(0, index),
+      ...state.slice(index + 1, state.length)
+    ];
+  }
   return [
     ...state.slice(0, index),
     category,
     ...state.slice(index + 1, state.length)
-  ];
+  ]
 }
 
 function apolloCategoriesStateSetup(action) {
@@ -88,22 +94,20 @@ function categoryActivitiesQueryResultStateSetup(state, action) {
     activities: activities.slice()
   };
 
-  return stateSetup(state, category, index);
+  return stateSetup(state, index, category);
 }
 
 function moveCategoryStateSetup(state, activity, previousActivity) {
-  const previousCategoryIndex = state.findIndex(category => category.id === previousActivity.categoryId);
-  const categoryWithActivityRemoved = categorySetup(state,
-    { id: previousActivity.id, type: DELETE_ACTIVITY },
-    previousCategoryIndex);
-  const stateWithActivityRemoved = stateSetup(state, categoryWithActivityRemoved, previousCategoryIndex);
+  const previousIndex = state.findIndex(category => category.id === previousActivity.categoryId);
+  const deleteAction = { id: previousActivity.id, type: DELETE_ACTIVITY };
+  const categoryWithActivityRemoved = categorySetup(state, deleteAction, previousIndex);
+  const stateWithActivityRemoved = stateSetup(state, previousIndex, categoryWithActivityRemoved);
 
-  const newCategoryIndex = stateWithActivityRemoved.findIndex(category => category.id === activity.categoryId);
-  const categoryWithActivityAdded = categorySetup(stateWithActivityRemoved,
-    { ...previousActivity, ...activity, type: ADD_ACTIVITY },
-    newCategoryIndex);
+  const newIndex = stateWithActivityRemoved.findIndex(category => category.id === activity.categoryId);
+  const addAction = { ...previousActivity, ...activity, type: ADD_ACTIVITY };
+  const categoryWithActivityAdded = categorySetup(stateWithActivityRemoved, addAction, newIndex);
 
-  return stateSetup(stateWithActivityRemoved, categoryWithActivityAdded, newCategoryIndex);
+  return stateSetup(stateWithActivityRemoved, newIndex, categoryWithActivityAdded);
 }
 
 function updateCategoryStateSetup(state, action) {
@@ -115,7 +119,7 @@ function updateCategoryStateSetup(state, action) {
   const index = findCategoryIndex(state, updateAction);
   const category = categorySetup(state, updateAction, index);
 
-  return stateSetup(state, category, index);
+  return stateSetup(state, index, category);
 }
 
 function newActivityStateSetup(state, action) {
@@ -123,7 +127,7 @@ function newActivityStateSetup(state, action) {
   const index = findCategoryIndex(state, { ...action, categoryId: activity.categoryId });
   const updatedCategory = categorySetup(state, action, index);
 
-  return stateSetup(state, updatedCategory, index);
+  return stateSetup(state, index, updatedCategory);
 }
 
 function optimisticActivityAddedStateSetup(state, action, optimisticResponse) {
@@ -131,7 +135,7 @@ function optimisticActivityAddedStateSetup(state, action, optimisticResponse) {
   const index = findCategoryIndex(state, { ...action, categoryId });
   const updatedCategory = categorySetup(state, { ...createActivity, type: ADD_ACTIVITY }, index);
 
-  return stateSetup(state, updatedCategory, index);
+  return stateSetup(state, index, updatedCategory);
 }
 
 function optimisticActivityRemovedStateSetup(state, optimisticResponse) {
@@ -139,7 +143,7 @@ function optimisticActivityRemovedStateSetup(state, optimisticResponse) {
   const index = findCategoryIndex(state, { type: DELETE_ACTIVITY, id });
   const updatedCategory = categorySetup(state, { id, type: DELETE_ACTIVITY }, index);
 
-  return stateSetup(state, updatedCategory, index);
+  return stateSetup(state, index, updatedCategory);
 }
 
 const initialState = [];
@@ -188,7 +192,7 @@ function crudCategoryStateSetup(operationName, optimisticMutation, mutationResul
       return removedCategoryStateSetUp(state, index);
     case UPDATE_CATEGORY_MUTATION:
 
-      return stateSetup(state, category, index);
+      return updatedCategoryStateSetup(state, category, index, optimisticMutation);
     default:
 
       return state;
@@ -198,17 +202,20 @@ function crudCategoryStateSetup(operationName, optimisticMutation, mutationResul
 function addedCategoryStateSetup(state, category, index, optimisticMutation) {
   if (optimisticMutation) {
     return state.concat(category);
-  } else {
-    return stateSetup(state, category, index);
   }
+  return stateSetup(state, index, category);
+}
+
+function updatedCategoryStateSetup(state, category, index, optimisticMutation) {
+  if (optimisticMutation) {
+    return stateSetup(state, index, category);
+  }
+  return state;
 }
 
 function removedCategoryStateSetUp(state, index) {
   if (isInteger(index)) {
-    return [
-      ...state.slice(0, index),
-      ...state.slice(index + 1, state.length)
-    ];
+    return stateSetup(state, index, null, DELETE_CATEGORY_MUTATION)
   } else {
     return state;
   }

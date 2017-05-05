@@ -5,12 +5,18 @@ import gql from 'graphql-tag';
 import {openCategory} from '../store/activeCategory'
 import {setButtonMethod} from '../store/actions'
 import Categories from '../components/Categories'
+import {
+  setProperties,
+  clearInputFields,
+  getCategory,
+  getCategoriesWithActiveSet
+} from '../utils/index';
 
 const initialState = { categories: [] };
 
 const mapStateToTabsProps = (state = initialState) => {
   const { actions, activeCategoryId } = state;
-  const categories = getCategories(state, activeCategoryId);
+  const categories = getCategoriesWithActiveSet(state, activeCategoryId);
   const category = getCategory(state, activeCategoryId);
 
   return {
@@ -19,25 +25,6 @@ const mapStateToTabsProps = (state = initialState) => {
     category
   }
 };
-
-function getCategories({categories}, id) {
-  if (!categories) {
-    return;
-  }
-  return categories.slice().map((category) => ({
-    ...category,
-    active: category.id === id
-  }));
-}
-
-function getCategory({categories}, id) {
-  if (!categories) {
-    return;
-  }
-  return categories.slice().find((category) => (
-    category.id === id
-  ));
-}
 
 const mapDispatchToTabsProps = (dispatch) => (
   {
@@ -85,15 +72,16 @@ const categoryCreate = gql`
 const categoryCreateOptions = {
   props: ({ mutate }) => ({
     handleCategoryCreate: (category) => {
-      const { name: { inputRef: { value: name } } } = category;
+      const { data: variables, inputReferences } = setProperties(category);
+      clearInputFields(inputReferences);
 
       return (
         mutate({
-          variables: { name },
+          variables,
           optimisticResponse: {
             __typename: "Mutation",
             category: {
-              ...category,
+              ...variables,
               id: '-1',
               __typename: "Category"
             }
@@ -112,17 +100,20 @@ const categoryDelete = gql`
     }
   }`;
 
+const getCategoryDeleteVariables = (id, deletedActivities) => {
+  const deleteVariables = { "id": `categories: ${id}` };
+  let variables = { ...deleteVariables };
+  if (deletedActivities.length >= 1) {
+    const activities = deletedActivities.map((activity) => (activity.id)).join(",");
+    variables = { ...deleteVariables, activities };
+  }
+  return variables;
+};
+
 const categoryDeleteOptions = {
   props: ({ mutate }) => ({
-    handleCategoryDelete: (id, deletedActivities = []) => {
-      const deleteVariables = {
-        "id": `categories: ${id}`
-      };
-      let variables = { ...deleteVariables };
-      if (deletedActivities.length >= 1) {
-        const activities = deletedActivities.map((activity) => (activity.id)).join(",");
-        variables = { ...deleteVariables, activities };
-      }
+    onCategoryDelete: (id, deletedActivities = []) => {
+      const variables = getCategoryDeleteVariables(id, deletedActivities);
       return (
         mutate({
           variables,
@@ -150,25 +141,21 @@ const categoryUpdate = gql`
 const categoryUpdateOptions = {
   props: ({ mutate }) => ({
     handleCategoryUpdate: (category, id) => {
-      const {
-        name: { inputRef: { value: name } },
-        name: { inputRef: { value: description } }
-      } = category;
+      const { data: categoryVariables, inputReferences } = setProperties(category);
+      clearInputFields(inputReferences);
 
       return (
         mutate({
           variables: {
-            id: `categories: ${id}`,
-            name,
-            description
+            ...categoryVariables,
+            id: `categories: ${id}`
           },
           optimisticResponse: {
             __typename: "Mutation",
             category: {
+              ...categoryVariables,
               __typename: "Category",
-              id,
-              name,
-              description
+              id
             }
           }
         })

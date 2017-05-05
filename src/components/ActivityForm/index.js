@@ -1,11 +1,12 @@
 import React from 'react'
 import Link from 'react-router/Link';
+import PropTypes from 'prop-types';
 import './styles.scss'
 import {Button, Input} from 'semantic-ui-react'
 
 export const ActivityForm = ({placeholder, onSubmit, buttonText, categories, activeCategoryId}) => {
   const activityObject = {};
-  let categoryId = {value: activeCategoryId};
+  let categoryId = { value: activeCategoryId };
 
   return (
     <div className='activity-input'>
@@ -15,27 +16,23 @@ export const ActivityForm = ({placeholder, onSubmit, buttonText, categories, act
         placeholder={`${placeholder} name`}
       >
       </Input>
-
       <Input
         ref={(node) => activityObject.about = node}
         type='text'
         placeholder={`${placeholder} description`}
       >
       </Input>
-
       <Input
         ref={(node) => activityObject.location = node}
         type='text'
         placeholder={`${placeholder} location`}
       >
       </Input>
-
       <Input
         ref={(node) => activityObject.date = node}
         type='date'
       >
       </Input>
-
       <select
         className={"ui search dropdown"}
         value={activityObject.categoryId}
@@ -61,11 +58,16 @@ export const ActivityForm = ({placeholder, onSubmit, buttonText, categories, act
 };
 
 ActivityForm.propTypes = {
-  onSubmit: React.PropTypes.func.isRequired,
-  placeholder: React.PropTypes.string.isRequired,
-  buttonText: React.PropTypes.string.isRequired,
-  activeCategoryId: React.PropTypes.string,
-  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired
+  onSubmit: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  buttonText: PropTypes.string.isRequired,
+  activeCategoryId: PropTypes.string,
+  categories: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string
+    })).isRequired
 };
 
 export default ActivityForm

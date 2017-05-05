@@ -8,7 +8,8 @@ export const sortCategories = (categories, categoryId) => {
   });
 };
 
-export const getActivity = (categoryId, id = String(id), categories = []) => {
+export const getActivityByCategoryId = (categoryId, activityId, categories = []) => {
+  const id = String(activityId);
   const index = categories.findIndex(category => category.id === categoryId);
   const { activities } = categories[index] || {};
   if (!activities) {
@@ -17,17 +18,49 @@ export const getActivity = (categoryId, id = String(id), categories = []) => {
   return activities.find(activity => activity.id === id);
 };
 
+export const getCategory = ({ categories }, id) => {
+  if (!categories) {
+    return;
+  }
+  return categories.slice().find((category) => (
+    category.id === id
+  ));
+};
+
+export const getCategoriesWithActiveSet = ({ categories }, id) => {
+  if (!categories) {
+    return;
+  }
+  return categories.slice().map((category) => ({
+    ...category,
+    active: category.id === id
+  }));
+};
+
 export const setProperties = (obj, property) => {
-  const keys = Object.keys(obj);
+  const inputObj = { ...obj };
+  const inputReferences = [];
+  const keys = Object.keys(inputObj);
   const data = {};
   for (const key of keys) {
-    if (obj[key] === property || !(((obj[key] || {}).inputRef || {}).value || '').trim()) {
+    const inputValue = (((inputObj[key] || {}).inputRef || {}).value || '').trim();
+    if (inputObj[key] === property || !inputValue) {
       continue;
     }
-    data[key] = obj[key].inputRef.value;
+    data[key] = inputValue;
+    inputReferences.push(obj[key].inputRef);
   }
 
-  return data;
+  return {
+    data,
+    inputReferences
+  };
+};
+
+export const clearInputFields = (inputReferences) => {
+  for (let i = 0, len = inputReferences.length; i < len; i++) {
+    inputReferences[i].value = '';
+  }
 };
 
 export const isInteger = (x) => {

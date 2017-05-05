@@ -10,7 +10,7 @@ export const Categories = (props) => {
   const {
     loading, error, actions, category,
     categories = [], onCategorySelect, onCategoryActionSet,
-    handleCategoryCreate, handleCategoryUpdate, handleCategoryDelete
+    handleCategoryCreate, handleCategoryUpdate, onCategoryDelete
   } = props;
 
   if (loading) {
@@ -53,7 +53,6 @@ export const Categories = (props) => {
 
           <div className={actions.categoriesAction === 'edit' ? 'edit active' : 'edit inactive'}>
             <CategoryForm category={category} type="edit" onSubmit={(category, id) => {
-              console.log('update: category, id', category, id);
               return handleCategoryUpdate(category, id);
             }}/>
           </div>
@@ -64,7 +63,7 @@ export const Categories = (props) => {
             onClose={() => onCategoryActionSet(false)}
             onDelete={(id, activities) => {
               onCategoryActionSet({ action: 'CATEGORY_REMOVED', id, categories });
-              return handleCategoryDelete(id, activities);
+              return onCategoryDelete(id, activities);
             }}>
           </DeleteModal>
         </div>
@@ -81,7 +80,7 @@ Categories.propTypes = {
   actions: React.PropTypes.object.isRequired,
   category: React.PropTypes.object,
   handleCategoryCreate: React.PropTypes.func.isRequired,
-  handleCategoryDelete: React.PropTypes.func.isRequired,
+  onCategoryDelete: React.PropTypes.func.isRequired,
   onCategoryActionSet: React.PropTypes.func.isRequired,
   handleCategoryUpdate: React.PropTypes.func.isRequired
 };

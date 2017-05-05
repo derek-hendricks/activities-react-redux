@@ -17,8 +17,8 @@ export default function categoryReducer(operationName, optimisticMutation, mutat
     const index = getIndex(state, "-1");
 
     return mutationResultUpdateStateSetup(state, index, { id: categoryId });
-  } else if (mutationResult && UPDATE_CATEGORY_MUTATION === operationName) {
-    const { result: { data: { UPDATE_CATEGORY_MUTATION: category } } } = action;
+  } else if (optimisticMutation && UPDATE_CATEGORY_MUTATION) {
+    const { optimisticResponse: { category } } = action;
     const index = getIndex(state, category.id);
 
     return mutationResultUpdateStateSetup(state, index, category);
@@ -32,9 +32,8 @@ export default function categoryReducer(operationName, optimisticMutation, mutat
 }
 
 function optimisticCreateStateSetup(action) {
-  const { optimisticResponse: { category: { id, name: { inputRef: { value: name } } } } } = action;
-
-  return { category: { id, name, activities: [] } };
+  const { optimisticResponse: { category } } = action;
+  return { category: {...category, activities: [] } };
 }
 
 function mutationResultUpdateStateSetup(state, index, attributes) {

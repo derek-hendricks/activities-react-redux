@@ -3,19 +3,27 @@ import Header from '../../components/Header'
 import './styles.scss'
 import '../../styles/core.scss'
 import Categories from '../../containers/Categories';
+import PropTypes from 'prop-types';
 
-export const CoreLayout = (props) => {
+export const CoreLayout = ({children}) => {
   return (
     <div>
       <Header/>
       <Categories/>
-      {props.children}
+      {children}
     </div>
   );
 };
 
 CoreLayout.propTypes = {
-  children: React.PropTypes.array.isRequired
+  children: PropTypes.arrayOf(
+    PropTypes.shape({
+      props: PropTypes.object.isRequired,
+      key: PropTypes.any,
+      ref: PropTypes.any,
+      _owner: PropTypes.any,
+      _store: PropTypes.object
+    })).isRequired
 };
 
 export default CoreLayout

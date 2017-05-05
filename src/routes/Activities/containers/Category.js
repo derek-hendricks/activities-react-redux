@@ -1,14 +1,19 @@
 import {connect} from 'react-redux'
 import {graphql, compose} from 'react-apollo';
 import gql from 'graphql-tag';
-import {setProperties} from '../../../utils/index';
+import {
+  setProperties, 
+  clearInputFields, 
+  getCategory, 
+  sortCategories
+} from '../../../utils/index';
 import Category from '../components/Category/index'
 
 const initialState = { error: false, category: {}, activity: {}, categories: [] };
 
 const mapStateToCategoryProps = (state = initialState) => {
   const { activeCategoryId, categories: categoryList }  = state;
-  const category = getCategory(categoryList.slice(), activeCategoryId);
+  const category = getCategory({categories: categoryList}, activeCategoryId);
   const categories = sortCategories(categoryList, activeCategoryId);
 
   return {
@@ -19,30 +24,15 @@ const mapStateToCategoryProps = (state = initialState) => {
   };
 };
 
-function getCategory(categories, id) {
-  return categories.find((category) => (
-    category.id === id
-  ));
-}
-
-function sortCategories(categories, categoryId) {
-  return categories.slice().sort((activity) => {
-    if (activity.id !== categoryId) {
-      return 1
-    } else {
-      return -1
-    }
-  });
-}
-
 const mapDispatchToCategoryProps = (dispatch) => ({ dispatch });
 
 const mergeCategoryProps = (stateProps, dispatchProps) => ({
   ...stateProps,
   ...dispatchProps,
   handleActivitySubmit: (activity, activeCategoryId, onActivitySubmit) => {
-    const newActivity = setProperties(activity, 'categoryId');
     const { categoryId: { value: categoryId } } = activity;
+    const { data: newActivity, inputReferences } = setProperties(activity, 'categoryId');
+    clearInputFields(inputReferences);
 
     return onActivitySubmit({ ...newActivity, categoryId })
   }
