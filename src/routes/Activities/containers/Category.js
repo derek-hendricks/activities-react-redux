@@ -43,7 +43,7 @@ const mergeCategoryProps = (stateProps, dispatchProps) => ({
   handleActivitySubmit: (activity, activeCategoryId, onActivitySubmit) => {
     const newActivity = setProperties(activity, 'categoryId');
     const { categoryId: { value: categoryId } } = activity;
-    debugger;
+
     return onActivitySubmit({ ...newActivity, categoryId })
   }
 });

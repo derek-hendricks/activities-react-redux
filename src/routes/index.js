@@ -12,11 +12,7 @@ export const createMatches = (store) => (
   <CoreLayout>
     <Match exactly pattern='/activities' render={ActivitiesRoute}/>
     <Match pattern='/about' render={AboutRoute}/>
-    <Match pattern='/activity/:id' render={(props) => {
-      return (
-        <ActivityRoute id={props.params.id} store={store} props={props}/>
-      );
-    }}/>
+    <Match pattern='/activity/:id' render={(props) => (<ActivityRoute id={props.params.id} store={store} props={props}/>)}/>
     <Match exactly pattern='/' render={() => (
       <Redirect to='/activities'/>
     )}/>

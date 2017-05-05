@@ -6,3 +6,4 @@ coverage
 notes.txt
 db.sqlite
 /public
+.vscode/
