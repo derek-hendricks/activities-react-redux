@@ -1,3 +1,6 @@
-
+.category.error {
+  height: 300px; }
+  .category.error .dimmed {
+    height: inherit; }
 
 /*# sourceMappingURL=styles.css.map */

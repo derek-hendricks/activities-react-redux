@@ -8,17 +8,20 @@ import ApolloClient, {
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
-    uri: 'http://localhost:3000/graphql',
-    dataIdFromObject: (result) => {
-      if (result.id && result.__typename) {
-        return result.__typename + result.id;
-      }
-      return null;
+    uri: 'http://localhost:8000/graphql',
+    opts: {
+      credentials: 'same-origin',
     },
     initialState: window.__APOLLO_STATE__, // eslint-disable-line no-underscore-dangle
     ssrForceFetchDelay: 100,
     connectToDevTools: true
-  })
+  }),
+  dataIdFromObject: (result) => {
+    if (result.id && result.__typename) {
+      return result.__typename + result.id;
+    }
+    return null;
+  },
 });
 
 const initialState = window.___INITIAL_STATE__;
@@ -35,33 +38,30 @@ let render = () => {
   )
 };
 
-if (__DEV__) {
-  if (module.hot) {
-    const renderApp = render;
-    const renderError = (error) => {
-      const RedBox = require('redbox-react').default;
+if (__DEV__ && module.hot) {
+  const renderApp = render;
+  const renderError = (error) => {
+    const RedBox = require('redbox-react').default;
+    ReactDOM.render(<RedBox error={error}/>, MOUNT_NODE)
+  };
 
-      ReactDOM.render(<RedBox error={error}/>, MOUNT_NODE)
-    };
+  render = () => {
+    try {
+      renderApp()
+    } catch (error) {
+      console.error(error);
+      renderError(error)
+    }
+  };
 
-    render = () => {
-      try {
-        renderApp()
-      } catch (error) {
-        console.error(error);
-        renderError(error)
-      }
-    };
-
-    module.hot.accept('./routes/index', () =>
-      setImmediate(() => {
-        ReactDOM.unmountComponentAtNode(MOUNT_NODE);
-        render()
-      })
-    )
-  }
+  module.hot.accept('./routes/index', () =>
+    setImmediate(() => {
+      ReactDOM.unmountComponentAtNode(MOUNT_NODE);
+      render()
+    })
+  )
 }
 
 render();
 
-export default client;
+export default client

@@ -1,72 +1,39 @@
+export const sortCategories = (categories, categoryId) => {
+  return categories.slice().sort((activity) => {
+    if (activity.id !== categoryId) {
+      return 1
+    } else {
+      return -1
+    }
+  });
+};
+
+export const getActivity = (categoryId, id = String(id), categories = []) => {
+  const index = categories.findIndex(category => category.id === categoryId);
+  const { activities } = categories[index] || {};
+  if (!activities) {
+    return;
+  }
+  return activities.find(activity => activity.id === id);
+};
+
 export const setProperties = (obj, property) => {
   const keys = Object.keys(obj);
   const data = {};
   for (const key of keys) {
-    if (obj[key] === property || !((obj[key] || {}).value || '').trim()) {
+    if (obj[key] === property || !(((obj[key] || {}).inputRef || {}).value || '').trim()) {
       continue;
     }
-    data[key] = obj[key].value;
+    data[key] = obj[key].inputRef.value;
   }
 
   return data;
 };
 
-export const initialFetch = () => {
-  const categoryListQuery = `{
-      categoryList {
-        categories {
-          id
-          description
-          name
-        }
-      }
-    }`;
+export const isInteger = (x) => {
+  return parseInt(x) === x;
+};
 
-  const activitiesQuery = (category_id) => {
-    return `{
-        categoryInterface(id: "categories: ${category_id}") {
-          ... on Category {
-            activities {
-              id
-              name
-              about
-              date
-              location
-              categoryId
-            }
-          }
-        }
-      }`;
-  };
-
-  function loadActivities(categoryList, activeIndex, activeCategory) {
-    return fetch(activitiesQuery(activeCategory.id)).then((results) => {
-      const {errors, data: {categoryInterface}} = results;
-      if (errors) {
-        return categoryList;
-      }
-
-      return {
-        activeCategory: activeCategory.id,
-        categories: [
-          ...categoryList.categories.slice(0, activeIndex),
-          Object.assign({}, activeCategory, categoryInterface),
-          ...categoryList.categories.slice(activeIndex + 1, categoryList.categories.length)
-        ]
-      };
-    });
-  }
-
-  return new Promise((resolve) => {
-    fetch(categoryListQuery).then((results) => {
-      const {errors, data: {categoryList}} = results;
-      const index = 0;
-      if (errors) {
-        return errors;
-      }
-      const category = categoryList.categories[index];
-
-      return loadActivities(categoryList.categories, index, category);
-    }).then(resolve);
-  });
+export const splitNodeId = (nodeId) => {
+  return nodeId.split(":")[1].trim();
 };

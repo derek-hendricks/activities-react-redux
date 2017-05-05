@@ -72,6 +72,9 @@ CategoryType = new GraphQLObjectType({
       description: {
         type: GraphQLString
       },
+      createdAt: {
+        type: GraphQLString
+      },
       activities: {
         type: new GraphQLList(ActivitiesType),
         resolve(source) {
@@ -95,6 +98,9 @@ const CategoryWithoutInterfaceType = new GraphQLObjectType({
       description: {
         type: GraphQLString
       },
+      createdAt: {
+        type: GraphQLString
+      }
     }
   }
 });

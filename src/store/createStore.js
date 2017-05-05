@@ -1,7 +1,9 @@
 import { applyMiddleware, compose, createStore } from 'redux'
 import makeRootReducer from './reducers'
 
-export default (initialState = {}, client) => {
+const initialState = {};
+
+export default (initialState, client) => {
   const middleware = [client.middleware()];
   const enhancers = [];
   let composeEnhancers = compose;

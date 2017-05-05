@@ -6,19 +6,20 @@ const categories = sql.define({
   name: 'categories',
   columns: [{
     name: 'id',
-    dataType: 'INTEGER',
+    dataType: 'integer',
     primaryKey: true
   }, {
     name: 'name',
-    dataType: 'text',
-    unique: true
+    dataType: 'text collate nocase',
+    unique: true,
   }, {
     name: 'description',
     dataType: 'text'
   }, {
     name: 'createdAt',
     dataType: 'datetime default current_timestamp'
-  }]
+  }],
+  constraint: 'name_unique UNIQUE (name)'
 });
 
 const activities = sql.define({

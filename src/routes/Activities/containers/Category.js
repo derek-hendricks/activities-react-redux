@@ -4,35 +4,48 @@ import gql from 'graphql-tag';
 import {setProperties} from '../../../utils/index';
 import Category from '../components/Category/index'
 
-const initialState = {loading: true, error: false, category: {}, activity: {}, categories: []};
+const initialState = { error: false, category: {}, activity: {}, categories: [] };
 
 const mapStateToCategoryProps = (state = initialState) => {
-  const {activeCategoryId, categories}  = state;
-  const category = categories.slice().find((category) => (
-    category.id === activeCategoryId
-  ));
+  const { activeCategoryId, categories: categoryList }  = state;
+  const category = getCategory(categoryList.slice(), activeCategoryId);
+  const categories = sortCategories(categoryList, activeCategoryId);
 
   return {
     ...initialState,
-    category: {
-      ...state.category,
-      ...category
-    },
+    category,
     activeCategoryId,
-    categories: categories.slice().sort((activity) => (
-      activity.id !== activeCategoryId
-    ))
+    categories
   };
 };
 
-const mapDispatchToCategoryProps = (dispatch) => ({dispatch});
+function getCategory(categories, id) {
+  return categories.find((category) => (
+    category.id === id
+  ));
+}
+
+function sortCategories(categories, categoryId) {
+  return categories.slice().sort((activity) => {
+    if (activity.id !== categoryId) {
+      return 1
+    } else {
+      return -1
+    }
+  });
+}
+
+const mapDispatchToCategoryProps = (dispatch) => ({ dispatch });
 
 const mergeCategoryProps = (stateProps, dispatchProps) => ({
   ...stateProps,
   ...dispatchProps,
-  handleActivitySubmit: (activity, activeCategoryId, onActivitySubmit) => (
-    onActivitySubmit(setProperties(activity))
-  )
+  handleActivitySubmit: (activity, activeCategoryId, onActivitySubmit) => {
+    const newActivity = setProperties(activity, 'categoryId');
+    const { categoryId: { value: categoryId } } = activity;
+    debugger;
+    return onActivitySubmit({ ...newActivity, categoryId })
+  }
 });
 
 const query = gql`
@@ -53,23 +66,28 @@ const query = gql`
   }`;
 
 const queryOptions = {
-  options: ({category: {activities = []}, activeCategoryId}) => ({
-    skip: !activeCategoryId,
-    variables: {
-      "id": `categories: ${activeCategoryId}`
-    }
-  }),
-  props: ({data: {loading, error = false}}) => ({
-    loading,
-    error
-  })
+  options: (props) => {
+    const { category = {}, activeCategoryId } = props;
+    const { activities } = category;
+
+    return {
+      skip: !activeCategoryId || !!activities,
+      variables: {
+        "id": `categories: ${activeCategoryId}`
+      }
+    };
+  },
+  props: ({ data: { loading, error = false } }) => {
+    return {
+      loading,
+      error
+    };
+  }
 };
 
 const createActivity = gql`
-  mutation CREATE_ACTIVITY_MUTATION($name: String!, $categoryId: String!,
-  $about: String, $location: String, $date: String) {
-    CREATE_ACTIVITY_MUTATION(name: $name, categoryId: $categoryId,
-      about: $about, location: $location, date: $date) {
+  mutation CREATE_ACTIVITY_MUTATION($name: String!, $categoryId: String!, $about: String, $location: String, $date: String) {
+    CREATE_ACTIVITY_MUTATION(name: $name, categoryId: $categoryId, about: $about, location: $location, date: $date) {
       __typename
       name
       id
@@ -82,20 +100,22 @@ const createActivity = gql`
   }`;
 
 const createActivityOptions = {
-  props: ({mutate}) => ({
-    onActivitySubmit: (activity) => (
-      mutate({
-        variables: {...activity},
-        optimisticResponse: {
-          __typename: "Mutation",
-          createActivity: {
-            ...activity,
-            id: `${activity.categoryId}:${activity.name}`,
-            __typename: "activities"
+  props: ({ mutate }) => ({
+    onActivitySubmit: (activity) => {
+      return (
+        mutate({
+          variables: { ...activity },
+          optimisticResponse: {
+            __typename: "Mutation",
+            createActivity: {
+              ...activity,
+              id: `${activity.categoryId}:${activity.name}`,
+              __typename: "activities"
+            }
           }
-        }
-      })
-    )
+        })
+      );
+    }
   })
 };
 

@@ -14,4 +14,13 @@
     color: #337ab7;
     font-weight: bold; }
 
+.category.actions .add.inactive {
+  display: none; }
+.category.actions .add.active {
+  display: block; }
+.category.actions .edit.inactive {
+  display: none; }
+.category.actions .edit.active {
+  display: block; }
+
 /*# sourceMappingURL=styles.css.map */

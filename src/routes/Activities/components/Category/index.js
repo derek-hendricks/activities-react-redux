@@ -1,19 +1,34 @@
 import React from 'react'
-import ActivityList from '../ActivityList/index'
-import ActivityInput from '../../../../components/ActivityInput/index'
+import {Dimmer, Loader} from 'semantic-ui-react'
+import ActivityList from '../ActivityList'
+import ActivityForm from '../../../../components/ActivityForm'
+import LoadError from '../../../../components/LoadError'
 import './styles.scss'
 
 export const Category = (props) => {
   const {
-    loading, error, category,
-    onActivitySubmit, handleActivitySubmit, categories,
-    activeCategoryId
+    loading, error,
+    category, activeCategoryId, categories,
+    onActivitySubmit, handleActivitySubmit
   } = props;
 
-  if (loading) {
-    return (<div>Activity list loading</div>)
+  if (loading || !category) {
+    return (
+      <div>
+        <Dimmer active inverted>
+          <Loader inverted>Loading</Loader>
+        </Dimmer>
+      </div>
+    )
   } else if (error) {
-    return (<p>Error</p>)
+    return (
+      <div className="category error">
+        <LoadError
+          errorText={"Error loading category"}
+          inverted={true}
+        />
+      </div>
+    )
   }
 
   return (
@@ -21,7 +36,7 @@ export const Category = (props) => {
       <ActivityList
         activities={category.activities}
       />
-      <ActivityInput
+      <ActivityForm
         onSubmit={(activity, activeCategoryId) => {
           handleActivitySubmit(activity, activeCategoryId, onActivitySubmit)
         }}

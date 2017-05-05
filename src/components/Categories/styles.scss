@@ -18,3 +18,17 @@
     font-weight: bold;
   }
 }
+.category.actions {
+  .add.inactive {
+    display: none;
+  }
+  .add.active {
+    display: block;
+  }
+  .edit.inactive {
+    display: none;
+  }
+  .edit.active {
+    display: block;
+  }
+}

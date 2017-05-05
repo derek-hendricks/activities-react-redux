@@ -1,41 +1,45 @@
 import React from 'react'
 import Link from 'react-router/Link';
 import './styles.scss'
+import {Button, Input} from 'semantic-ui-react'
 
-export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, activeCategoryId }) => {
+export const ActivityForm = ({placeholder, onSubmit, buttonText, categories, activeCategoryId}) => {
   const activityObject = {};
   let categoryId = {value: activeCategoryId};
 
   return (
     <div className='activity-input'>
-      <input
+      <Input
         ref={(node) => activityObject.name = node}
         type='text'
         placeholder={`${placeholder} name`}
       >
-      </input>
+      </Input>
 
-      <input
+      <Input
         ref={(node) => activityObject.about = node}
         type='text'
         placeholder={`${placeholder} description`}
       >
-      </input>
+      </Input>
 
-      <input
+      <Input
         ref={(node) => activityObject.location = node}
         type='text'
         placeholder={`${placeholder} location`}
       >
-      </input>
+      </Input>
 
-      <input
+      <Input
         ref={(node) => activityObject.date = node}
         type='date'
       >
-      </input>
+      </Input>
 
-      <select value={activityObject.categoryId} onChange={({ target }) => categoryId = target }>
+      <select
+        className={"ui search dropdown"}
+        value={activityObject.categoryId}
+        onChange={({target}) => categoryId = target }>
         {categories.map((category, index) => (
           <option key={index} value={category.id}>
             {category.name}
@@ -44,7 +48,8 @@ export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, a
       </select>
 
       <div onClick={() => {
-        return onSubmit({ ...activityObject, categoryId }, activeCategoryId);
+        const activity = {...activityObject};
+        return onSubmit({...activity, categoryId});
       } }>
         <Link to='/activities'>
           {buttonText}
@@ -55,7 +60,7 @@ export const ActivityInput = ({ placeholder, onSubmit, buttonText, categories, a
   );
 };
 
-ActivityInput.propTypes = {
+ActivityForm.propTypes = {
   onSubmit: React.PropTypes.func.isRequired,
   placeholder: React.PropTypes.string.isRequired,
   buttonText: React.PropTypes.string.isRequired,
@@ -63,5 +68,4 @@ ActivityInput.propTypes = {
   categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired
 };
 
-export default ActivityInput
-
+export default ActivityForm

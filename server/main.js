@@ -8,139 +8,16 @@ const webpackConfig = require('../config/webpack.config');
 const project = require('../config/project.config');
 const compress = require('compression');
 const cors = require('cors');
-
 const graphqlHTTP = require('express-graphql');
-const GraphQLSchema = require('graphql').GraphQLSchema;
-const GraphQLObjectType = require('graphql').GraphQLObjectType;
-const GraphQLNonNull = require('graphql').GraphQLNonNull;
-const GraphQLID = require('graphql').GraphQLID;
-const GraphQLString = require('graphql').GraphQLString;
 
-const types = require('./src/types');
-const loaders = require('./src/loaders');
+const schema = require('./src/schema').Schema;
 
 const app = express();
+
 app.use(compress());
 
-const RootQuery = new GraphQLObjectType({
-  name: 'RootQuery',
-  description: 'The root query',
-  fields: {
-    categoryList: {
-      type: types.CategoriesType,
-      resolve() {
-        return loaders.getCategories();
-      }
-    },
-    categoryInterface: {
-      type: types.CategoryInterface,
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID)
-        }
-      },
-      resolve(source, args) {
-        return loaders.getNodeById(args.id);
-      }
-    }
-  }
-});
-
-const RootMutation = new GraphQLObjectType({
-  name: 'RootMutation',
-  description: 'Activity Root Mutation',
-  fields: {
-    CREATE_ACTIVITY_MUTATION: {
-      type: types.ActivitiesType,
-      args: {
-        name: {
-          type: new GraphQLNonNull(GraphQLString)
-        },
-        categoryId: {
-          type: new GraphQLNonNull(GraphQLString)
-        },
-        about: {
-          type: GraphQLString
-        },
-        location: {
-          type: GraphQLString
-        },
-        date: {
-          type: GraphQLString
-        }
-      },
-      resolve(source, args, context) {
-        return loaders.createActivity(args, context).then((result) => (
-          loaders.nodeLoaders[result.table].load(result.id)
-        ));
-      }
-    },
-    CREATE_CATEGORY_MUTATION: {
-      type: types.CategoryType,
-      args: {
-        name: {
-          type: new GraphQLNonNull(GraphQLString)
-        },
-        description: {
-          type: GraphQLString
-        }
-      },
-      resolve(source, args, context) {
-        return loaders.createCategory(args, context).then((result) => (
-          loaders.nodeLoaders[result.table].load(result.id)
-        ));
-      }
-    },
-    DELETE_ACTIVITY_MUTATION: {
-      type: types.ActivitiesType,
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID)
-        }
-      },
-      resolve(source, args) {
-        return loaders.deleteRow(args);
-      }
-    },
-    UPDATE_ACTIVITY_MUTATION: {
-      type: types.ActivitiesType,
-      args: {
-        id: {
-          type: new GraphQLNonNull(GraphQLID)
-        },
-        name: {
-          type: GraphQLString
-        },
-        categoryId: {
-          type: GraphQLString
-        },
-        about: {
-          type: GraphQLString
-        },
-        location: {
-          type: GraphQLString
-        },
-        date: {
-          type: GraphQLString
-        }
-      },
-      resolve(source, args, context) {
-        return loaders.updateRow(args, context).then(() => {
-          return loaders.getNodeById(args.id);
-        })
-      }
-    }
-  }
-});
-
-const Schema = new GraphQLSchema({
-  types: [types.CategoriesType, types.CategoryType, types.CategoryInterface, types.ActivitiesType],
-  query: RootQuery,
-  mutation: RootMutation
-});
-
 app.use('/graphql', cors(), graphqlHTTP(() => ({
-  schema: Schema,
+  schema,
   graphiql: true
 })));
 

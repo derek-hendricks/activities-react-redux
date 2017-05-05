@@ -1,13 +1,13 @@
 import React from 'react'
+import {Dimmer, Loader} from 'semantic-ui-react'
 import './styles.scss'
-import ActivityInput from '../../../../components/ActivityInput'
+import ActivityForm from '../../../../components/ActivityForm'
 import DeleteItem from '../DeleteItem/index'
 
 export const Activity = (props) => {
   const {
-    activity,
+    activity = {},
     activeCategoryId,
-    onActivityDelete,
     handleActivityDelete,
     handleActivityUpdate,
     onActivityUpdate,
@@ -17,22 +17,33 @@ export const Activity = (props) => {
     error
   } = props;
 
-  if (loading && !(activity || {}).id) {
-    return (<div>loading</div>)
+  if (loading && !(activity).id) {
+    return (
+      <div>
+        <Dimmer active inverted>
+          <Loader inverted>Loading</Loader>
+        </Dimmer>
+      </div>)
   } else if (error) {
     return (<p>Error!</p>)
   } else {
+    const { name, id, about, location, date } = activity;
 
     return (
       <div className="activity">
-        <p>Name: {activity.name}</p>
-        <p>Description: {activity.about}</p>
-        <p>Location: {activity.location}</p>
-        <p>Date: {activity.date}</p>
+        <p>Name: {name}</p>
+        <p>Description: {about}</p>
+        <p>Location: {location}</p>
+        <p>Date: {date}</p>
 
-        <ActivityInput
-          onSubmit={(props) => {
-            handleActivityUpdate({ ...props, id: activity.id }, onActivityUpdate, activity, dispatch)
+        <ActivityForm
+          onSubmit={(activityObject) => {
+            return handleActivityUpdate(
+              { ...activityObject, id: activity.id },
+              onActivityUpdate,
+              activity,
+              dispatch
+            )
           }}
           buttonText={"Edit Activity"}
           placeholder={"Edit"}
@@ -42,10 +53,12 @@ export const Activity = (props) => {
         />
 
         <DeleteItem
-          onSubmit={(props) => {
-            handleActivityDelete(props, onActivityDelete)
-          }}
-          id={activity.id}
+          id={id}
+          categoryId={activeCategoryId}
+          onSubmit={(id, categoryId) => {
+            return handleActivityDelete(id, categoryId)
+          }
+          }
         />
       </div>
     )
@@ -53,10 +66,9 @@ export const Activity = (props) => {
 };
 
 Activity.propTypes = {
-  handleActivityUpdate: React.PropTypes.func.isRequired,
-  onActivityUpdate: React.PropTypes.func.isRequired,
   handleActivityDelete: React.PropTypes.func.isRequired,
-  onActivityDelete: React.PropTypes.func.isRequired,
+  onActivityUpdate: React.PropTypes.func.isRequired,
+  handleActivityUpdate: React.PropTypes.func.isRequired,
   activity: React.PropTypes.object.isRequired,
   dispatch: React.PropTypes.func.isRequired,
   categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
