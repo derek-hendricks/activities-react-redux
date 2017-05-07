@@ -14,8 +14,5 @@ function getSql (query)  {
 }
 
 module.exports = {
-  db,
   getSql
 };
-
-

@@ -72,5 +72,5 @@ export const splitNodeId = (nodeId) => {
 };
 
 export const classify = (text) => {
-  return text.toLowerCase().replace(' ', '-');
+  return text.toLowerCase().replace(" ", "-");
 };

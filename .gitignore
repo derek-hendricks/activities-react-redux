@@ -1,8 +1,6 @@
-.DS_STORE
-*.log
-node_modules
-coverage
-.idea/
 .env
-notes.txt
-.vscode/
+npm-debug.log.*
+node_modules
+.eslintrc.js
+.idea/
+coverage/*

@@ -38,7 +38,8 @@
       "command": "npm run deploy",
       "env": {
         "DEBUG": "app:*",
-        "NODE_ENV": "development"
+        "NODE_ENV": "development",
+        "API_BASE": "http://localhost:3000/graphql"
       }
     },
     "deploy:prod": {
@@ -50,15 +51,15 @@
       }
     },
     "dev": {
-      "command": "nodemon bin/dev-server --ignore dist --ignore coverage --ignore tests --ignore src",
+      "command": "nodemon bin/server --ignore dist --ignore coverage --ignore tests --ignore src",
       "env": {
         "DEBUG": "app:*",
         "NODE_ENV": "development",
-        "API_BASE": "http://localhost:5000/graphql"
+        "API_BASE": "http://localhost:3000/graphql"
       }
     },
     "start": {
-      "command": "node bin/dev-server",
+      "command": "node bin/server",
       "env": {
         "DEBUG": "app:*"
       }
@@ -106,6 +107,7 @@
     "karma-log-reporter": "0.0.4",
     "memory-fs": "^0.4.1",
     "method-override": "^2.3.8",
+    "node-env-file": "^0.1.8",
     "node-pre-gyp": "^0.6.34",
     "node-sass": "^3.4.2",
     "normalize.css": "^5.0.0",
@@ -123,7 +125,8 @@
     "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.67.2",
     "serve-favicon": "^2.4.2",
-    "sqlite3": "3.1.3",
+    "sql": "^0.75.0",
+    "sqlite3": "",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.6",
     "webpack": "^1.12.14",
@@ -161,6 +164,7 @@
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.18.0"
+    "webpack-hot-middleware": "^2.18.0",
+    "debug": "latest"
   }
 }

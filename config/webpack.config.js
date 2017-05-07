@@ -21,6 +21,7 @@ const webpackConfig = {
   },
   module : {}
 };
+
 // ------------------------------------
 // Entry Points
 // ------------------------------------
@@ -36,6 +37,7 @@ webpackConfig.entry = {
 // ------------------------------------
 // Bundle Output
 // ------------------------------------
+
 webpackConfig.output = {
   filename   : `[name].[${project.compiler_hash_type}].js`,
   path       : project.paths.dist(),
@@ -67,14 +69,12 @@ webpackConfig.plugins = [
   })
 ];
 
-// Ensure that the compiler exits on errors during testing so that
-// they do not get skipped and misreported.
+// exit the compiler on errors to prevent tests from being skipped and misreported
 if (__TEST__ && !argv.watch) {
   webpackConfig.plugins.push(function () {
     this.plugin('done', function (stats) {
       if (stats.compilation.errors.length) {
-        // Pretend no assets were generated. This prevents the tests
-        // from running making it clear that there were warnings.
+        // stop running tests when warnings are raised
         throw new Error(
           stats.compilation.errors.map(err => err.message || err)
         )
@@ -105,7 +105,7 @@ if (__DEV__) {
   )
 }
 
-// Don't split bundles during testing, since we only want import one bundle
+// prevent bundle splitting during testing since only one is imported
 if (!__TEST__) {
   webpackConfig.plugins.push(
     new webpack.optimize.CommonsChunkPlugin({
@@ -117,6 +117,7 @@ if (!__TEST__) {
 // ------------------------------------
 // Loaders
 // ------------------------------------
+
 // JavaScript / JSON
 webpackConfig.module.loaders = [{
   test    : /\.(js|jsx)$/,
@@ -131,8 +132,9 @@ webpackConfig.module.loaders = [{
 // ------------------------------------
 // Style Loaders
 // ------------------------------------
-// We use cssnano with the postcss loader, so we tell
-// css-loader not to duplicate minimization.
+
+// prevent css-loader minimization duplication
+// since cssnano is used with postcss loader
 const BASE_CSS_LOADER = 'css?sourceMap&-minimize';
 
 webpackConfig.module.loaders.push({
@@ -193,6 +195,7 @@ webpackConfig.module.loaders.push(
 
 if (!__DEV__) {
   debug('Applying ExtractTextPlugin to CSS loaders.');
+
   webpackConfig.module.loaders.filter((loader) =>
     loader.loaders && loader.loaders.find((name) => /css/.test(name.split('?')[0]))
   ).forEach((loader) => {
