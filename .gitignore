@@ -5,5 +5,4 @@ coverage
 .idea/
 .env
 notes.txt
-db.sqlite
 .vscode/
