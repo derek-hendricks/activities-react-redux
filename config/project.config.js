@@ -4,10 +4,6 @@ const debug = require('debug')('app:config:project');
 const argv = require('yargs').argv;
 const ip = require('ip');
 
-if (process.env.NODE_ENV != "production") {
-  const env = require("node-env-file");
-  env(`${path.resolve(__dirname, '..')}/.env`);
-}
 
 debug('Creating default configuration.');
 // ========================================================
