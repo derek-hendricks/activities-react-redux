@@ -110,7 +110,6 @@
     "normalize.css": "^5.0.0",
     "postcss-loader": "^1.1.0",
     "prop-types": "^15.5.8",
-    "pug": "^2.0.0-rc.1",
     "react": "^15.0.0",
     "react-apollo": "^0.13.2",
     "react-dom": "^15.0.0",
