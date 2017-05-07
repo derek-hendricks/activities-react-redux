@@ -3904,9 +3904,9 @@ lodash.some@^4.4.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/lodash.some/-/lodash.some-4.6.0.tgz#1bb9f314ef6b8baded13b549169b2a945eb68e4d"
 
-lodash@4.1.x:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.1.0.tgz#299894283de01a9eefbedff4c4b9b00a6a2e6e96"
+lodash@1.3.x:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-1.3.1.tgz#a4663b53686b895ff074e2ba504dfb76a8e2b770"
 
 lodash@^3.8.0:
   version "3.10.1"
@@ -4147,9 +4147,13 @@ mute-stream@0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.5.tgz#8fbfabb0a98a253d3184331f9e8deb7372fac6c0"
 
-nan@^2.3.0, nan@^2.3.2, nan@~2.4.0:
+nan@^2.3.0, nan@^2.3.2:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
+
+nan@~2.2.0:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.2.1.tgz#d68693f6b34bb41d66bc68b3a4f9defc79d7149b"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -4235,7 +4239,7 @@ node-libs-browser@^0.6.0:
     util "~0.10.3"
     vm-browserify "0.0.4"
 
-node-pre-gyp@^0.6.29, node-pre-gyp@^0.6.34, node-pre-gyp@~0.6.31:
+node-pre-gyp@^0.6.29, node-pre-gyp@^0.6.34, node-pre-gyp@~0.6.25:
   version "0.6.34"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.6.34.tgz#94ad1c798a11d7fc67381b50d47f8cc18d9799f7"
   dependencies:
@@ -5768,19 +5772,19 @@ sprintf-js@~1.0.2:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/sprintf-js/-/sprintf-js-1.0.3.tgz#04e6926f662895354f3dd015203633b857297e2c"
 
-sql@^0.75.0:
-  version "0.75.0"
-  resolved "https://registry.yarnpkg.com/sql/-/sql-0.75.0.tgz#d46e6cc062ae38e39ee68908dcb71efadfb945bd"
+sql@0.67.0:
+  version "0.67.0"
+  resolved "https://registry.yarnpkg.com/sql/-/sql-0.67.0.tgz#db61cf7392be5ebc77d51032db097d5ffcd7ccf0"
   dependencies:
-    lodash "4.1.x"
+    lodash "1.3.x"
     sliced "0.0.x"
 
-sqlite3@^3.1.8:
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.8.tgz#4cbcf965d8b901d1b1015cbc7fc415aae157dfaa"
+sqlite3@3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/sqlite3/-/sqlite3-3.1.3.tgz#40cd909e07a264ef3d47343f7f32c46191c5d4a9"
   dependencies:
-    nan "~2.4.0"
-    node-pre-gyp "~0.6.31"
+    nan "~2.2.0"
+    node-pre-gyp "~0.6.25"
 
 sshpk@^1.7.0:
   version "1.10.1"

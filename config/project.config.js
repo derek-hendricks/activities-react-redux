@@ -51,8 +51,7 @@ const config = {
     'react-redux',
     'react-router',
     'redux',
-    'sql',
-    'sqlite3'
+    'sql'
   ],
 
   // ----------------------------------
