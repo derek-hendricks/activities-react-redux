@@ -18,8 +18,7 @@ const schema = require('./src/schema').Schema;
 app.use(compress());
 
 app.use('/graphql', cors(), graphqlHTTP(() => ({
-  schema,
-  graphiql: "development" === project.env
+  schema
 })));
 
 if ("development" === project.env) {
@@ -79,7 +78,7 @@ if ("development" === project.env) {
   app.use(bodyParser.json({ type: "application/json" }));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(`${project.paths.dist()}/index.html`));
+    res.sendFile(`${project.paths.dist()}/index.html`);
   });
 }
 
