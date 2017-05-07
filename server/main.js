@@ -11,7 +11,7 @@ const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
 const methodOverride = require('method-override');
 const favicon = require('serve-favicon');
-
+// const sqlite = require('sqlite');
 
 
 const app = express();
@@ -23,6 +23,7 @@ app.use(compress());
 app.use('/graphql', cors(), graphqlHTTP(() => ({
   schema
 })));
+
 
 if ("development" === project.env) {
   const compiler = webpack(webpackConfig);
@@ -59,9 +60,13 @@ if ("development" === project.env) {
     })
   })
 } else {
+
+
+
   app.listen(process.env.PORT, () => {
     console.log(`listening on ${process.env.PORT}`);
   });
+
   app.use(methodOverride());
 
   app.set("view cache", true);
@@ -79,7 +84,6 @@ if ("development" === project.env) {
   }));
 
 
-
   app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.render("error", {
@@ -87,9 +91,6 @@ if ("development" === project.env) {
       error: err
     });
   });
-
-
-
 
 
   app.get("*", (req, res) => {
