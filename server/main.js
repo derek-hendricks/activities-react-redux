@@ -10,6 +10,9 @@ const compress = require('compression');
 const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
 const methodOverride = require('method-override');
+const favicon = require('serve-favicon');
+
+
 
 const app = express();
 
@@ -56,12 +59,26 @@ if ("development" === project.env) {
     })
   })
 } else {
-
-  app.use(express.static(project.paths.dist()));
-
-  app.use(express.static(project.paths.public()));
-
+  app.listen(process.env.PORT, () => {
+    console.log(`listening on ${process.env.PORT}`);
+  });
   app.use(methodOverride());
+
+  app.set("view cache", true);
+  app.set("x-powered-by", false);
+
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json({ type: "application/json" }));
+
+  app.use(favicon(`${__dirname}/dist/favicon.ico`));
+
+  app.use(express.static(path.join(__dirname, "dist")));
+
+  app.use(express.static(path.join(__dirname, "/public"), {
+    maxage: 700000000
+  }));
+
+
 
   app.use((err, req, res, next) => {
     res.status(err.status || 500);
@@ -71,11 +88,9 @@ if ("development" === project.env) {
     });
   });
 
-  app.set("view cache", true);
-  app.set("x-powered-by", false);
 
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json({ type: "application/json" }));
+
+
 
   app.get("*", (req, res) => {
     res.sendFile(`${project.paths.dist()}/index.html`);
