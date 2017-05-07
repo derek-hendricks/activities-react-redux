@@ -11,12 +11,14 @@ const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
 const methodOverride = require('method-override');
 const favicon = require('serve-favicon');
-// const sqlite = require('sqlite');
+const sqlite = require('sqlite');
 
 
 const app = express();
 
 const schema = require('./src/schema').Schema;
+
+app.use(methodOverride());
 
 app.use(compress());
 
@@ -25,7 +27,7 @@ app.use('/graphql', cors(), graphqlHTTP(() => ({
 })));
 
 
-if ("development" === project.env) {
+if (project.env === "development") {
   const compiler = webpack(webpackConfig);
 
   debug('Enabling webpack dev and HMR middleware');
@@ -63,28 +65,20 @@ if ("development" === project.env) {
 
 
 
-  app.listen(process.env.PORT, () => {
-    console.log(`listening on ${process.env.PORT}`);
-  });
-
-  app.use(methodOverride());
-
   app.set("view cache", true);
   app.set("x-powered-by", false);
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json({ type: "application/json" }));
 
-  app.use(favicon(`${__dirname}/dist/favicon.ico`));
-
-  app.use(express.static(path.join(__dirname, "dist")));
-
-  app.use(express.static(path.join(__dirname, "/public"), {
-    maxage: 700000000
-  }));
+  app.use(express.static(project.paths.dist()));
+  app.use(express.static(project.paths.public()));
 
 
-  app.use((err, req, res, next) => {
+  app.use(favicon(`${project.paths.public()}/favicon.ico`));
+
+
+  app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render("error", {
       message: err.message,
@@ -92,9 +86,8 @@ if ("development" === project.env) {
     });
   });
 
-
-  app.get("*", (req, res) => {
-    res.sendFile(`${project.paths.dist()}/index.html`);
+  app.get("*", function (req, res) {
+    res.sendFile(project.paths.dist() + "/index.html");
   });
 }
 
