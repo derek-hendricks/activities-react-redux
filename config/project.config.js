@@ -10,7 +10,7 @@ debug('Creating default configuration.');
 // Default Configuration
 // ========================================================
 const config = {
-  env : process.env.NODE_ENV || 'development',
+  env : process.env.NODE_ENV,
 
   // ----------------------------------
   // Project Structure
@@ -26,7 +26,7 @@ const config = {
   // Server Configuration
   // ----------------------------------
   server_host : 'localhost',
-  server_port : process.env.PORT || 3000,
+  server_port : process.env.PORT,
 
   // ----------------------------------
   // Compiler Configuration

@@ -11,24 +11,19 @@ const graphqlHTTP = require('express-graphql');
 const methodOverride = require('method-override');
 const favicon = require('serve-favicon');
 
-const dev = "development" === project.env;
-
 const app = express();
-const schema = require('./src/schema').Schema;
+
+const schema = require('./src/schema');
 
 app.use(methodOverride());
 app.use(compress());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ type: "application/json" }));
 
 app.use('/graphql', cors(), graphqlHTTP(() => ({
   schema,
   graphiql: "development" === project.env
 })));
-
-app.set("view cache", "production" === project.env);
-app.set("x-powered-by", false);
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ type: "application/json" }));
 
 const developmentSetup = () => {
   const debug = require('debug')('app:server');
@@ -66,6 +61,9 @@ const developmentSetup = () => {
 };
 
 const productionSetup = () => {
+  app.set("view cache", true);
+  app.set("x-powered-by", false);
+
   app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.render("error", {

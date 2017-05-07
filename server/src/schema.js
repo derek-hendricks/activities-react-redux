@@ -27,7 +27,7 @@ const RootMutation = new GraphQLObjectType({
   }
 });
 
-const Schema = new GraphQLSchema({
+const schema = new GraphQLSchema({
   types: [
     types.CategoriesType,
     types.CategoryType,
@@ -38,6 +38,4 @@ const Schema = new GraphQLSchema({
   mutation: RootMutation
 });
 
-module.exports = {
-  Schema: Schema
-};
+module.exports = schema;
