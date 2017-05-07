@@ -3,7 +3,7 @@
 node_modules
 coverage
 .idea/
+.env
 notes.txt
 db.sqlite
-/public
 .vscode/

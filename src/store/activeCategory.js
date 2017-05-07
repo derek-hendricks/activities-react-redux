@@ -77,8 +77,10 @@ function createActivityMutationResultSetup(state, action) {
   }
   return state;
 }
-
+console.log('b0b');
 function optimisticCreateCategoryStateSetup(state, action) {
+  console.log('b0b');
+  debugger;
   const { optimisticResponse: { category: { id } } } = action;
 
   return id;

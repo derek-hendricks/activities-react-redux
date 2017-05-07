@@ -1,73 +1,87 @@
 import React from 'react'
-import Link from 'react-router/Link';
-import PropTypes from 'prop-types';
-import './styles.scss'
-import {Button, Input} from 'semantic-ui-react'
+import PropTypes from 'prop-types'
+import {Input} from 'semantic-ui-react'
 
-export const ActivityForm = ({placeholder, onSubmit, buttonText, categories, activeCategoryId}) => {
+import SelectList from '../SelectList'
+import LinkButton from '../LinkButton'
+import './styles.scss'
+
+export const ActivityForm = (props) => {
   const activityObject = {};
+  const {
+    onSubmit,
+    buttonText,
+    categories,
+    activeCategoryId,
+    placeholder = ''
+  } = props;
   let categoryId = { value: activeCategoryId };
 
   return (
     <div className='activity-input'>
-      <Input
-        ref={(node) => activityObject.name = node}
-        type='text'
-        placeholder={`${placeholder} name`}
-      >
-      </Input>
-      <Input
-        ref={(node) => activityObject.about = node}
-        type='text'
-        placeholder={`${placeholder} description`}
-      >
-      </Input>
-      <Input
-        ref={(node) => activityObject.location = node}
-        type='text'
-        placeholder={`${placeholder} location`}
-      >
-      </Input>
-      <Input
-        ref={(node) => activityObject.date = node}
-        type='date'
-      >
-      </Input>
-      <select
-        className={"ui search dropdown"}
-        value={activityObject.categoryId}
-        onChange={({target}) => categoryId = target }>
-        {categories.map((category, index) => (
-          <option key={index} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </select>
 
-      <div onClick={() => {
-        const activity = {...activityObject};
-        return onSubmit({...activity, categoryId});
-      } }>
-        <Link to='/activities'>
-          {buttonText}
-        </Link>
+      <div className='ui tiny form category-form'>
+        <div className="five fields">
+          <div className="field">
+            <Input
+              ref={(node) => activityObject.name = node}
+              type='text'
+              placeholder={`${placeholder} name`}
+            />
+          </div>
+          <div className="field">
+            <Input
+              ref={(node) => activityObject.about = node}
+              type='text'
+              placeholder={`${placeholder} description`}
+            />
+          </div>
+          <div className="field">
+            <Input
+              ref={(node) => activityObject.location = node}
+              type='text'
+              placeholder={`${placeholder} location`}
+            />
+          </div>
+          <div className="field">
+            <Input
+              ref={(node) => activityObject.date = node}
+              type='date'
+            />
+          </div>
+          <div className="field">
+          <SelectList
+            value={activityObject.categoryId}
+            items={categories}
+            onSelect={({ target }) => categoryId = target }
+          />
+          </div>
+        </div>
       </div>
 
+      <LinkButton
+        text={buttonText}
+        onClick={() => {
+          const activity = { ...activityObject, categoryId };
+          return onSubmit(activity);
+        }}
+      />
     </div>
   );
 };
 
 ActivityForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  placeholder: PropTypes.string.isRequired,
-  buttonText: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   activeCategoryId: PropTypes.string,
+  onSubmit: PropTypes.func.isRequired,
+  buttonText: PropTypes.string.isRequired,
   categories: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       description: PropTypes.string
-    })).isRequired
+    })
+  ).isRequired
 };
 
 export default ActivityForm

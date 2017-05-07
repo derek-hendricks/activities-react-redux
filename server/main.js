@@ -9,19 +9,20 @@ const project = require('../config/project.config');
 const compress = require('compression');
 const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
-
-const schema = require('./src/schema').Schema;
+const methodOverride = require('method-override');
 
 const app = express();
+
+const schema = require('./src/schema').Schema;
 
 app.use(compress());
 
 app.use('/graphql', cors(), graphqlHTTP(() => ({
   schema,
-  graphiql: true
+  graphiql: "development" === project.env
 })));
 
-if (project.env === 'development') {
+if ("development" === project.env) {
   const compiler = webpack(webpackConfig);
 
   debug('Enabling webpack dev and HMR middleware');
@@ -41,7 +42,7 @@ if (project.env === 'development') {
 
   app.use(express.static(project.paths.public()));
 
-  app.use(bodyParser.urlencoded({extended: true}));
+  app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
 
   app.use('*', function (req, res, next) {
@@ -56,7 +57,30 @@ if (project.env === 'development') {
     })
   })
 } else {
-  app.use(express.static(project.paths.dist()))
+
+  app.use(express.static(project.paths.dist()));
+
+  app.use(express.static(project.paths.public()));
+
+  app.use(methodOverride());
+
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+    res.render("error", {
+      message: err.message,
+      error: err
+    });
+  });
+
+  app.set("view cache", true);
+  app.set("x-powered-by", false);
+
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json({ type: "application/json" }));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(`${project.paths.dist()}/index.html`));
+  });
 }
 
 module.exports = app;

@@ -1,8 +1,10 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {Dimmer, Loader} from 'semantic-ui-react'
+
 import './styles.scss'
 import ActivityForm from '../../../../components/ActivityForm'
-import DeleteItem from '../DeleteItem/index'
+import LinkButton from '../../../../components/LinkButton'
 
 export const Activity = (props) => {
   const {
@@ -52,13 +54,12 @@ export const Activity = (props) => {
           activeCategoryId={activeCategoryId}
         />
 
-        <DeleteItem
-          id={id}
-          categoryId={activeCategoryId}
-          onSubmit={(id, categoryId) => {
-            return handleActivityDelete(id, categoryId)
-          }
-          }
+        <LinkButton
+          text={'Delete'}
+          className={'delete-activity'}
+          onClick={() => {
+            return handleActivityDelete(id, activeCategoryId)
+          }}
         />
       </div>
     )
@@ -66,14 +67,19 @@ export const Activity = (props) => {
 };
 
 Activity.propTypes = {
-  handleActivityDelete: React.PropTypes.func.isRequired,
-  onActivityUpdate: React.PropTypes.func.isRequired,
-  handleActivityUpdate: React.PropTypes.func.isRequired,
-  activity: React.PropTypes.object.isRequired,
-  dispatch: React.PropTypes.func.isRequired,
-  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  loading: React.PropTypes.bool.isRequired,
-  activeCategoryId: React.PropTypes.string
+  activeCategoryId: PropTypes.string,
+  handleActivityDelete: PropTypes.func.isRequired,
+  onActivityUpdate: PropTypes.func.isRequired,
+  handleActivityUpdate: PropTypes.func.isRequired,
+  activity: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  categories: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      description: PropTypes.string
+    })).isRequired
 };
 
 export default Activity

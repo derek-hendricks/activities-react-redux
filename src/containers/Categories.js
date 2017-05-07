@@ -1,10 +1,11 @@
 import {connect} from 'react-redux'
-import {graphql, compose} from 'react-apollo';
-import gql from 'graphql-tag';
+import {graphql, compose} from 'react-apollo'
 
 import {openCategory} from '../store/activeCategory'
 import {setButtonMethod} from '../store/actions'
 import Categories from '../components/Categories'
+import {categoriesQuery} from '../gql/queries'
+import {categoryCreate, categoryDelete, categoryUpdate} from '../gql/mutations'
 import {
   setProperties,
   clearInputFields,
@@ -37,17 +38,6 @@ const mapDispatchToTabsProps = (dispatch) => (
   }
 );
 
-const CategoriesQuery = gql`
-  query CATEGORIES_QUERY {
-    categoryList {
-      categories {
-        id
-        description
-        name
-      }
-    }
-  }`;
-
 const queryOptions = {
   options: ({ activeCategoryId }) => {
     return { skip: activeCategoryId };
@@ -59,15 +49,6 @@ const queryOptions = {
     }
   }
 };
-
-const categoryCreate = gql`
-  mutation CREATE_CATEGORY_MUTATION($name: String!) {
-    CREATE_CATEGORY_MUTATION(name: $name) {
-      __typename
-      name
-      id
-    }
-  }`;
 
 const categoryCreateOptions = {
   props: ({ mutate }) => ({
@@ -91,14 +72,6 @@ const categoryCreateOptions = {
     }
   })
 };
-
-const categoryDelete = gql`
-  mutation DELETE_CATEGORY_MUTATION($id: ID!, $activities: String) {
-    DELETE_CATEGORY_MUTATION(id: $id, activities: $activities) {
-      __typename
-      id
-    }
-  }`;
 
 const getCategoryDeleteVariables = (id, deletedActivities) => {
   const deleteVariables = { "id": `categories: ${id}` };
@@ -130,14 +103,6 @@ const categoryDeleteOptions = {
   })
 };
 
-const categoryUpdate = gql`
-  mutation UPDATE_CATEGORY_MUTATION($id: ID!, $name: String, $description: String) {
-    UPDATE_CATEGORY_MUTATION(id: $id, name: $name, description: $description) {
-      __typename
-      id
-    }
-  }`;
-
 const categoryUpdateOptions = {
   props: ({ mutate }) => ({
     handleCategoryUpdate: (category, id) => {
@@ -165,7 +130,7 @@ const categoryUpdateOptions = {
 };
 
 export default compose(
-  graphql(CategoriesQuery, queryOptions),
+  graphql(categoriesQuery, queryOptions),
   connect(
     (state) => mapStateToTabsProps(state),
     (dispatch) => mapDispatchToTabsProps(dispatch)),

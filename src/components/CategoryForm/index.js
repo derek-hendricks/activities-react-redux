@@ -52,8 +52,3 @@ CategoryForm.propTypes = {
 };
 
 export default CategoryForm
-
-
-
-
-

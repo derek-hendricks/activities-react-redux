@@ -95,16 +95,16 @@ const deleteCategory = (data) => {
     return {
       id: data.id,
       __tableName: table.getName(),
-      __typename: "categories"
+      __typename: "Category"
     }
   })
 };
 
 const deleteRow = (data) => {
-  const db = data.id.split(":");
+  const db = dbIdNodeId(data.id);
   const query = { text: `delete from ${db[0]} where id = ${db[1]};` };
 
-  return database.getSql(query).then((res) => {
+  return database.getSql(query).then(() => {
     clearCacheById(data.id);
     return data;
   }).catch(error => error)
@@ -118,7 +118,8 @@ const deleteActivity = (data) => {
   return database.getSql(query).then(() => {
     return {
       id: data.id,
-      __tableName: table.getName()
+      __tableName: table.getName(),
+      typeName: 'Activity'
     }
   })
 };
@@ -184,7 +185,7 @@ const deleteCategoryActivities = (data) => {
     return ({
       id: data.id,
       __tableName: "categories",
-      __typename: "categories"
+      __typename: "Category"
     })
   }).catch(error => ({ error }))
 };

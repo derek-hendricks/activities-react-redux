@@ -70,3 +70,7 @@ export const isInteger = (x) => {
 export const splitNodeId = (nodeId) => {
   return nodeId.split(":")[1].trim();
 };
+
+export const classify = (text) => {
+  return text.toLowerCase().replace(' ', '-');
+};

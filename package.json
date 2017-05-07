@@ -42,7 +42,7 @@
       }
     },
     "deploy:prod": {
-      "command": "npm run deploy",
+      "command": "npm run clean && npm run deploy",
       "env": {
         "DEBUG": "app:*",
         "NODE_ENV": "production"
@@ -103,10 +103,12 @@
     "json-loader": "^0.5.4",
     "karma-log-reporter": "0.0.4",
     "memory-fs": "^0.4.1",
+    "method-override": "^2.3.8",
     "node-sass": "^4.0.0",
     "normalize.css": "^5.0.0",
     "postcss-loader": "^1.1.0",
     "prop-types": "^15.5.8",
+    "pug": "^2.0.0-rc.1",
     "react": "^15.0.0",
     "react-apollo": "^0.13.2",
     "react-dom": "^15.0.0",
@@ -117,6 +119,7 @@
     "sass-loader": "^4.0.0",
     "semantic-ui-css": "^2.2.10",
     "semantic-ui-react": "^0.67.2",
+    "serve-favicon": "^2.4.2",
     "sql": "^0.75.0",
     "sqlite3": "^3.1.8",
     "style-loader": "^0.13.1",
@@ -148,6 +151,7 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-webpack-with-fast-source-maps": "^1.9.2",
     "mocha": "^3.0.1",
+    "node-env-file": "^0.1.8",
     "nodemon": "^1.10.2",
     "phantomjs-prebuilt": "^2.1.12",
     "react-addons-test-utils": "^15.0.0",

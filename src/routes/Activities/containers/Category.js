@@ -1,13 +1,15 @@
 import {connect} from 'react-redux'
-import {graphql, compose} from 'react-apollo';
-import gql from 'graphql-tag';
+import {graphql, compose} from 'react-apollo'
+
+import Category from '../components/Category/index'
+import {activitiesQuery} from '../../../gql/queries'
+import {createActivity} from '../../../gql/mutations'
 import {
-  setProperties, 
-  clearInputFields, 
-  getCategory, 
+  setProperties,
+  clearInputFields,
+  getCategory,
   sortCategories
 } from '../../../utils/index';
-import Category from '../components/Category/index'
 
 const initialState = { error: false, category: {}, activity: {}, categories: [] };
 
@@ -38,23 +40,6 @@ const mergeCategoryProps = (stateProps, dispatchProps) => ({
   }
 });
 
-const query = gql`
-  query ACTIVITIES_QUERY($id: ID!) {
-    categoryInterface(id: $id) {
-      ... on Category {
-        id,
-        activities {
-          id
-          name
-          about
-          date
-          location
-          categoryId
-        }
-      }
-    }
-  }`;
-
 const queryOptions = {
   options: (props) => {
     const { category = {}, activeCategoryId } = props;
@@ -75,20 +60,6 @@ const queryOptions = {
   }
 };
 
-const createActivity = gql`
-  mutation CREATE_ACTIVITY_MUTATION($name: String!, $categoryId: String!, $about: String, $location: String, $date: String) {
-    CREATE_ACTIVITY_MUTATION(name: $name, categoryId: $categoryId, about: $about, location: $location, date: $date) {
-      __typename
-      name
-      id
-      categoryId
-      about
-      location
-      date
-      createdAt
-    }
-  }`;
-
 const createActivityOptions = {
   props: ({ mutate }) => ({
     onActivitySubmit: (activity) => {
@@ -100,7 +71,7 @@ const createActivityOptions = {
             createActivity: {
               ...activity,
               id: `${activity.categoryId}:${activity.name}`,
-              __typename: "activities"
+              __typename: "Activity"
             }
           }
         })
@@ -114,6 +85,6 @@ export default compose(
     (state) => mapStateToCategoryProps(state),
     (dispatch) => mapDispatchToCategoryProps(dispatch),
     (stateProps, dispatchProps) => mergeCategoryProps(stateProps, dispatchProps)),
-  graphql(query, queryOptions),
+  graphql(activitiesQuery, queryOptions),
   graphql(createActivity, createActivityOptions)
 )(Category);

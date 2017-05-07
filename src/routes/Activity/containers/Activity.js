@@ -1,8 +1,9 @@
 import {connect} from "react-redux"
 import {graphql, compose} from "react-apollo";
-import gql from "graphql-tag"
-
 import Activity from "../components/Activity/index"
+
+import {activityQuery} from '../../../gql/queries'
+import {activityDelete, activityUpdate} from '../../../gql/mutations'
 import {
   setProperties,
   clearInputFields,
@@ -48,43 +49,24 @@ const mergeActivityProps = (stateProps, dispatchProps) => ({
   }
 });
 
-const activityDelete = gql`
-  mutation DELETE_ACTIVITY_MUTATION($id: ID!) {
-    DELETE_ACTIVITY_MUTATION(id: $id) {
-      __typename
-      id
-    }
-  }`;
-
 const activityDeleteOptions = {
-  props: ({ mutate }) => {
-    return ({
-      handleActivityDelete: (id) => {
-        return (
-          mutate({
-            variables: {
-              id: `activities: ${id}`
-            },
-            optimisticResponse: {
-              __typename: "Mutation",
-              activity: {
-                __typename: "Activity",
-                id
-              }
-            }
-          })
-        )
-      }
-    })
-  }
+  props: ({ mutate }) => ({
+    handleActivityDelete: (id) => (
+      mutate({
+        variables: {
+          id: `activities: ${id}`
+        },
+        optimisticResponse: {
+          __typename: "Mutation",
+          activity: {
+            __typename: "Activity",
+            id
+          }
+        }
+      })
+    )
+  })
 };
-
-const activityUpdate = gql`mutation UPDATE_ACTIVITY_MUTATION($id: ID!, $name: String, $categoryId: String, $about: String, $location: String, $date: String) {
-  UPDATE_ACTIVITY_MUTATION(id: $id, name: $name, about: $about, location: $location, date: $date, categoryId: $categoryId) {
-    __typename
-    id
-  }
-}`;
 
 const activityUpdateOptions = {
   props: ({ ownProps, mutate }) => ({
@@ -107,19 +89,6 @@ const activityUpdateOptions = {
     )
   })
 };
-
-const activityQuery = gql`query ACTIVITY_QUERY($id: ID!) {
-  categoryInterface(id: $id) {
-    ... on Activity {
-      id
-      name
-      about
-      date
-      location
-      categoryId
-    }
-  }
-}`;
 
 const activityQueryOptions = {
   options: ({ id, store }) => {

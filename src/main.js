@@ -8,23 +8,22 @@ import ApolloClient, {
 
 const client = new ApolloClient({
   networkInterface: createNetworkInterface({
-    uri: 'http://localhost:8000/graphql',
+    uri: __API_BASE__,
     opts: {
       credentials: 'same-origin',
     },
-    initialState: window.__APOLLO_STATE__, // eslint-disable-line no-underscore-dangle
     ssrForceFetchDelay: 100,
-    connectToDevTools: true
-  }),
-  dataIdFromObject: (result) => {
-    if (result.id && result.__typename) {
-      return result.__typename + result.id;
+    connectToDevTools: __DEV__,
+    dataIdFromObject: (result) => {
+      if (result.id && result.__typename) {
+        return result.__typename + result.id;
+      }
+      return null;
     }
-    return null;
-  },
+  })
 });
 
-const initialState = window.___INITIAL_STATE__;
+const initialState = {};
 const store = createStore(initialState, client);
 
 const MOUNT_NODE = document.getElementById('root');
