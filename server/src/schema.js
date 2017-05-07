@@ -39,5 +39,5 @@ const Schema = new GraphQLSchema({
 });
 
 module.exports = {
-  Schema
+  Schema: Schema
 };

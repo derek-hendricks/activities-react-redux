@@ -1,9 +1,10 @@
 const project = require('../config/project.config');
 const server = require('../server/main');
-const sqlite = require('sqlite');
 
-const sqlite3 = require('sqlite3').cached;
+const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./db.sqlite');
+
+
 
 
 if ("development" === project.env) {

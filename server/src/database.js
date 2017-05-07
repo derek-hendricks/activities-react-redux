@@ -1,4 +1,4 @@
-const sqlite3 = require('sqlite3').cached;
+const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database('./db.sqlite');
 
 function getSql (query)  {
@@ -17,6 +17,5 @@ module.exports = {
   db,
   getSql
 };
-
 
 

@@ -11,7 +11,7 @@ const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
 const methodOverride = require('method-override');
 const favicon = require('serve-favicon');
-const sqlite = require('sqlite');
+
 
 
 const app = express();
@@ -87,7 +87,8 @@ if (project.env === "development") {
   });
 
   app.get("*", function (req, res) {
-    res.sendFile(project.paths.dist() + "/index.html");
+    // res.sendFile(project.paths.dist() + "/index.html");
+    res.sendFile('index.html', { root: path.join(__dirname, '../dist') });
   });
 }
 
