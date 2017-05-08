@@ -1,5 +1,6 @@
 import React from 'react'
 import './styles.scss'
+import {classify} from '../../utils'
 import {
   List,
   ListDescription,
@@ -9,47 +10,57 @@ import {
   ListItem
 } from 'semantic-ui-react';
 
-export const CategoryFoldersList = ({ name, activities }) => (
-  <div>
-    <List>
-      <ListItem>
-        <ListIcon name='folder'/>
+export const CategoryFoldersList = (props) => {
+  const { listHeader, listDescription, listContents } = props;
+
+  const ListItemDetails = (data, index) => {
+    const { id, categoryId, __typename, ...item } = data;
+    const listItem = Object.keys(item).filter((attr) => item[attr]);
+    return (
+      <ListItem key={index} className={classify(__typename)}>
+        <ListIcon name='file'/>
         <ListContent>
           <ListHeader>
-            {name}
+            {item.name}
           </ListHeader>
-          <ListDescription>
-            {activities.length} activities
-          </ListDescription>
-          <List.List>
-            {activities.map((activity, index) => (
-              <ListItem key={index}>
-                <ListIcon name='file'/>
-                <ListContent>
-                  <ListHeader>
-                    {activity.name}
-                  </ListHeader>
-                  <ListDescription>
-                    {activity.about ? `About: ${activity.about}` : ''}
-                  </ListDescription>
-                  <ListDescription>
-                    {activity.location ? `Location: ${activity.location}` : ''}
-                  </ListDescription>
-                  <ListDescription>
-                    {activity.date ? `Activity Date: ${activity.date}` : ''}
-                  </ListDescription>
-                </ListContent>
-              </ListItem>
-            ))}
-          </List.List>
+          {listItem.map((attr) => (
+            <ListDescription>
+              {`${attr}: ${item[attr]}`}
+            </ListDescription>
+          ))}
         </ListContent>
       </ListItem>
-    </List>
-  </div>
-);
+    );
+  };
+
+  return (
+    <div>
+      <List>
+        <ListItem>
+          <ListIcon name='folder'/>
+          <ListContent>
+            <ListHeader>
+              {listHeader}
+            </ListHeader>
+            <ListDescription>
+              {listDescription}
+            </ListDescription>
+            <List>
+              {listContents.map((item, index) => {
+                return ListItemDetails(item, index);
+              })}
+            </List>
+          </ListContent>
+        </ListItem>
+      </List>
+    </div>
+  );
+};
 
 CategoryFoldersList.propTypes = {
-  activities: React.PropTypes.array.isRequired
+  listContents: React.PropTypes.array.isRequired,
+  listDescription: React.PropTypes.string,
+  listTitle: React.PropTypes.string
 };
 
 export default CategoryFoldersList

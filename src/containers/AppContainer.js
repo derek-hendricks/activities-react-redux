@@ -1,6 +1,7 @@
-import React, { Component, PropTypes } from 'react'
-import Router from 'react-router/BrowserRouter';
-import { ApolloProvider } from 'react-apollo';
+import React, { Component } from "react"
+import Router from "react-router/BrowserRouter";
+import { ApolloProvider } from "react-apollo";
+import PropTypes from "prop-types"
 
 class AppContainer extends Component {
   static propTypes = {

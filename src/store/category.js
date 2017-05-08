@@ -1,5 +1,4 @@
-import {getIndex} from './categories';
-import {splitNodeId} from "../utils"
+import {splitNodeId, getIndex} from "../utils"
 
 const CREATE_CATEGORY_MUTATION = "CREATE_CATEGORY_MUTATION";
 const UPDATE_CATEGORY_MUTATION = "UPDATE_CATEGORY_MUTATION";

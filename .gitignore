@@ -4,4 +4,4 @@ node_modules
 .eslintrc.js
 .idea/
 coverage/*
-.notes
+/notes.txt

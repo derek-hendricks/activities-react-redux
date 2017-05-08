@@ -1,4 +1,4 @@
-export const APOLLO_ACTIVITY_QUERY = "ACTIVITY_QUERY";
+const APOLLO_ACTIVITY_QUERY = "ACTIVITY_QUERY";
 
 const initialState = {};
 

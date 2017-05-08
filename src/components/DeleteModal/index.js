@@ -1,6 +1,9 @@
 import React from "react"
 import Link from "react-router/Link"
+import PropTypes from "prop-types"
+
 import CategoryFoldersList from "../CategoryFoldersList"
+import "./styles.scss"
 import {
   Button,
   Modal,
@@ -8,7 +11,7 @@ import {
   ModalContent,
   ModalActions
 } from 'semantic-ui-react';
-import "./styles.scss"
+
 
 export const DeleteModal = (props) => {
   const { open, onClose, onDelete, category } = props;
@@ -22,20 +25,26 @@ export const DeleteModal = (props) => {
       <div>
         <Modal size={'small'} closeIcon={'close'} open={open} onClose={onClose}>
           <ModalHeader>
-           Delete Category
+            Delete Category
           </ModalHeader>
 
           <ModalContent>
             <h3>{`Name: ${name}`}</h3>
             <h3>{description ? `Description: ${description}` : ''}</h3>
             <p>{activities.length ? `The following will also be deleted` : ''}</p>
-          <CategoryFoldersList name={'todo: category name or text or something'} activities={activities} />
+
+            <CategoryFoldersList
+              listHeader={name}
+              listContents={activities}
+              listDescription={`${activities.length} ${activities.length > 1 ? 'Activities' : 'Activity'}`}
+            />
           </ModalContent>
 
           <ModalActions>
             <Button onClick={onClose}>
               Cancel
             </Button>
+
             <Button labelPosition='right'>
               <Link to={`/activities`} onClick={() => onDelete(id, activities)}>
                 Delete
@@ -49,10 +58,13 @@ export const DeleteModal = (props) => {
 };
 
 DeleteModal.propTypes = {
-  open: React.PropTypes.bool.isRequired,
-  onClose: React.PropTypes.func.isRequired,
-  onDelete: React.PropTypes.func.isRequired,
-  category: React.PropTypes.object
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  category: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string
+  }).isRequired
 };
 
 export default DeleteModal

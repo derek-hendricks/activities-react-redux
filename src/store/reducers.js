@@ -1,4 +1,5 @@
 import {combineReducers} from 'redux'
+
 import activeCategoryIdReducer from './activeCategory'
 import categoriesReducer from './categories'
 import activityReducer from './activity'

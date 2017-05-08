@@ -1,4 +1,4 @@
-export const SET_BUTTON_METHOD = 'SET_BUTTON_METHOD';
+const SET_BUTTON_METHOD = 'SET_BUTTON_METHOD';
 
 export function setButtonMethod(method) {
   return {

@@ -1,7 +1,9 @@
-export const ADD_ACTIVITY = 'ADD_ACTIVITY';
-export const DELETE_ACTIVITY = 'DELETE_ACTIVITY';
-export const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
-export const APOLLO_MUTATION_RESULT = 'APOLLO_MUTATION_RESULT';
+import {getIndex} from '../utils'
+
+const ADD_ACTIVITY = 'ADD_ACTIVITY';
+const DELETE_ACTIVITY = 'DELETE_ACTIVITY';
+const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
+const APOLLO_MUTATION_RESULT = 'APOLLO_MUTATION_RESULT';
 
 const initialState = [];
 
@@ -11,7 +13,7 @@ export default function activitiesReducer(state = initialState, action) {
 
       return activitiesAdded(state, action);
     case UPDATE_ACTIVITY:
-      const activityIndex = getIndex(state, action);
+      const activityIndex = getIndex(state, action.id);
 
       return activityUpdated(state, action, activityIndex);
     case DELETE_ACTIVITY:
@@ -19,16 +21,12 @@ export default function activitiesReducer(state = initialState, action) {
       return activitiesDeleted(state, action);
     case APOLLO_MUTATION_RESULT:
       const { result: { data: { CREATE_ACTIVITY_MUTATION: { id, name, categoryId } } } } = action;
-      const index = getIndex(state, { id: `${categoryId}:${name}` });
+      const index = getIndex(state, `${categoryId}:${name}`);
 
       return activityUpdated(state, { id }, index);
     default:
       return state;
   }
-}
-
-function getIndex(state, { id }) {
-  return state.findIndex((activity) => activity.id === id);
 }
 
 function activitiesAdded(state, { type, __typename, ...activity }) {
@@ -49,8 +47,8 @@ function activityUpdated(state, activity, activityIndex) {
   ]
 }
 
-function activitiesDeleted(state, action) {
-  const activityIndex = getIndex(state, action);
+function activitiesDeleted(state, {id}) {
+  const activityIndex = getIndex(state, id);
 
   return [
     ...state.slice(0, activityIndex),

@@ -1,3 +1,18 @@
+export const getIndex = (items, id) => {
+  return items.findIndex(item => item.id === id);
+};
+
+export const getCategoryIndexByActivity = (categories, activityId) => {
+  return categories.slice().findIndex(({activities = []}) => {
+    if (!activities.length) {
+      return false;
+    }
+    return activities.find((activity) => {
+      return activityId === activity.id
+    })
+  })
+};
+
 export const sortCategories = (categories, categoryId) => {
   return categories.slice().sort((activity) => {
     if (activity.id !== categoryId) {
@@ -71,6 +86,6 @@ export const splitNodeId = (nodeId) => {
   return nodeId.split(":")[1].trim();
 };
 
-export const classify = (text) => {
+export const classify = (text = " ") => {
   return text.toLowerCase().replace(" ", "-");
 };
