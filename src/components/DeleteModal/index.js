@@ -6,7 +6,11 @@ import {
   Modal,
   ModalHeader,
   ModalContent,
-  ModalActions
+  ModalActions,
+  ListItem,
+  ListContent,
+  ListHeader,
+  ListDescription
 } from 'semantic-ui-react';
 
 import CategoryFoldersList from "../CategoryFoldersList"
@@ -26,16 +30,24 @@ export const DeleteModal = (props) => {
     }
 
     return (
-      <div>
+      <div className={'delete-modal'}>
         <Modal size={'small'} closeIcon={'close'} open={open} onClose={onClose}>
           <ModalHeader>
             Delete Category
           </ModalHeader>
 
           <ModalContent>
-            <h3>{`Name: ${name}`}</h3>
-            <h4>{description ? `Description: ${description}` : ''}</h4>
-            <p>{activities.length ? `The ${activityText} below will also be deleted` : ''}</p>
+            <div className={'ui segment'}>
+              <ListItem className={'category-list-item'}>
+                <ListContent>
+                  <ListHeader>{name}</ListHeader>
+                  <listDescription>{`Activities: ${activities.length}`}</listDescription>
+                  <ListDescription>{description ? `Description: ${description}` : ''}</ListDescription>
+                </ListContent>
+              </ListItem>
+            </div>
+
+            <p>{activities.length ? `${activities.length} ${activityText} will also be removed` : ''}</p>
 
             <CategoryFoldersList
               listHeader={name}
