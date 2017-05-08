@@ -1,10 +1,15 @@
 import React from "react"
-import {Icon, Button, ButtonGroup, ButtonOr, Popup} from 'semantic-ui-react';
+import {
+  Icon,
+  Button,
+  ButtonGroup,
+  ButtonOr,
+  Popup
+} from "semantic-ui-react";
+
 import "./styles.scss"
 
-export const CategoryButtons = ({setAction}) => {
-
-  return (
+export const CategoryButtons = ({setAction}) =>  (
     <div>
       <Popup content='Add Category' size='small' trigger={
         <Button icon={true} onClick={() => setAction('add')}>
@@ -25,8 +30,7 @@ export const CategoryButtons = ({setAction}) => {
         }/>
       </ButtonGroup>
     </div>
-  )
-};
+  );
 
 CategoryButtons.propTypes = {
   setAction: React.PropTypes.func.isRequired

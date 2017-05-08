@@ -4,7 +4,6 @@ import Link from 'react-router/Link'
 import {Button} from 'semantic-ui-react'
 
 import {classify} from '../../utils'
-
 import './styles.scss'
 
 export const LinkButton = (props) => {

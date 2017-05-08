@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from 'graphql-tag'
 
 export const categoriesQuery = gql`
   query CATEGORIES_QUERY {

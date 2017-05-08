@@ -1,18 +1,21 @@
-import React from 'react'
-import CoreLayout from '../layouts/CoreLayout'
-import ActivitiesRoute from './Activities'
-import AboutRoute from './Home'
-import ActivityRoute from'./Activity'
-import NotFound from '../components/NotFound'
-import Match from 'react-router/Match';
-import Redirect from 'react-router/Redirect';
-import Miss from 'react-router/Miss';
+import React from "react"
+import Match from "react-router/Match";
+import Redirect from "react-router/Redirect";
+import Miss from "react-router/Miss";
+
+import CoreLayout from "../layouts/CoreLayout"
+import ActivitiesRoute from "./Activities"
+import AboutRoute from "./Home"
+import ActivityRoute from "./Activity"
+import NotFound from "../components/NotFound"
 
 export const CreateMatches = (store) => (
   <CoreLayout>
     <Match exactly pattern='/activities' render={ActivitiesRoute}/>
     <Match pattern='/about' render={AboutRoute}/>
-    <Match pattern='/activity/:id' render={(props) => (<ActivityRoute id={props.params.id} store={store} props={props}/>)}/>
+    <Match pattern='/activity/:id' render={(props) => {
+      return <ActivityRoute id={props.params.id} store={store} props={props}/>;
+    }}/>
     <Match exactly pattern='/' render={() => (
       <Redirect to='/activities'/>
     )}/>

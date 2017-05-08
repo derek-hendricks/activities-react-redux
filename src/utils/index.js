@@ -33,8 +33,8 @@ export const getActivityByCategoryId = (categoryId, activityId, categories = [])
   return activities.find(activity => activity.id === id);
 };
 
-export const getCategory = ({ categories }, id) => {
-  if (!categories) {
+export const getCategory = ({ categories = [] }, id) => {
+  if (!categories.length) {
     return;
   }
   return categories.slice().find((category) => (
@@ -42,8 +42,8 @@ export const getCategory = ({ categories }, id) => {
   ));
 };
 
-export const getCategoriesWithActiveSet = ({ categories }, id) => {
-  if (!categories) {
+export const getCategoriesWithActiveSet = ({ categories = [] }, id) => {
+  if (!categories.length) {
     return;
   }
   return categories.slice().map((category) => ({
@@ -87,5 +87,5 @@ export const splitNodeId = (nodeId) => {
 };
 
 export const classify = (text = " ") => {
-  return text.toLowerCase().replace(" ", "-");
+  return text.trim().toLowerCase().replace(" ", "-");
 };

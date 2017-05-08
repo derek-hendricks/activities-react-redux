@@ -1,9 +1,6 @@
 import React from "react"
 import Link from "react-router/Link"
 import PropTypes from "prop-types"
-
-import CategoryFoldersList from "../CategoryFoldersList"
-import "./styles.scss"
 import {
   Button,
   Modal,
@@ -12,6 +9,8 @@ import {
   ModalActions
 } from 'semantic-ui-react';
 
+import CategoryFoldersList from "../CategoryFoldersList"
+import "./styles.scss"
 
 export const DeleteModal = (props) => {
   const { open, onClose, onDelete, category } = props;
@@ -20,6 +19,11 @@ export const DeleteModal = (props) => {
     return (<div></div>)
   } else {
     const { name, description, id, activities = [] } = category;
+
+    let activityText = '';
+    if (activities.length) {
+      activityText = activities.length > 1 ? 'activities' : 'activity';
+    }
 
     return (
       <div>
@@ -30,13 +34,13 @@ export const DeleteModal = (props) => {
 
           <ModalContent>
             <h3>{`Name: ${name}`}</h3>
-            <h3>{description ? `Description: ${description}` : ''}</h3>
-            <p>{activities.length ? `The following will also be deleted` : ''}</p>
+            <h4>{description ? `Description: ${description}` : ''}</h4>
+            <p>{activities.length ? `The ${activityText} below will also be deleted` : ''}</p>
 
             <CategoryFoldersList
               listHeader={name}
               listContents={activities}
-              listDescription={`${activities.length} ${activities.length > 1 ? 'Activities' : 'Activity'}`}
+              listDescription={`${activities.length} ${activityText}`}
             />
           </ModalContent>
 

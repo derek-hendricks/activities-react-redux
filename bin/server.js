@@ -12,5 +12,6 @@ if (project.env === "development") {
   server.developmentSetup();
   debug(`Server is now running at ${server_host}:${port}.`);
 } else {
+
   server.productionSetup();
 }

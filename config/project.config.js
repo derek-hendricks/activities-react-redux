@@ -4,8 +4,8 @@ const debug = require('debug')('app:config:project');
 const argv = require('yargs').argv;
 const ip = require('ip');
 
-
 debug('Creating default configuration.');
+
 // ========================================================
 // Default Configuration
 // ========================================================
@@ -36,6 +36,7 @@ const config = {
     plugins        : ['transform-runtime'],
     presets        : ['es2015', 'react', 'stage-0']
   },
+
   compiler_devtool         : 'source-map',
   compiler_hash_type       : 'hash',
   compiler_fail_on_warning : false,
@@ -46,11 +47,15 @@ const config = {
     chunkModules : false,
     colors : true
   },
+
   compiler_vendors : [
     'react',
     'react-redux',
     'react-router',
-    'redux'
+    'redux',
+    'apollo-client',
+    'react-apollo',
+    'graphql-tag'
   ],
 
   // ----------------------------------
@@ -74,6 +79,7 @@ Edit at Your Own Risk
 // ------------------------------------
 // Environment
 // ------------------------------------
+
 // N.B.: globals added here must _also_ be added to .eslintrc
 config.globals = {
   'process.env'  : {
