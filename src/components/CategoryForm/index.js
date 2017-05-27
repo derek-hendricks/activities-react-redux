@@ -12,7 +12,6 @@ export const CategoryForm = ({ onSubmit, type, category = {} }) => {
   const categoryObject = {};
 
   return (
-    <div>
       <div className='ui tiny form category-form'>
         <div className="four fields">
           <div className="field">
@@ -41,7 +40,6 @@ export const CategoryForm = ({ onSubmit, type, category = {} }) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

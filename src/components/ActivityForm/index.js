@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Input} from 'semantic-ui-react'
+import {Input, Button} from 'semantic-ui-react'
 
 import SelectList from '../SelectList'
-import LinkButton from '../LinkButton'
 import './styles.scss'
 
 export const ActivityForm = (props) => {
@@ -13,7 +12,7 @@ export const ActivityForm = (props) => {
     buttonText,
     categories,
     activeCategoryId,
-    placeholder = ''
+    placeholder
   } = props;
   let categoryId = { value: activeCategoryId };
 
@@ -26,21 +25,21 @@ export const ActivityForm = (props) => {
             <Input
               ref={(node) => activityObject.name = node}
               type='text'
-              placeholder={`${placeholder} name`}
+              placeholder={placeholder ? `${placeholder} name` : 'name'}
             />
           </div>
           <div className="field">
             <Input
               ref={(node) => activityObject.about = node}
               type='text'
-              placeholder={`${placeholder} description`}
+              placeholder={placeholder ? `${placeholder} description` : 'description'}
             />
           </div>
           <div className="field">
             <Input
               ref={(node) => activityObject.location = node}
               type='text'
-              placeholder={`${placeholder} location`}
+              placeholder={placeholder ? `${placeholder} location` : 'location'}
             />
           </div>
           <div className="field">
@@ -50,38 +49,39 @@ export const ActivityForm = (props) => {
             />
           </div>
           <div className="field">
-          <SelectList
-            value={activityObject.categoryId}
-            items={categories}
-            onSelect={({ target }) => categoryId = target }
-          />
+            <SelectList
+              value={activityObject.categoryId}
+              items={categories}
+              onSelect={({ target }) => categoryId = target }
+            />
           </div>
         </div>
       </div>
 
-      <LinkButton
-        text={buttonText}
+      <Button
         onClick={() => {
           const activity = { ...activityObject, categoryId };
           return onSubmit(activity);
         }}
-      />
+      >
+        {buttonText}
+      </Button>
     </div>
   );
 };
 
+const { string, func, arrayOf, shape } = PropTypes;
+
 ActivityForm.propTypes = {
-  placeholder: PropTypes.string,
-  activeCategoryId: PropTypes.string,
-  onSubmit: PropTypes.func.isRequired,
-  buttonText: PropTypes.string.isRequired,
-  categories: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      description: PropTypes.string
-    })
-  ).isRequired
+  placeholder: string,
+  activeCategoryId: string,
+  onSubmit: func.isRequired,
+  buttonText: string.isRequired,
+  categories: arrayOf(shape({
+    id: string.isRequired,
+    name: string.isRequired,
+    description: string
+  })).isRequired
 };
 
 export default ActivityForm

@@ -1,26 +1,28 @@
 .categories {
-  margin: 15px 0px 10px 0px; }
-  .categories .item {
-    display: inline;
-    padding: 10px; }
-    .categories .item:hover {
-      cursor: pointer;
-      text-decoration: underline;
-      color: #337ab7; }
-    .categories .item span {
-      padding: 2px;
-      border-radius: 2px; }
-  .categories .active {
-    color: #337ab7;
-    font-weight: bold; }
-
-.category.actions .add.inactive {
-  display: none; }
-.category.actions .add.active {
-  display: block; }
-.category.actions .edit.inactive {
-  display: none; }
-.category.actions .edit.active {
-  display: block; }
+  margin: 15px 0 10px 0; }
+  .categories .right.menu .button:hover {
+    color: #337ab7; }
+  .categories .right.menu .button .add.circle.icon {
+    width: 2.57142857em !important; }
+  .categories .edit-delete {
+    padding: 5px !important; }
+  .categories .create-category button {
+    background: none !important;
+    border: 1px solid rgba(34, 36, 38, 0.15) !important; }
+    .categories .create-category button:hover {
+      background: rgba(0, 0, 0, 0.03);
+      color: rgba(0, 0, 0, 0.95); }
+  .categories .add.inactive {
+    display: none; }
+  .categories .add.active {
+    display: block; }
+  .categories .edit.inactive {
+    display: none; }
+  .categories .edit.active {
+    display: block; }
+  .categories .error {
+    padding: 25px;
+    height: 200px;
+    margin-bottom: 60px; }
 
 /*# sourceMappingURL=styles.css.map */

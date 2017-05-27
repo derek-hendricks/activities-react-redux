@@ -4,8 +4,10 @@ import {graphql, compose} from 'react-apollo'
 import {openCategory} from '../store/activeCategory'
 import {setButtonMethod} from '../store/actions'
 import Categories from '../components/Categories'
+
 import {categoriesQuery} from '../gql/queries'
 import {categoryCreate, categoryDelete, categoryUpdate} from '../gql/mutations'
+
 import {
   setProperties,
   clearInputFields,

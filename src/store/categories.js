@@ -1,5 +1,6 @@
 import activitiesReducer from './activities';
 import categoryReducer from './category';
+import activityReducer from './activity';
 import {isInteger, splitNodeId, getCategoryIndexByActivity, getIndex} from '../utils'
 
 const ADD_ACTIVITY = "ADD_ACTIVITY";
@@ -76,11 +77,16 @@ function moveCategoryStateSetup(state, activity, previousActivity) {
 
 function updateCategoryStateSetup(state, action) {
   const { optimisticResponse: { activity, previousActivity } } = action;
+  const index = getCategoryIndexByActivity(state, activity.id);
+  if (index < 0) {
+    activityReducer(activity, action);
+
+    return state;
+  }
   if (activity.categoryId && activity.categoryId !== previousActivity.categoryId) {
     return moveCategoryStateSetup(state, activity, previousActivity);
   }
   const updateAction = { ...activity, type: UPDATE_ACTIVITY };
-  const index = getCategoryIndexByActivity(state, activity.id);
   const category = categorySetup(state, updateAction, index);
 
   return stateSetup(state, index, category);

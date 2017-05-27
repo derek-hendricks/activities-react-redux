@@ -1,10 +1,16 @@
-import React from "react"
-import Link from "react-router/Link"
-import {Loader} from "semantic-ui-react"
-import "./styles.scss"
-import CategoryForm from "../CategoryForm"
-import CategoryButtons from "../CategoryButtons"
-import DeleteModal from "../DeleteModal"
+import React from 'react'
+import Link from 'react-router/Link'
+import {
+  Loader,
+  Popup,
+  Button
+} from 'semantic-ui-react';
+
+import './styles.scss'
+import CategoryForm from '../CategoryForm'
+import CategoryButtons from '../CategoryButtons'
+import DeleteModal from '../DeleteModal'
+import LoadError from '../LoadError'
 
 export const Categories = (props) => {
   const {
@@ -21,52 +27,69 @@ export const Categories = (props) => {
         </Loader>
       </div>)
   } else if (error) {
-    return (<p>Error</p>);
+    return (
+      <LoadError
+        className={"categories"}
+        errorText={"Error loading categories"}
+        inverted={true}
+      />
+    );
   } else {
 
     return (
-      <div>
-        <nav className='categories'>
-          {categories.map((category, index) => (
-            <Link key={index} to='/activities'>
-              <div
-                key={index}
-                className={category.active ? 'active item' : 'item'}
-                onClick={() => onCategorySelect(category.id)}
-              >
+      <div className="categories">
+        <div className="ui top attached menu">
+
+          <div className={'left menu'}>
+            {categories.map((category, index) => (
+              <Link key={index} to='/activities' className={category.active ? 'ui active item' : 'ui item'}
+                    onClick={() => onCategorySelect(category.id)}>
                 {category.name}
-              </div>
-            </Link>
-          ))}
-        </nav>
+              </Link>
+            ))}
 
-        <div className="ui segment category actions">
-          <CategoryButtons setAction={(method) => {
-            return onCategoryActionSet(method);
-          }}/>
-
-          <div className={actions.categoriesAction === 'add' ? 'add active' : 'add inactive'}>
-            <CategoryForm type="create" onSubmit={(category) => {
-              return handleCategoryCreate(category);
-            }}/>
           </div>
-
-          <div className={actions.categoriesAction === 'edit' ? 'edit active' : 'edit inactive'}>
-            <CategoryForm category={category} type="edit" onSubmit={(category, id) => {
-              return handleCategoryUpdate(category, id);
-            }}/>
+          <div className="labeled icon right menu">
+            <div className="item edit-delete">
+              <CategoryButtons setAction={(method) => {
+                return onCategoryActionSet(method);
+              }}/>
+            </div>
+            <div className="ui item create-category">
+              <Popup content='Create New Category' size='small' trigger={
+                <Button onClick={() => onCategoryActionSet('add')}>
+                  <i className="add circle icon"/>
+                  Create
+                </Button>
+              }/>
+            </div>
           </div>
-
-          <DeleteModal
-            open={actions.categoriesAction === 'remove'}
-            category={category}
-            onClose={() => onCategoryActionSet(false)}
-            onDelete={(id, activities) => {
-              onCategoryActionSet({ action: 'CATEGORY_REMOVED', id, categories });
-              return onCategoryDelete(id, activities);
-            }}>
-          </DeleteModal>
         </div>
+
+        <div className={actions.categoriesAction === 'add' ? 'add active ui segment category actions' : 'add inactive'}>
+          <CategoryForm type="create" onSubmit={(category) => {
+            onCategoryActionSet(false);
+            return handleCategoryCreate(category);
+          }}/>
+        </div>
+
+        <div
+          className={actions.categoriesAction === 'edit' ? 'edit active ui segment category actions' : 'edit inactive'}>
+          <CategoryForm category={category} type="edit" onSubmit={(category, id) => {
+            onCategoryActionSet(false);
+            return handleCategoryUpdate(category, id);
+          }}/>
+        </div>
+
+        <DeleteModal
+          open={actions.categoriesAction === 'remove'}
+          category={category}
+          onClose={() => onCategoryActionSet(false)}
+          onDelete={(id, activities) => {
+            onCategoryActionSet({ action: 'CATEGORY_REMOVED', id, categories });
+            return onCategoryDelete(id, activities);
+          }}>
+        </DeleteModal>
       </div>
     );
   }

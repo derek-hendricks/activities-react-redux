@@ -1,5 +1,5 @@
-import React from "react"
-import "./styles.scss"
+import React from 'react'
+import PropTypes from 'prop-types'
 import {
   DimmerDimmable,
   Segment,
@@ -8,31 +8,39 @@ import {
   Icon
 } from 'semantic-ui-react';
 
-export const LoadError = ({ props }) => {
+import './styles.scss'
+
+export const LoadError = (props) => {
   const {
     errorText,
-    icon = 'heart',
+    className = "default",
+    icon = "heart",
     dimmed = true,
     inverted = false
   } = props;
 
   return (
-    <DimmerDimmable as={Segment} dimmed={dimmed}>
-      <Dimmer active={true}>
-        <Header as='h2' icon inverted={inverted}>
-          <Icon name={icon}/>
-          {errorText}
-        </Header>
-      </Dimmer>
-    </DimmerDimmable>
+    <div className={className}>
+      <DimmerDimmable className="error" as={Segment} dimmed={dimmed}>
+        <Dimmer active={true}>
+          <Header as="h2" icon={true} inverted={inverted}>
+            <Icon name={icon}/>
+            {errorText}
+          </Header>
+        </Dimmer>
+      </DimmerDimmable>
+    </div>
   )
 };
 
+const { string } = PropTypes;
+
 LoadError.propTypes = {
-  errorText: React.PropTypes.string.isRequired,
-  icon: React.PropTypes.string,
-  dimmed: React.PropTypes.string,
-  inverted: React.PropTypes.string
+  errorText: string.isRequired,
+  className: string,
+  icon: string,
+  dimmed: string,
+  inverted: string
 };
 
 export default LoadError

@@ -13,7 +13,6 @@ export const LinkButton = (props) => {
     className,
     url = '/activities'
   } = props;
-
   return (
     <div className={className || classify(text)}>
       <Link to={url}>

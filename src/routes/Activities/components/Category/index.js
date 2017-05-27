@@ -1,5 +1,7 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {Dimmer, Loader} from 'semantic-ui-react'
+
 import ActivityList from '../ActivityList'
 import ActivityForm from '../../../../components/ActivityForm'
 import LoadError from '../../../../components/LoadError'
@@ -22,12 +24,11 @@ export const Category = (props) => {
     )
   } else if (error) {
     return (
-      <div className="category error">
-        <LoadError
-          errorText={"Error loading category"}
-          inverted={true}
-        />
-      </div>
+      <LoadError
+        className="category"
+        errorText={`Error loading activities for ${(category || {}).name || "Category"}`}
+        inverted={true}
+      />
     )
   }
 
@@ -49,14 +50,16 @@ export const Category = (props) => {
   )
 };
 
+const { string, bool, object, arrayOf, func } = PropTypes;
+
 Category.propTypes = {
-  loading: React.PropTypes.bool.isRequired,
-  error: React.PropTypes.bool.isRequired,
-  category: React.PropTypes.object.isRequired,
-  categories: React.PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  onActivitySubmit: React.PropTypes.func.isRequired,
-  handleActivitySubmit: React.PropTypes.func.isRequired,
-  activeCategoryId: React.PropTypes.string
+  loading: bool.isRequired,
+  error: bool.isRequired,
+  category: object.isRequired,
+  categories: arrayOf(object).isRequired,
+  onActivitySubmit: func.isRequired,
+  handleActivitySubmit: func.isRequired,
+  activeCategoryId: string
 };
 
 export default Category

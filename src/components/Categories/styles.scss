@@ -1,24 +1,32 @@
 .categories {
-  margin: 15px 0px 10px 0px;
-  .item {
-    display: inline;
-    padding: 10px;
-    &:hover {
-      cursor: pointer;
-      text-decoration: underline;
-      color: #337ab7;
-    }
-    span {
-      padding: 2px;
-      border-radius: 2px;
+  margin: 15px 0 10px 0;
+
+  .right.menu {
+    .button {
+      &:hover {
+        color: #337ab7;
+      }
+      .add.circle.icon {
+        width: 2.57142857em !important;
+      }
     }
   }
-  .active {
-    color: #337ab7;
-    font-weight: bold;
+
+  .edit-delete {
+    padding: 5px !important;
   }
-}
-.category.actions {
+
+  .create-category {
+    button {
+      background: none !important;
+      border: 1px solid rgba(34,36,38,.15) !important;
+      &:hover {
+        background: rgba(0, 0, 0, .03);
+        color: rgba(0, 0, 0, .95);
+      }
+    }
+  }
+
   .add.inactive {
     display: none;
   }
@@ -30,5 +38,11 @@
   }
   .edit.active {
     display: block;
+  }
+
+  .error {
+    padding: 25px;
+    height: 200px;
+    margin-bottom: 60px;
   }
 }

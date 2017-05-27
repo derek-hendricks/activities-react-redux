@@ -3,13 +3,14 @@ export const getIndex = (items, id) => {
 };
 
 export const getCategoryIndexByActivity = (categories, activityId) => {
-  return categories.slice().findIndex(({activities = []}) => {
+  return categories.slice().findIndex(({ activities = [] }) => {
     if (!activities.length) {
       return false;
     }
-    return activities.find((activity) => {
-      return activityId === activity.id
-    })
+
+    return activities.find((activity) => (
+      activityId === activity.id
+    ))
   })
 };
 
@@ -26,10 +27,11 @@ export const sortCategories = (categories, categoryId) => {
 export const getActivityByCategoryId = (categoryId, activityId, categories = []) => {
   const id = String(activityId);
   const index = categories.findIndex(category => category.id === categoryId);
-  const { activities } = categories[index] || {};
-  if (!activities) {
+  const { activities = [] } = categories[index] || {};
+  if (!activities.length) {
     return;
   }
+
   return activities.find(activity => activity.id === id);
 };
 
@@ -37,6 +39,7 @@ export const getCategory = ({ categories = [] }, id) => {
   if (!categories.length) {
     return;
   }
+
   return categories.slice().find((category) => (
     category.id === id
   ));
@@ -46,6 +49,7 @@ export const getCategoriesWithActiveSet = ({ categories = [] }, id) => {
   if (!categories.length) {
     return;
   }
+
   return categories.slice().map((category) => ({
     ...category,
     active: category.id === id
@@ -53,10 +57,9 @@ export const getCategoriesWithActiveSet = ({ categories = [] }, id) => {
 };
 
 export const setProperties = (obj, property) => {
+  const inputReferences = [], data = {};
   const inputObj = { ...obj };
-  const inputReferences = [];
   const keys = Object.keys(inputObj);
-  const data = {};
   for (const key of keys) {
     const inputValue = (((inputObj[key] || {}).inputRef || {}).value || '').trim();
     if (inputObj[key] === property || !inputValue) {

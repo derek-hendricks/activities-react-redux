@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 export const CoreLayout = ({children}) => {
   return (
-    <div>
+    <div className={"ui container"}>
       <Header/>
       <Categories/>
       {children}
