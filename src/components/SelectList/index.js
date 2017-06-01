@@ -7,7 +7,6 @@ export const SelectList = (props) => {
   const {
     items,
     onSelect,
-    value,
     className = "ui search dropdown"
   } = props;
 
@@ -15,27 +14,28 @@ export const SelectList = (props) => {
     <div className="select-list">
       <select
         className={className}
-        value={value}
         onChange={({ target }) => onSelect({ target }) }>
-        {items.map(({ name, id }, index) => (
-          <option key={index} value={id}>
-            {name}
-          </option>
-        ))}
+        {items.map(({ name, id }, index) => {
+          return (
+            <option key={index} value={id}>
+              {name}
+            </option>
+          );
+        })}
       </select>
     </div>
   );
 };
 
+const { string, func, arrayOf, shape } = PropTypes;
+
 SelectList.propTypes = {
-  className: PropTypes.string,
-  onSelect: PropTypes.func.isRequired,
-  value: PropTypes.string.isRequired,
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
-    })).isRequired
+  className: string,
+  onSelect: func.isRequired,
+  items: arrayOf(shape({
+    id: string.isRequired,
+    name: string.isRequired
+  })).isRequired
 };
 
 export default SelectList

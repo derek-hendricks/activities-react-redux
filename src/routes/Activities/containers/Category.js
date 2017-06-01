@@ -6,12 +6,12 @@ import {activitiesQuery} from '../../../gql/queries'
 import {createActivity} from '../../../gql/mutations'
 import {
   setProperties,
-  clearInputFields,
+  clearFormFields,
   getCategory,
   sortCategories
 } from '../../../utils/index';
 
-const initialState = { error: false, category: {}, activity: {}, categories: [] };
+const initialState = { error: false, loading: false, category: {}, activity: {}, categories: [] };
 
 const mapStateToCategoryProps = (state = initialState) => {
   const { activeCategoryId, categories: categoryList }  = state;
@@ -34,7 +34,7 @@ const mergeCategoryProps = (stateProps, dispatchProps) => ({
   handleActivitySubmit: (activity, activeCategoryId, onActivitySubmit) => {
     const { categoryId: { value: categoryId } } = activity;
     const { data: newActivity, inputReferences } = setProperties(activity, 'categoryId');
-    clearInputFields(inputReferences);
+    clearFormFields(inputReferences, activity.categoryId);
 
     return onActivitySubmit({ ...newActivity, categoryId })
   }

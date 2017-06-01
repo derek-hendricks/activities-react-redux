@@ -2,11 +2,11 @@ import {connect} from "react-redux"
 import {graphql, compose} from "react-apollo";
 import Activity from "../components/Activity/index"
 
-import {activityQuery} from '../../../gql/queries'
+import {activityQuery, activitiesQuery} from '../../../gql/queries'
 import {activityDelete, activityUpdate} from '../../../gql/mutations'
 import {
   setProperties,
-  clearInputFields,
+  clearFormFields,
   sortCategories,
   getActivityByCategoryId
 } from "../../../utils";
@@ -41,7 +41,7 @@ const mergeActivityProps = (stateProps, dispatchProps) => ({
     if (categoryId.trim()) {
       updatedActivity = { ...updatedActivity, categoryId }
     }
-    clearInputFields(inputReferences);
+    clearFormFields(inputReferences, activity.categoryId);
 
     return (
       onActivityUpdate(updatedActivity, previousActivity)
@@ -108,6 +108,20 @@ const activityQueryOptions = {
   })
 };
 
+// load activities for category if user navigates directly to activity route without first visiting activities route.
+// otherwise category activities will not display in category structure section of delete category modal
+// when 'delete category' is selected before navigation to activities route occurs
+const activitiesQueryOptions = {
+  options: ({ loading, activeCategoryId }) => {
+    return ({
+      skip: loading || !activeCategoryId,
+      variables: {
+        "id": `categories: ${activeCategoryId}`
+      }
+    })
+  }
+};
+
 export default compose(
   graphql(activityQuery, activityQueryOptions),
   connect(
@@ -115,5 +129,6 @@ export default compose(
     (dispatch) => mapDispatchToActivityProps(dispatch),
     (stateProps, dispatchProps) => mergeActivityProps(stateProps, dispatchProps)),
   graphql(activityUpdate, activityUpdateOptions),
-  graphql(activityDelete, activityDeleteOptions)
+  graphql(activityDelete, activityDeleteOptions),
+  graphql(activitiesQuery, activitiesQueryOptions),
 )(Activity);

@@ -50,9 +50,10 @@ export const ActivityForm = (props) => {
           </div>
           <div className="field">
             <SelectList
-              value={activityObject.categoryId}
               items={categories}
-              onSelect={({ target }) => categoryId = target }
+              onSelect={({ target }) => {
+                return categoryId = target;
+              } }
             />
           </div>
         </div>

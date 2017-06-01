@@ -13,12 +13,11 @@ export const LinkButton = (props) => {
     className,
     url = '/activities'
   } = props;
+
   return (
     <div className={className || classify(text)}>
       <Link to={url}>
-        <Button onClick={() => {
-          return onClick();
-        }}>
+        <Button onClick={() => onClick()}>
           {text}
         </Button>
       </Link>
@@ -26,11 +25,13 @@ export const LinkButton = (props) => {
   )
 };
 
+const { func, string } = PropTypes;
+
 LinkButton.propTypes = {
-  onClick: PropTypes.func.isRequired,
-  text: PropTypes.string.isRequired,
-  url: PropTypes.string,
-  className: PropTypes.string
+  onClick: func.isRequired,
+  text: string.isRequired,
+  url: string,
+  className: string
 };
 
 export default LinkButton

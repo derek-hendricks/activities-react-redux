@@ -12,7 +12,7 @@ import './styles.scss'
 
 export const LoadError = (props) => {
   const {
-    errorText,
+    errorText = "Error loading page",
     className = "default",
     icon = "heart",
     dimmed = true,
@@ -36,7 +36,7 @@ export const LoadError = (props) => {
 const { string } = PropTypes;
 
 LoadError.propTypes = {
-  errorText: string.isRequired,
+  errorText: string,
   className: string,
   icon: string,
   dimmed: string,

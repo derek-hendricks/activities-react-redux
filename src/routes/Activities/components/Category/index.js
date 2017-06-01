@@ -34,12 +34,10 @@ export const Category = (props) => {
 
   return (
     <div className='category'>
-      <ActivityList
-        activities={category.activities}
-      />
+      <ActivityList activities={category.activities}/>
       <ActivityForm
         onSubmit={(activity, activeCategoryId) => {
-          handleActivitySubmit(activity, activeCategoryId, onActivitySubmit)
+          handleActivitySubmit(activity, activeCategoryId, onActivitySubmit);
         }}
         categories={categories}
         activeCategoryId={activeCategoryId}
@@ -50,16 +48,24 @@ export const Category = (props) => {
   )
 };
 
-const { string, bool, object, arrayOf, func } = PropTypes;
+const { string, bool, array, shape, arrayOf, func } = PropTypes;
 
 Category.propTypes = {
   loading: bool.isRequired,
   error: bool.isRequired,
-  category: object.isRequired,
-  categories: arrayOf(object).isRequired,
   onActivitySubmit: func.isRequired,
   handleActivitySubmit: func.isRequired,
-  activeCategoryId: string
+  activeCategoryId: string,
+  category: shape({
+    name: string,
+    id: string,
+    activities: array
+  }),
+  categories: arrayOf(shape({
+    name: string,
+    id: string,
+    activities: array
+  })).isRequired
 };
 
 export default Category

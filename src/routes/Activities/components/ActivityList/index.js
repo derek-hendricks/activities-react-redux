@@ -1,14 +1,16 @@
 import React from 'react'
-import './styles.scss'
-import Link from 'react-router/Link';
+import PropTypes from 'prop-types'
+import Link from 'react-router/Link'
 
-export const ActivityList = (props) => (
+import './styles.scss'
+
+export const ActivityList = ({ activities }) => (
   <div className='activity-list'>
     {
-      props.activities.map((activity, index) => (
+      activities.map(({id, name}, index) => (
         <div className='text' key={index}>
-          <Link to={`/activity/${activity.id}`}>
-            {activity.name}
+          <Link to={`/activity/${id}`}>
+            {name}
           </Link>
         </div>
       ))
@@ -16,8 +18,13 @@ export const ActivityList = (props) => (
   </div>
 );
 
+const { string, arrayOf, shape } = PropTypes;
+
 ActivityList.propTypes = {
-  activities: React.PropTypes.arrayOf(React.PropTypes.object).isRequired
+  activities: arrayOf(shape({
+    id: string.isRequired,
+    name: string.isRequired
+  })).isRequired
 };
 
 export default ActivityList

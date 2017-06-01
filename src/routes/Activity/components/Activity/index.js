@@ -5,6 +5,7 @@ import {Dimmer, Loader} from 'semantic-ui-react'
 import './styles.scss'
 import ActivityForm from '../../../../components/ActivityForm'
 import LinkButton from '../../../../components/LinkButton'
+import LoadError from '../../../../components/LoadError'
 
 export const Activity = (props) => {
   const {
@@ -27,7 +28,13 @@ export const Activity = (props) => {
         </Dimmer>
       </div>)
   } else if (error) {
-    return (<p>Error!</p>)
+    return (
+      <LoadError
+        className="activity"
+        errorText="Error loading Activity"
+        dimmed={false}
+      />
+    )
   } else {
     const { name, id, about, location, date } = activity;
 
@@ -41,7 +48,7 @@ export const Activity = (props) => {
         <ActivityForm
           onSubmit={(activityObject) => {
             return handleActivityUpdate(
-              { ...activityObject, id: activity.id },
+              { ...activityObject, id },
               onActivityUpdate,
               activity,
               dispatch
@@ -66,19 +73,27 @@ export const Activity = (props) => {
   }
 };
 
+const { string, func, bool, arrayOf, shape } = PropTypes;
+
 Activity.propTypes = {
-  activeCategoryId: PropTypes.string,
-  handleActivityDelete: PropTypes.func.isRequired,
-  onActivityUpdate: PropTypes.func.isRequired,
-  handleActivityUpdate: PropTypes.func.isRequired,
-  activity: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  loading: PropTypes.bool.isRequired,
-  categories: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      description: PropTypes.string
+  activeCategoryId: string,
+  handleActivityDelete: func.isRequired,
+  onActivityUpdate: func.isRequired,
+  handleActivityUpdate: func.isRequired,
+  dispatch: func.isRequired,
+  loading: bool.isRequired,
+  activity: shape({
+    id: string,
+    name: string,
+    about: string,
+    location: string,
+    date: string
+  }).isRequired,
+  categories: arrayOf(
+    shape({
+      id: string.isRequired,
+      name: string.isRequired,
+      description: string
     })).isRequired
 };
 

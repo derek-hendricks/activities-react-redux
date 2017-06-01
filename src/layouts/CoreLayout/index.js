@@ -5,7 +5,7 @@ import '../../styles/core.scss'
 import Categories from '../../containers/Categories';
 import PropTypes from 'prop-types';
 
-export const CoreLayout = ({children}) => {
+export const CoreLayout = ({ children }) => {
   return (
     <div className={"ui container"}>
       <Header/>
@@ -15,15 +15,16 @@ export const CoreLayout = ({children}) => {
   );
 };
 
+const { arrayOf, shape, object, any } = PropTypes;
+
 CoreLayout.propTypes = {
-  children: PropTypes.arrayOf(
-    PropTypes.shape({
-      props: PropTypes.object.isRequired,
-      key: PropTypes.any,
-      ref: PropTypes.any,
-      _owner: PropTypes.any,
-      _store: PropTypes.object
-    })).isRequired
+  children: arrayOf(shape({
+    props: object.isRequired,
+    key: any,
+    ref: any,
+    _owner: any,
+    _store: object
+  })).isRequired
 };
 
 export default CoreLayout

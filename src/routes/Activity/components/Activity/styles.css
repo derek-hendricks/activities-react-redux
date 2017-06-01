@@ -1,3 +1,8 @@
-
+.activity .error {
+  height: 18em; }
+  .activity .error h2.header {
+    color: aliceblue; }
+  .activity .error i.icon {
+    color: lightslategrey; }
 
 /*# sourceMappingURL=styles.css.map */

@@ -10,9 +10,10 @@ import {categoryCreate, categoryDelete, categoryUpdate} from '../gql/mutations'
 
 import {
   setProperties,
-  clearInputFields,
+  clearFormFields,
   getCategory,
-  getCategoriesWithActiveSet
+  getCategoriesWithActiveSet,
+  getCategoryDeleteVariables
 } from '../utils/index';
 
 const initialState = { categories: [] };
@@ -56,7 +57,7 @@ const categoryCreateOptions = {
   props: ({ mutate }) => ({
     handleCategoryCreate: (category) => {
       const { data: variables, inputReferences } = setProperties(category);
-      clearInputFields(inputReferences);
+      clearFormFields(inputReferences);
 
       return (
         mutate({
@@ -73,16 +74,6 @@ const categoryCreateOptions = {
       );
     }
   })
-};
-
-const getCategoryDeleteVariables = (id, deletedActivities) => {
-  const deleteVariables = { "id": `categories: ${id}` };
-  let variables = { ...deleteVariables };
-  if (deletedActivities.length >= 1) {
-    const activities = deletedActivities.map((activity) => (activity.id)).join(",");
-    variables = { ...deleteVariables, activities };
-  }
-  return variables;
 };
 
 const categoryDeleteOptions = {
@@ -109,7 +100,7 @@ const categoryUpdateOptions = {
   props: ({ mutate }) => ({
     handleCategoryUpdate: (category, id) => {
       const { data: categoryVariables, inputReferences } = setProperties(category);
-      clearInputFields(inputReferences);
+      clearFormFields(inputReferences);
 
       return (
         mutate({

@@ -24,75 +24,82 @@ export const DeleteModal = (props) => {
   } else {
     const { name, description, id, activities = [] } = category;
 
-    let activityText = '';
-    if (activities.length) {
-      activityText = activities.length > 1 ? 'activities' : 'activity';
-    }
+    const activityText = getActivityText(activities);
 
     return (
-        <Modal className={'delete-modal'} size={'small'} closeIcon={'close'} open={open} onClose={onClose}>
-          <ModalHeader>
-            Delete Category
-          </ModalHeader>
+      <Modal className={'delete-modal'} size={'small'} closeIcon={'close'} open={open} onClose={onClose}>
+        <ModalHeader>Delete Category</ModalHeader>
 
-          <ModalContent>
-            <div className={'ui grid'}>
-              <div className={'ten wide column'}>
-                <div className={'ui segment'}>
-                  <ListItem className={'category-list-item'}>
-                    <ListContent>
-                      <ListHeader>{name}</ListHeader>
-                      <listDescription>{`Activities: ${activities.length}`}</listDescription>
-                      <ListDescription>{description ? `Description: ${description}` : 'No description'}</ListDescription>
-                    </ListContent>
-                  </ListItem>
-                </div>
+        <ModalContent>
+          <div className={'ui grid'}>
+            <div className={'ten wide column'}>
+              <div className={'ui segment'}>
+                <ListItem className={'category-list-item'}>
+                  <ListContent>
+                    <ListHeader>{name}</ListHeader>
+                    <listDescription>
+                      {`Activities: ${activities.length}`}
+                    </listDescription>
+                    <ListDescription>
+                      {description ? `Description: ${description}` : 'No description'}
+                    </ListDescription>
+                  </ListContent>
+                </ListItem>
               </div>
-              <div className={'left floated six wide column'}>
-                <div className={"ui segment"}>
-                  <div className={"image content"}>
+            </div>
+            <div className={'left floated six wide column'}>
+              <div className={"ui segment"}>
+                <div className={"image content"}>
                   <img
                     className={"ui wireframe image"}
                     src={"https://semantic-ui.com/images/wireframe/image.png"}
                   />
-                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className={'divider'}>
-                <h5 className={"ui horizontal divider header"}>
-                  <i className={"tag icon"}/>
-                  Category Structure
-                </h5>
-              </div>
-              <div className={'eight wide column'}>
+            <div className={'divider'}>
+              <h5 className={"ui horizontal divider header"}>
+                <i className={"tag icon"}/>
+                Category Structure
+              </h5>
+            </div>
+
+            <div className={'eight wide column'}>
               <CategoryFoldersList
                 listHeader={name}
                 listContents={activities}
                 listDescription={`${activities.length} ${activityText}`}
               />
-              </div>
-              <div className={'eight wide column'}>
-                <p>{activities.length ? `${activities.length} ${activityText} will be removed` : ''}</p>
-              </div>
             </div>
-          </ModalContent>
 
-          <ModalActions>
-            <Button onClick={onClose}>
-              Cancel
-            </Button>
+            <div className={'eight wide column'}>
+              <p>{activities.length ? `${activities.length} ${activityText} will be removed` : ''}</p>
+            </div>
+          </div>
+        </ModalContent>
 
-            <Button labelPosition='right'>
-              <Link to={`/activities`} onClick={() => onDelete(id, activities)}>
-                Delete
-              </Link>
-            </Button>
-          </ModalActions>
-        </Modal>
+        <ModalActions>
+          <Button onClick={onClose}>Cancel</Button>
+
+          <Button labelPosition='right'>
+            <Link to={`/activities`} onClick={() => onDelete(id, activities)}>
+              Delete
+            </Link>
+          </Button>
+        </ModalActions>
+      </Modal>
     )
   }
 };
+
+function getActivityText(activities) {
+  let activityText = '';
+  if (activities.length) {
+    activityText = activities.length > 1 ? 'activities' : 'activity';
+  }
+  return activityText;
+}
 
 DeleteModal.propTypes = {
   open: PropTypes.bool.isRequired,

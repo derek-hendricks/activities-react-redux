@@ -56,6 +56,16 @@ export const getCategoriesWithActiveSet = ({ categories = [] }, id) => {
   }));
 };
 
+export const getCategoryDeleteVariables = (id, deletedActivities) => {
+  const deleteVariables = { "id": `categories: ${id}` };
+  let variables = { ...deleteVariables };
+  if (deletedActivities.length >= 1) {
+    const activities = deletedActivities.map((activity) => (activity.id)).join(",");
+    variables = { ...deleteVariables, activities };
+  }
+  return variables;
+};
+
 export const setProperties = (obj, property) => {
   const inputReferences = [], data = {};
   const inputObj = { ...obj };
@@ -75,9 +85,12 @@ export const setProperties = (obj, property) => {
   };
 };
 
-export const clearInputFields = (inputReferences) => {
+export const clearFormFields = (inputReferences, selectReference) => {
   for (let i = 0, len = inputReferences.length; i < len; i++) {
     inputReferences[i].value = '';
+  }
+  if (selectReference) {
+    selectReference.selectedIndex = 0;
   }
 };
 
@@ -92,3 +105,8 @@ export const splitNodeId = (nodeId) => {
 export const classify = (text = " ") => {
   return text.trim().toLowerCase().replace(" ", "-");
 };
+
+export const capitalize = (text) => {
+  return `${text[0].toUpperCase()}${text.slice(1)}`
+};
+

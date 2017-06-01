@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Link from 'react-router/Link'
 import {
   Loader,
@@ -21,7 +22,7 @@ export const Categories = (props) => {
 
   if (loading) {
     return (
-      <div>
+      <div className="categories">
         <Loader active size='mini'>
           Categories Loading
         </Loader>
@@ -95,17 +96,23 @@ export const Categories = (props) => {
   }
 };
 
+const { string, func, arrayOf, bool, object, shape } = PropTypes;
+
 Categories.propTypes = {
-  onCategorySelect: React.PropTypes.func.isRequired,
-  categories: React.PropTypes.arrayOf(React.PropTypes.object),
-  loading: React.PropTypes.bool.isRequired,
-  error: React.PropTypes.bool.isRequired,
-  actions: React.PropTypes.object.isRequired,
-  category: React.PropTypes.object,
-  handleCategoryCreate: React.PropTypes.func.isRequired,
-  onCategoryDelete: React.PropTypes.func.isRequired,
-  onCategoryActionSet: React.PropTypes.func.isRequired,
-  handleCategoryUpdate: React.PropTypes.func.isRequired
+  onCategorySelect: func.isRequired,
+  categories: arrayOf(shape({
+    id: string.isRequired,
+    name: string,
+    description: string
+  })),
+  loading: bool.isRequired,
+  error: bool.isRequired,
+  actions: object.isRequired,
+  category: object,
+  handleCategoryCreate: func.isRequired,
+  onCategoryDelete: func.isRequired,
+  onCategoryActionSet: func.isRequired,
+  handleCategoryUpdate: func.isRequired
 };
 
 export default Categories

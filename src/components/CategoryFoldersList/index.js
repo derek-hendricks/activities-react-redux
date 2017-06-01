@@ -1,5 +1,5 @@
-import React from "react"
-import PropTypes from "prop-types"
+import React from 'react'
+import PropTypes from 'prop-types'
 import {
   List,
   ListDescription,
@@ -7,30 +7,32 @@ import {
   ListContent,
   ListIcon,
   ListItem
-} from "semantic-ui-react"
+} from 'semantic-ui-react'
 
-import "./styles.scss"
-import {classify} from "../../utils"
+import './styles.scss'
+import {classify, capitalize} from '../../utils'
 
 export const CategoryFoldersList = (props) => {
   const {
     listHeader,
     listDescription,
     listContents,
-    listIconName = 'folder',
-    listItemIconName = 'file'
+    listIconName = "folder",
+    listItemIconName = "file"
   } = props;
 
   const listItem = (data, index) => {
-    const { id, categoryId, name, __typename, ...item } = data;
-    const listItem = Object.keys(item).filter((attr) => item[attr]);
+    const { id, categoryId, type, name, __typename, ...item } = data;
+    const listItemAttributes = Object.keys(item).filter((attr) => item[attr]);
     return (
       <ListItem key={index} className={classify(__typename)}>
         <ListIcon name={listItemIconName}/>
         <ListContent>
           <ListHeader>{name}</ListHeader>
-          {listItem.map(attr => (
-            <ListDescription>{`${attr}: ${item[attr]}`}</ListDescription>
+          {listItemAttributes.map((attr, index) => (
+            <ListDescription key={index}>
+              <strong>{`${capitalize(attr)}: `}</strong>{`${item[attr]}`}
+            </ListDescription>
           ))}
         </ListContent>
       </ListItem>
@@ -53,13 +55,25 @@ export const CategoryFoldersList = (props) => {
   );
 };
 
+const { string, shape, arrayOf } = PropTypes;
+
 CategoryFoldersList.propTypes = {
-  listHeader: PropTypes.string.isRequired,
-  listContents: PropTypes.array.isRequired,
-  listDescription: PropTypes.string,
-  listTitle: PropTypes.string,
-  listIconName: PropTypes.string,
-  listItemIconName: PropTypes.string
+  listHeader: string.isRequired,
+  listContents: arrayOf(
+    shape({
+      id: string.isRequired,
+      name: string.isRequired,
+      categoryId: string,
+      description: string,
+      location: string,
+      date: string,
+      __typename: string,
+      type: string
+    })).isRequired,
+  listDescription: string,
+  listTitle: string,
+  listIconName: string,
+  listItemIconName: string
 };
 
 export default CategoryFoldersList
