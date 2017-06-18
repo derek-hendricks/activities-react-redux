@@ -63,14 +63,19 @@ const getCategories = () => {
     categories: rows.map((row) => ({
       id: row.id,
       name: row.name,
-      description: row.description
+      description: row.description,
+      createdAt: row.createdAt,
+      __tableName: table.getName()
     }))
   }));
 };
 
 const getActivities = (source) => {
   const table = tables.activities;
-  const query = table.select(table.star()).from(table).where(table.categoryId.equals(source.id)).order(table.createdAt.desc).toQuery();
+  const query = table.select(table.star()).from(table)
+    .where(table.categoryId.equals(source.id))
+    .order(table.createdAt.desc)
+    .toQuery();
 
   return database.getSql(query).then((rows) => (
     rows.map((row) => ({
@@ -154,7 +159,6 @@ const insertRow = (table, query) => {
     return dbIdToNodeId(ids[0].id, table);
   }).catch(error => ({ error }))
 };
-
 
 const createActivity = (data) => {
   const activity = {
