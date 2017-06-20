@@ -32,7 +32,7 @@ const schema = new GraphQLSchema({
     types.CategoriesType,
     types.CategoryType,
     types.CategoryInterface,
-    types.ActivitiesType
+    types.ActivityType
   ],
   query: RootQuery,
   mutation: RootMutation

@@ -70,6 +70,20 @@ const getCategories = () => {
   }));
 };
 
+const setActivityRows = (rows, table) => {
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    about: row.about,
+    categoryId: row.categoryId,
+    createdAt: row.createdAt,
+    date: row.date,
+    location: row.location,
+    __tableName: table.getName(),
+    __cursor: row.id + ':' + row.createdAt
+  }))
+};
+
 const getActivities = (source) => {
   const table = tables.activities;
   const query = table.select(table.star()).from(table)
@@ -77,18 +91,58 @@ const getActivities = (source) => {
     .order(table.createdAt.desc)
     .toQuery();
 
-  return database.getSql(query).then((rows) => (
-    rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      about: row.about,
-      categoryId: row.categoryId,
-      createdAt: row.createdAt,
-      date: row.date,
-      location: row.location,
-      __tableName: table.getName()
-    }))
-  ));
+  return database.getSql(query).then((rows) => {
+    return setActivityRows(rows, table);
+  });
+};
+
+const cursorAfterQuery = (args, query, table) => {
+  const activity = args.before.split(':');
+  const id = activity[0];
+  const createdAtDateTime = activity[1];
+  return query
+    .where(table.createdAt.lt(createdAtDateTime))
+    .where(table.id.lt(id));
+};
+
+const getActivitiesPage = (source, args) => {
+  const table = tables.activities;
+  let first = args.first;
+  if (!first) {
+    first = 2;
+  }
+
+  let query = table.select(table.star()).from(table)
+    .where(table.categoryId.equals(source.id))
+    .order(table.createdAt.desc)
+    .limit(first + 1);
+
+  if (args.before) {
+    query = cursorAfterQuery(args, query, table);
+  }
+
+  return database.getSql(query.toQuery()).then((allRows) => {
+    const activityRows = allRows.slice(0, first);
+    const hasNextPage = allRows.length > first;
+    const hasPreviousPage = false;
+
+    const pageInfo = {
+      hasNextPage,
+      hasPreviousPage
+    };
+
+    const rows = setActivityRows(activityRows, table);
+
+    if (rows.length > 0) {
+      pageInfo.startCursor = rows[0].__cursor;
+      pageInfo.endCursor = rows[rows.length - 1].__cursor;
+    }
+
+    return {
+      rows,
+      pageInfo
+    };
+  });
 };
 
 const deleteCategory = (data) => {
@@ -205,5 +259,7 @@ module.exports = {
   deleteCategory,
   deleteCategoryActivities,
   updateRow,
-  nodeLoaders
+  nodeLoaders,
+  dbIdToNodeId,
+  getActivitiesPage
 };

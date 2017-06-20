@@ -41,3 +41,33 @@ export const activityQuery = gql`
       }
     }
   }`;
+
+export const activitiesPage = gql`
+query ACTIVITY_QUERY($id: ID!, $first: String, $before: String)  {
+  categoryInterface(id: $id) {
+    ... on Category {
+      activities(first: $first, before: $before) {
+        pageInfo {
+          hasNextPage
+          hasPreviousPage
+          startCursor
+          endCursor
+        }
+        edges {
+          cursor
+          node {
+            id
+            name
+            about
+            location
+            date
+            createdAt
+            categoryId
+          }
+        }
+      }
+    }
+  }
+}`;
+
+
