@@ -9,7 +9,6 @@ const GraphQLInt = require('graphql').GraphQLInt;
 const GraphQLInterfaceType = require('graphql').GraphQLInterfaceType;
 
 const loaders = require('./loaders');
-const tables = require('./tables');
 
 let CategoryType, ActivityType;
 
@@ -20,12 +19,11 @@ const CategoryInterface = new GraphQLInterfaceType({
       type: new GraphQLNonNull(GraphQLID)
     }
   },
-  resolveType: (source) => {
-    if (source.__tableName === "categories") {
+  resolveType: ({ __tableName }) => {
+    if (__tableName === "categories") {
       return CategoryType;
-    } else if (source.__tableName === "activities") {
-      return ActivityType;
     }
+    return ActivityType;
   }
 });
 
@@ -106,17 +104,16 @@ const ActivitiesConnectionType = new GraphQLObjectType({
 });
 
 const getEdges = (rows) => {
-  return rows.map((row) => {
-    const nodeId = loaders.dbIdToNodeId(row.id, row.__tableName);
+  return rows.map(({ id, __tableName, __cursor: cursor }) => {
+    const nodeId = loaders.dbIdToNodeId(id, __tableName);
     return loaders.getNodeById(nodeId).then((node) => {
       return {
         node,
-        cursor: row.__cursor
+        cursor
       };
     })
   });
 };
-
 
 const getEdgesPageInfo = (rows, pageInfo) => {
   return Promise.all(getEdges(rows)).then((edges) => {
@@ -134,8 +131,8 @@ CategoryType = new GraphQLObjectType({
     return {
       id: {
         type: new GraphQLNonNull(GraphQLID),
-        resolve(source) {
-          return `${source.__tableName}: ${source.id}`;
+        resolve({ __tableName, id }) {
+          return loaders.dbIdToNodeId(id, __tableName);
         }
       },
       name: {
@@ -159,6 +156,9 @@ CategoryType = new GraphQLObjectType({
           before: {
             type: GraphQLString
           },
+          after: {
+            type: GraphQLString
+          },
           first: {
             type: GraphQLInt
           }
@@ -172,7 +172,6 @@ CategoryType = new GraphQLObjectType({
     }
   }
 });
-
 
 const CategoryWithoutInterfaceType = new GraphQLObjectType({
   name: 'CategoryWithoutInterface',

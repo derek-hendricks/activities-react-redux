@@ -6,7 +6,7 @@ const types = require('./types');
 const loaders = require('./loaders');
 
 const createActivity = {
-  type: types.ActivitiesType,
+  type: types.ActivityType,
   args: {
     name: {
       type: new GraphQLNonNull(GraphQLString)
@@ -95,7 +95,7 @@ const deleteCategory = {
 };
 
 const deleteActivity = {
-  type: types.ActivitiesType,
+  type: types.ActivityType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID)
@@ -107,7 +107,7 @@ const deleteActivity = {
 };
 
 const updateActivity = {
-  type: types.ActivitiesType,
+  type: types.ActivityType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID)

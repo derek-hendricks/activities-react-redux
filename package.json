@@ -19,7 +19,8 @@
     "lint:fix": "npm run lint -- --fix",
     "start": "better-npm-run start",
     "test": "better-npm-run test",
-    "test:dev": "npm run test -- --watch"
+    "test:dev": "npm run test -- --watch",
+    "test:server": "mocha server/tests/*/*.spec*"
   },
   "betterScripts": {
     "compile": {
@@ -71,7 +72,9 @@
         "NODE_ENV": "test"
       }
     }
-  },"react-apollo": "^0.13.2", "apollo-client": "^0.10.1",
+  },
+  "react-apollo": "^0.13.2",
+  "apollo-client": "^0.10.1",
   "author": "Derek Hendricks <derek.m.hendricks@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -140,6 +143,7 @@
     "chai-enzyme": "^0.6.1",
     "cheerio": "^0.22.0",
     "codecov": "^1.0.1",
+    "debug": "latest",
     "enzyme": "^2.8.0",
     "eslint": "^3.0.1",
     "eslint-config-standard": "^6.0.0",
@@ -148,6 +152,8 @@
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-react": "^6.0.0",
     "eslint-plugin-standard": "^2.0.0",
+    "faker": "^4.1.0",
+    "graphql-tools": "^1.0.0",
     "karma": "^1.0.0",
     "karma-coverage": "^1.0.0",
     "karma-log-reporter": "0.0.4",
@@ -163,7 +169,6 @@
     "sinon": "^1.17.5",
     "sinon-chai": "^2.8.0",
     "webpack-dev-middleware": "^1.6.1",
-    "webpack-hot-middleware": "^2.18.0",
-    "debug": "latest"
+    "webpack-hot-middleware": "^2.18.0"
   }
 }

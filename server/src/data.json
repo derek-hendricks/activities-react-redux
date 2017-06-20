@@ -3,19 +3,23 @@
     {
       "id": 1,
       "name": "Sports",
-      "description": "Sports description"
+      "description": "Sports description",
+      "createdAt": "2017-03-01 13:35:47"
     }, {
       "id": 2,
       "name": "Work",
-      "description": "Work description"
+      "description": "Work description",
+      "createdAt": "2017-03-01 13:35:47"
     }, {
       "id": 3,
       "name": "Events",
-      "description": "Outdoor Activities description"
+      "description": "Outdoor Activities description",
+      "createdAt": "2017-03-01 13:35:47"
     }, {
       "id": 4,
       "name": "Board Games",
-      "description": "Monopoly, etc."
+      "description": "Monopoly, etc.",
+      "createdAt": "2017-03-01 13:35:47"
     }
   ],
 
@@ -27,7 +31,7 @@
       "date": "2018-01-11",
       "about": "---",
       "location": "hockey arena?",
-      "createdAt": "2017-03-01"
+      "createdAt": "2017-03-01 13:35:47"
     }, {
       "id": 2,
       "categoryId": 3,
@@ -35,7 +39,7 @@
       "location": "Animal Shelter",
       "date": "2017-06-11",
       "about": "---",
-      "createdAt": "2017-03-02"
+      "createdAt": "2017-03-02 13:35:47"
     }, {
       "id": 3,
       "categoryId": 3,
@@ -43,7 +47,7 @@
       "location": "Town Hall",
       "date": "2019-06-11",
       "about": "---",
-      "createdAt": "2017-04-03"
+      "createdAt": "2017-04-03 13:35:47"
     }, {
       "id": 4,
       "categoryId": 2,
@@ -51,7 +55,7 @@
       "location": "Work",
       "date": "2018-06-02",
       "about": "Present new updates to CEO",
-      "createdAt": "2017-03-31"
+      "createdAt": "2017-03-31 13:35:47"
     }
   ]
 }
