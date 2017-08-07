@@ -12,7 +12,7 @@ export const Category = (props) => {
   const {
     loading, error,
     category, activeCategoryId, categories,
-    onActivitySubmit, handleActivitySubmit, loadMoreActivities
+    onActivitySubmit, handleActivitySubmit, loadMoreActivities, updateActivity
   } = props;
 
   if (loading) {
