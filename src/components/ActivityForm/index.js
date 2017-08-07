@@ -6,7 +6,6 @@ import SelectList from '../SelectList'
 import './styles.scss'
 
 export const ActivityForm = (props) => {
-  const activityObject = {};
   const {
     onSubmit,
     buttonText,
@@ -14,6 +13,8 @@ export const ActivityForm = (props) => {
     activeCategoryId,
     placeholder
   } = props;
+
+  const activityObject = {};
   let categoryId = { value: activeCategoryId };
 
   return (

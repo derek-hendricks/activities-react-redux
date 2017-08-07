@@ -6,7 +6,7 @@ const server_host = project.server_host;
 
 server.app.listen(port);
 
-if (project.env === "development") {
+if ("development" === project.env) {
   const debug = require('debug')('app:bin:dev-server');
 
   server.developmentSetup();

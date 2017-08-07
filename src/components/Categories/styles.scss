@@ -1,6 +1,22 @@
 .categories {
   margin: 15px 0 10px 0;
 
+  .categories-loading {
+    margin-bottom: 100px;
+    .loader {
+      position: absolute;
+      top: 12%;
+      left: 7.5%;
+      min-width: 10rem !important;
+    }
+  }
+
+  .error {
+    padding: 25px;
+    height: 200px;
+    margin-bottom: 60px;
+  }
+
   .right.menu {
     .button {
       &:hover {
@@ -30,19 +46,17 @@
   .add.inactive {
     display: none;
   }
+
   .add.active {
     display: block;
   }
+
   .edit.inactive {
     display: none;
   }
+
   .edit.active {
     display: block;
   }
 
-  .error {
-    padding: 25px;
-    height: 200px;
-    margin-bottom: 60px;
-  }
 }

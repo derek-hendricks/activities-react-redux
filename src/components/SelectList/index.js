@@ -15,13 +15,11 @@ export const SelectList = (props) => {
       <select
         className={className}
         onChange={({ target }) => onSelect({ target }) }>
-        {items.map(({ name, id }, index) => {
-          return (
-            <option key={index} value={id}>
-              {name}
-            </option>
-          );
-        })}
+        {items.map(({ name, id }, index) => (
+          <option key={index} value={id}>
+            {name}
+          </option>
+        ))}
       </select>
     </div>
   );

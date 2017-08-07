@@ -1,5 +1,8 @@
 import {splitNodeId, getIndex} from "../utils"
 
+export const OPTIMISTIC_ACTIVITY_ID = -1;
+export const TYPE_NAME = "Category";
+
 const CREATE_CATEGORY_MUTATION = "CREATE_CATEGORY_MUTATION";
 const UPDATE_CATEGORY_MUTATION = "UPDATE_CATEGORY_MUTATION";
 const DELETE_CATEGORY_MUTATION = "DELETE_CATEGORY_MUTATION";
@@ -13,7 +16,7 @@ export default function categoryReducer(operationName, optimisticMutation, mutat
   } else if (mutationResult && CREATE_CATEGORY_MUTATION === operationName) {
     const { result: { data: { CREATE_CATEGORY_MUTATION: { id } } } } = action;
     const categoryId = splitNodeId(id);
-    const index = getIndex(state, "-1");
+    const index = getIndex(state, OPTIMISTIC_ACTIVITY_ID);
 
     return mutationResultUpdateStateSetup(state, index, { id: categoryId });
   } else if (optimisticMutation && UPDATE_CATEGORY_MUTATION) {
@@ -32,6 +35,7 @@ export default function categoryReducer(operationName, optimisticMutation, mutat
 
 function optimisticCreateStateSetup(action) {
   const { optimisticResponse: { category } } = action;
+
   return { category: {...category, activities: [] } };
 }
 
@@ -41,6 +45,7 @@ function mutationResultUpdateStateSetup(state, index, attributes) {
     ...previousCategory,
     ...attributes
   };
+
   return { category, index }
 }
 

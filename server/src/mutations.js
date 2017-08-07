@@ -79,30 +79,29 @@ const deleteCategory = {
     id: {
       type: new GraphQLNonNull(GraphQLID)
     },
-    activities: {
+    activityIds: {
       type: GraphQLString
     }
   },
   resolve(_, args) {
-    if (!args.activities) {
-      return loaders.deleteCategory(args)
-    } else {
-      return loaders.deleteCategory(args).then(() => {
-        return loaders.deleteCategoryActivities(args)
-      })
-    }
+    return loaders.deleteCategory(args);
   }
 };
 
 const deleteActivity = {
-  type: types.ActivityType,
+  type: types.CategoryType,
   args: {
     id: {
+      type: new GraphQLNonNull(GraphQLID),
+    },
+    categoryId: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve(_, args) {
-    return loaders.deleteRow(args);
+    return loaders.deleteActivity(args).then(() => {
+      return loaders.getNodeById(args.categoryId);
+    })
   }
 };
 

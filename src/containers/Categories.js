@@ -1,6 +1,7 @@
 import {connect} from 'react-redux'
 import {graphql, compose} from 'react-apollo'
 
+import {OPTIMISTIC_ACTIVITY_ID, TYPE_NAME} from '../store/category'
 import {openCategory} from '../store/activeCategory'
 import {setButtonMethod} from '../store/actions'
 import Categories from '../components/Categories'
@@ -16,7 +17,7 @@ import {
   getCategoryDeleteVariables
 } from '../utils/index';
 
-const initialState = { categories: [] };
+const initialState = {};
 
 const mapStateToTabsProps = (state = initialState) => {
   const { actions, activeCategoryId } = state;
@@ -42,9 +43,6 @@ const mapDispatchToTabsProps = (dispatch) => (
 );
 
 const queryOptions = {
-  options: ({ activeCategoryId }) => {
-    return { skip: activeCategoryId };
-  },
   props: ({ data: { loading = true, error = false } }) => {
     return {
       loading,
@@ -66,8 +64,8 @@ const categoryCreateOptions = {
             __typename: "Mutation",
             category: {
               ...variables,
-              id: '-1',
-              __typename: "Category"
+              id: OPTIMISTIC_ACTIVITY_ID,
+              __typename: TYPE_NAME
             }
           }
         })
@@ -78,16 +76,18 @@ const categoryCreateOptions = {
 
 const categoryDeleteOptions = {
   props: ({ mutate }) => ({
-    onCategoryDelete: (id, deletedActivities = []) => {
-      const variables = getCategoryDeleteVariables(id, deletedActivities);
+    onCategoryDelete: (id, activities = []) => {
       return (
         mutate({
-          variables,
+          variables: {
+            id: `categories: ${id}`,
+            activityIds: activities.map(({ node }) => node.id).join(",")
+          },
           optimisticResponse: {
             __typename: "Mutation",
             category: {
               id,
-              __typename: "Category"
+              __typename: TYPE_NAME
             }
           }
         })
@@ -112,7 +112,7 @@ const categoryUpdateOptions = {
             __typename: "Mutation",
             category: {
               ...categoryVariables,
-              __typename: "Category",
+              __typename: TYPE_NAME,
               id
             }
           }

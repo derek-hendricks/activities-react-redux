@@ -16,16 +16,17 @@ export const CategoryFoldersList = (props) => {
   const {
     listHeader,
     listDescription,
-    listContents,
+    listItems,
     listIconName = "folder",
     listItemIconName = "file"
   } = props;
 
-  const listItem = (data, index) => {
-    const { id, categoryId, type, name, __typename, ...item } = data;
+  const listItem = (data) => {
+    const { id, categoryId, name, __typename, ...item } = data;
     const listItemAttributes = Object.keys(item).filter((attr) => item[attr]);
+
     return (
-      <ListItem key={index} className={classify(__typename)}>
+      <ListItem key={id} className={classify(__typename)}>
         <ListIcon name={listItemIconName}/>
         <ListContent>
           <ListHeader>{name}</ListHeader>
@@ -47,7 +48,7 @@ export const CategoryFoldersList = (props) => {
           <ListHeader>{listHeader}</ListHeader>
           <ListDescription>{listDescription}</ListDescription>
           <List>
-            {listContents.map((item, index) => listItem(item, index))}
+            {listItems.map(({node}) => listItem(node))}
           </List>
         </ListContent>
       </ListItem>
@@ -59,17 +60,17 @@ const { string, shape, arrayOf } = PropTypes;
 
 CategoryFoldersList.propTypes = {
   listHeader: string.isRequired,
-  listContents: arrayOf(
-    shape({
+  listItems: arrayOf(shape({
+    node: shape({
       id: string.isRequired,
       name: string.isRequired,
       categoryId: string,
-      description: string,
+      about: string,
       location: string,
       date: string,
-      __typename: string,
-      type: string
-    })).isRequired,
+      createdAt: string
+    }).isRequired
+  })),
   listDescription: string,
   listTitle: string,
   listIconName: string,

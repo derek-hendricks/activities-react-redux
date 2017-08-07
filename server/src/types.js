@@ -30,27 +30,29 @@ const CategoryInterface = new GraphQLInterfaceType({
 ActivityType = new GraphQLObjectType({
   name: 'Activity',
   interfaces: [CategoryInterface],
-  fields: {
-    id: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    name: {
-      type: new GraphQLNonNull(GraphQLString)
-    },
-    categoryId: {
-      type: new GraphQLNonNull(GraphQLID)
-    },
-    createdAt: {
-      type: new GraphQLNonNull(GraphQLString)
-    },
-    date: {
-      type: GraphQLString
-    },
-    about: {
-      type: GraphQLString
-    },
-    location: {
-      type: GraphQLString
+  fields: () => {
+    return {
+      id: {
+        type: new GraphQLNonNull(GraphQLID),
+      },
+      name: {
+        type: new GraphQLNonNull(GraphQLString)
+      },
+      categoryId: {
+        type: new GraphQLNonNull(GraphQLID)
+      },
+      createdAt: {
+        type: new GraphQLNonNull(GraphQLString)
+      },
+      date: {
+        type: GraphQLString
+      },
+      about: {
+        type: GraphQLString
+      },
+      location: {
+        type: GraphQLString
+      }
     }
   }
 });
@@ -103,25 +105,17 @@ const ActivitiesConnectionType = new GraphQLObjectType({
   }
 });
 
-const getEdges = (rows) => {
-  return rows.map(({ id, __tableName, __cursor: cursor }) => {
-    const nodeId = loaders.dbIdToNodeId(id, __tableName);
+const activityEdges = (rows) => {
+  return rows.map((row) => {
+    const nodeId = loaders.dbIdToNodeId(row.id, row.__tableName);
+
     return loaders.getNodeById(nodeId).then((node) => {
       return {
         node,
-        cursor
+        cursor: row.__cursor,
       };
-    })
+    });
   });
-};
-
-const getEdgesPageInfo = (rows, pageInfo) => {
-  return Promise.all(getEdges(rows)).then((edges) => {
-    return {
-      edges,
-      pageInfo
-    }
-  })
 };
 
 CategoryType = new GraphQLObjectType({
@@ -144,12 +138,6 @@ CategoryType = new GraphQLObjectType({
       createdAt: {
         type: GraphQLString
       },
-      activities: {
-        type: new GraphQLList(ActivityType),
-        resolve(source) {
-          return loaders.getActivities(source);
-        }
-      },
       activitiesPage: {
         type: ActivitiesConnectionType,
         args: {
@@ -160,18 +148,24 @@ CategoryType = new GraphQLObjectType({
             type: GraphQLString
           },
           first: {
-            type: GraphQLInt
+            type: new GraphQLNonNull(GraphQLInt)
           }
         },
         resolve(source, args) {
-          return loaders.getActivitiesPage(source, args).then(({ rows, pageInfo }) => {
-            return getEdgesPageInfo(rows, pageInfo);
+          return loaders.getActivitiesPage(source, args).then(({rows, pageInfo}) => {
+            return Promise.all(activityEdges(rows)).then((edges) => {
+              return {
+                edges,
+                pageInfo
+              }
+            })
           })
         }
       }
     }
   }
 });
+
 
 const CategoryWithoutInterfaceType = new GraphQLObjectType({
   name: 'CategoryWithoutInterface',

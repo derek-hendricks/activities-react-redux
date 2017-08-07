@@ -22,9 +22,8 @@ export const DeleteModal = (props) => {
   if (!category) {
     return (<div></div>)
   } else {
-    const { name, description, id, activities = [] } = category;
-
-    const activityText = getActivityText(activities);
+    const { name, description, id, activityEdges = [] } = category;
+    const activityText = getActivityText(activityEdges);
 
     return (
       <Modal className={'delete-modal'} size={'small'} closeIcon={'close'} open={open} onClose={onClose}>
@@ -38,7 +37,7 @@ export const DeleteModal = (props) => {
                   <ListContent>
                     <ListHeader>{name}</ListHeader>
                     <listDescription>
-                      {`Activities: ${activities.length}`}
+                      {`Activities: ${activityEdges.length}`}
                     </listDescription>
                     <ListDescription>
                       {description ? `Description: ${description}` : 'No description'}
@@ -68,13 +67,13 @@ export const DeleteModal = (props) => {
             <div className={'eight wide column'}>
               <CategoryFoldersList
                 listHeader={name}
-                listContents={activities}
-                listDescription={`${activities.length} ${activityText}`}
+                listItems={activityEdges}
+                listDescription={`${activityEdges.length} ${activityText}`}
               />
             </div>
 
             <div className={'eight wide column'}>
-              <p>{activities.length ? `${activities.length} ${activityText} will be removed` : ''}</p>
+              <p>{activityEdges.length ? `${activityEdges.length} ${activityText} will be removed` : ''}</p>
             </div>
           </div>
         </ModalContent>
@@ -83,9 +82,11 @@ export const DeleteModal = (props) => {
           <Button onClick={onClose}>Cancel</Button>
 
           <Button labelPosition='right'>
-            <Link to={`/activities`} onClick={() => onDelete(id, activities)}>
+            <Button onClick={() => {
+              return onDelete(id, activityEdges)
+            }}>
               Delete
-            </Link>
+            </Button>
           </Button>
         </ModalActions>
       </Modal>
@@ -101,14 +102,19 @@ function getActivityText(activities) {
   return activityText;
 }
 
+const { bool, func, shape, string, object, array, } = PropTypes;
+
 DeleteModal.propTypes = {
-  open: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  category: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    description: PropTypes.string
-  }).isRequired
+  open: bool.isRequired,
+  onClose: func.isRequired,
+  onDelete: func.isRequired,
+  category: shape({
+    id: string.isRequired,
+    name: string.isRequired,
+    description: string,
+    pageInfo: object,
+    activityEdges: array
+  })
 };
 
 export default DeleteModal

@@ -4,26 +4,31 @@ import Link from 'react-router/Link'
 
 import './styles.scss'
 
-export const ActivityList = ({ activities }) => (
-  <div className='activity-list'>
-    {
-      activities.map(({id, name}, index) => (
-        <div className='text' key={index}>
-          <Link to={`/activity/${id}`}>
-            {name}
-          </Link>
-        </div>
-      ))
-    }
-  </div>
-);
+export const ActivityList = ({ edges }) => {
+  return (
+    <div className='activity-list'>
+      {
+        edges.map(({ node: { id, name } }, index) => (
+          <div className='text' key={index}>
+            <Link to={`/activity/${id}`}>
+              {name}
+            </Link>
+          </div>
+        ))
+      }
+    </div>
+  );
+};
 
-const { string, arrayOf, shape } = PropTypes;
+const { string, arrayOf, shape, any } = PropTypes;
 
 ActivityList.propTypes = {
-  activities: arrayOf(shape({
-    id: string.isRequired,
-    name: string.isRequired
+  edges: arrayOf(shape({
+    cursor: string,
+    node: shape({
+      id: string.isRequired,
+      name: string.isRequired
+    })
   })).isRequired
 };
 

@@ -3,22 +3,34 @@ const DataLoader = require('dataloader');
 const database = require('./database');
 const tables = require('./tables');
 
+const { activities: activitiesTable, categories: categoriesTable } = tables;
+const ACTIVITIES_TABLE_NAME = activitiesTable.getName();
+const CATEGORY_TABLE_NAME = categoriesTable.getName();
+
 const createNodeLoader = (table) => {
   return new DataLoader((ids) => {
-    const query = table.select(table.star()).where(table.id.in(ids)).toQuery();
+    const query = table
+      .select(table.star())
+      .where(table.id.in(ids))
+      .order(table.id.desc)
+      .toQuery();
 
     return database.getSql(query).then((rows) => {
-      rows.forEach((row) => {
-        row.__tableName = table.getName();
+      return ids.map((id) => {
+        return rows.find((row) => {
+          row.__tableName = table.getName();
+          return id === String(row.id);
+        })
       });
-      return rows;
-    }).catch(error => error)
-  });
+    }).catch((error) => {
+      return error;
+    })
+  })
 };
 
 const nodeLoaders = {
-  categories: createNodeLoader(tables.categories),
-  activities: createNodeLoader(tables.activities),
+  categories: createNodeLoader(categoriesTable),
+  activities: createNodeLoader(activitiesTable),
 };
 
 const dbIdToNodeId = (dbId, tableName) => {
@@ -30,17 +42,24 @@ const dbIdNodeId = (data) => {
 };
 
 const dbIdCreatedAtDate = (data) => {
-  return data.replace(/:/g, '').split(' ');
+  return data.replace(/:/, '+').split('+').map((x) => x.trim())[ 1 ];
 };
 
 const getNodeById = (data) => {
-  const nodeId = dbIdNodeId(data);
-  return nodeLoaders[ nodeId[ 0 ] ].load(nodeId[ 1 ]);
+  const [ table, id ] = dbIdNodeId(data);
+  return nodeLoaders[ table ].load(id).catch((error) => {
+    nodeLoaders[ table ].clear(id);
+    throw error;
+  });
 };
 
 const clearCacheById = (data) => {
-  const nodeId = dbIdNodeId(data);
-  return nodeLoaders[ nodeId[ 0 ] ].clear(nodeId[ 1 ]);
+  const [ table, id ] = dbIdNodeId(data);
+  return nodeLoaders[ table ].clear(id);
+};
+
+const clearTableCache = (table) => {
+  return nodeLoaders[ table ].clearAll();
 };
 
 const setProperties = (obj, property) => {
@@ -60,27 +79,34 @@ const setProperties = (obj, property) => {
 };
 
 const getCategories = () => {
-  const table = tables.categories;
-  const query = tables.categories.select(table.star()).toQuery();
+  const query = categoriesTable
+    .select(categoriesTable.star())
+    .toQuery();
 
   return database.getSql(query).then((rows) => ({
-    categories: rows.map(({ id, name, description, createdAt }) => ({
-      id,
-      name,
-      description,
-      createdAt,
-      __tableName: table.getName()
-    }))
+    categories: rows.map((data) => {
+      const {
+        id, name, description, createdAt
+      } = data;
+
+      return {
+        id,
+        name,
+        description,
+        createdAt,
+        __tableName: CATEGORY_TABLE_NAME
+      };
+    })
   }));
 };
 
-const setActivityRows = (rows, __tableName, cursors) => (
-  rows.map((row) => {
+const activitiesPageRows = (rows, __tableName) => (
+  rows.slice().map((row) => {
     const {
       id, name, about, createdAt, categoryId, location, date
     } = row;
 
-    const activityRow = {
+    return {
       id,
       name,
       about,
@@ -88,135 +114,119 @@ const setActivityRows = (rows, __tableName, cursors) => (
       createdAt,
       date,
       location,
-      __tableName
+      __tableName,
+      __cursor: `${id}: ${createdAt}`
     };
-
-    if (cursors) {
-      activityRow.__cursor = `${id}: ${createdAt}`;
-    }
-
-    return activityRow;
   })
 );
 
-const getActivities = ({ id }) => {
-  const table = tables.activities;
-  const query = table.select(table.star()).from(table)
-    .where(table.categoryId.equals(id))
-    .order(table.createdAt.desc)
-    .toQuery();
-
-  return database.getSql(query).then((rows) => {
-    return setActivityRows(rows, table.getName());
-  });
-};
-
-const cursorSpecification = (args) => {
-  const [ data, operator ] = args.after ?
-    [ args.after, 'gt' ] :
-    [ args.before, 'lt' ];
-
-  const [ id, createdAt ] = dbIdCreatedAtDate(data);
-
-  return {
-    id,
-    createdAt,
-    operator
+const activitiesPageQuery = (args, id) => {
+  const { first } = args;
+  const table = ACTIVITIES_TABLE_NAME;
+  const select = {
+    text: `select "${table}".* from "${table}" where "${table}"."categoryId" = $1`,
+    values: [ id ]
+  };
+  let dateTime = { text: '' };
+  if (args.before) {
+    const before = dbIdCreatedAtDate(args.before);
+    dateTime = {
+      text: `and "${table}"."createdAt" < Datetime($2)`,
+      values: [ before ]
+    };
   }
-};
-
-const cursorQuery = (args, query, table) => {
-  const {
-    operator, id, createdAt
-  } = cursorSpecification(args);
-
-  return query
-    .where(table.createdAt[ operator ](createdAt))
-    .where(table.id[ operator ](id));
-};
-
-const setPageInfo = (rows, first = 2) => {
-  const hasNextPage = rows.length > first;
-  const hasPreviousPage = false;
-
-  const pageInfo = {
-    hasNextPage,
-    hasPreviousPage
+  const orderLimit = {
+    text: `order by "${table}"."createdAt" desc limit ${first + 1}`,
   };
 
-  if (rows.length > 0) {
-    const { __cursor: startCursor } = rows[ 0 ];
-    const { __cursor: endCursor } = rows[ rows.length - 1 ];
+  return {
+    text: `${select.text} ${dateTime.text} ${orderLimit.text}`,
+    values: [].concat(select.values, dateTime.values)
+  };
+};
 
-    return Object.assign(pageInfo, { startCursor, endCursor });
+const activitiesPageInfo = (rows, pageRows, first) => {
+  const pageInfo = {
+    hasNextPage: rows.length > first,
+    hasPreviousPage: false
+  };
+  if (pageRows.length > 0) {
+    const { __cursor: startCursor } = pageRows[ 0 ];
+    const { __cursor: endCursor } = pageRows[ pageRows.length - 1 ];
+
+    return Object.assign({}, pageInfo, { startCursor, endCursor });
   }
 
   return pageInfo;
 };
 
 const getActivitiesPage = ({ id }, args) => {
-  const table = tables.activities;
-  const { first = 2, before, after } = args;
+  const { first } = args;
+  const query = activitiesPageQuery(args, id);
 
-  let query = table
-    .select(table.star())
-    .from(table)
-    .where(table.categoryId.equals(id))
-    .order(table.createdAt.desc)
-    .limit(first + 1);
-
-  if (before || after) {
-    query = cursorQuery(args, query, table);
-  }
-
-  return database.getSql(query.toQuery()).then((result) => {
+  return database.getSql(query).then((result) => {
     const pageRows = result.slice(0, first);
-    const rows = setActivityRows(pageRows, table.getName(), true);
-    const pageInfo = setPageInfo(rows, first);
-
-    return {
-      rows,
-      pageInfo
-    };
+    const rows = activitiesPageRows(pageRows, ACTIVITIES_TABLE_NAME);
+    const pageInfo = activitiesPageInfo(result, rows, first);
+    return { rows, pageInfo }
   });
 };
 
-const deleteCategory = ({ id }) => {
-  const table = tables.categories;
-  const db = dbIdNodeId(id);
-  const query = { text: `delete from ${db[ 0 ]} where id = ${db[ 1 ]};` };
+const deleteCategoryActivities = (data) => {
+  const { id, activityIds } = data;
+  const categoryId = dbIdNodeId(id)[ 1 ];
+  const query = {
+    text: `delete from ${ACTIVITIES_TABLE_NAME} where categoryId = $1;`,
+    values: [ categoryId ]
+  };
+  const categoryActivities = activityIds.replace(/ /g, '').split(",");
 
   return database.getSql(query).then(() => {
-    return {
-      id: id,
-      __tableName: table.getName(),
-      __typename: "Category"
+    for (let i = 0, len = categoryActivities.length; i < len; i++) {
+      clearCacheById(`${ACTIVITIES_TABLE_NAME}: ${categoryActivities[ i ]}`);
     }
+  }).catch((error) => {
+    return { error };
+  })
+};
+
+const deleteCategory = (data) => {
+  const { id, activityIds } = data;
+  const categoryId = dbIdNodeId(id)[ 1 ];
+  const query = {
+    text: `delete from "${CATEGORY_TABLE_NAME}" where id = $1;`,
+    values: [ categoryId ]
+  };
+
+  return database.getSql(query).then(() => {
+    clearCacheById(id);
+    if (activityIds) {
+      return deleteCategoryActivities(data)
+    }
+  }).catch((error) => {
+    return error;
   })
 };
 
 const deleteRow = (data) => {
-  const db = dbIdNodeId(data.id);
-  const query = { text: `delete from ${db[ 0 ]} where id = ${db[ 1 ]};` };
+  const [ table, id ] = dbIdNodeId(data.id);
+  const query = { text: `delete from ${table} where id = ${id};` };
+
+  return database.getSql(query).then(() => {
+    clearCacheById(data.id);
+
+    return data;
+  }).catch(error => error)
+};
+
+const deleteActivity = (data) => {
+  const [ table, id ] = dbIdNodeId(data.id);
+  const query = { text: `delete from ${table} where id = ${id};` };
 
   return database.getSql(query).then(() => {
     clearCacheById(data.id);
     return data;
   }).catch(error => error)
-};
-
-const deleteActivity = ({ id }) => {
-  const tableName = tables.activities.getName();
-  const [ table, activityId ] = dbIdNodeId(id);
-  const query = { text: `delete from ${table} where id = ${activityId};` };
-
-  return database.getSql(query).then(() => {
-    return {
-      id,
-      __tableName: tableName,
-      __typename: 'Activity'
-    }
-  })
 };
 
 const updateQuery = (table, id, data) => {
@@ -232,8 +242,8 @@ const updateQuery = (table, id, data) => {
 
 const updateRow = (data) => {
   const row = setProperties(data, "id");
-  const db = dbIdNodeId(data.id);
-  const query = { text: updateQuery(db[ 0 ], db[ 1 ], row) };
+  const [ table, id ] = dbIdNodeId(data.id);
+  const query = { text: updateQuery(table, id, row) };
 
   return database.getSql(query).then(() => (
     clearCacheById(data.id)
@@ -246,56 +256,44 @@ const insertRow = (table, query) => {
       text: `SELECT last_insert_rowid() AS id FROM ${table} LIMIT 1`
     });
   }).then((ids) => {
+
     return dbIdToNodeId(ids[ 0 ].id, table);
   }).catch(error => ({ error }))
 };
 
 const createActivity = (data) => {
+  const { name, categoryId, about, location, date } = data;
   const activity = {
-    name: data.name,
-    categoryId: data.categoryId,
-    about: data.about,
-    location: data.location,
-    date: data.date
+    name,
+    categoryId,
+    about,
+    location,
+    date
   };
-  const query = tables.activities.insert([ activity ]).toQuery();
-  return insertRow(tables.activities.getName(), query);
+  const query = activitiesTable
+    .insert([ activity ])
+    .toQuery();
+
+  return insertRow(ACTIVITIES_TABLE_NAME, query);
 };
 
 const createCategory = (category) => {
-  const query = tables.categories.insert([ category ]).toQuery();
-  return insertRow(tables.categories.getName(), query);
-};
-
-const deleteCategoryActivities = (data) => {
-  const db = dbIdNodeId(data.id);
-  const query = { text: `delete from activities where categoryId = ${db[ 1 ]};` };
-  const activities = data.activities.replace(/ /g, '').split(",");
-
-  return database.getSql(query).then(() => {
-    for (let i = 0, len = activities.length; i < len; i++) {
-      clearCacheById(`activities: ${activities[ i ]}`);
-    }
-    return ({
-      id: data.id,
-      __tableName: "categories",
-      __typename: "Category"
-    })
-  }).catch(error => ({ error }))
+  const query = categoriesTable.insert([ category ]).toQuery();
+  return insertRow(CATEGORY_TABLE_NAME, query);
 };
 
 module.exports = {
   getCategories,
-  getActivities,
   getNodeById,
   createActivity,
   createCategory,
   deleteActivity,
-  deleteRow,
   deleteCategory,
   deleteCategoryActivities,
   updateRow,
+  deleteRow,
   nodeLoaders,
   dbIdToNodeId,
-  getActivitiesPage
+  getActivitiesPage,
+  clearCacheById
 };

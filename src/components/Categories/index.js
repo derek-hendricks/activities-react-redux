@@ -21,13 +21,17 @@ export const Categories = (props) => {
   } = props;
 
   if (loading) {
+
     return (
       <div className="categories">
-        <Loader active size='mini'>
-          Categories Loading
-        </Loader>
+        <div className="categories-loading">
+          <Loader active size='mini'>
+            Categories Loading
+          </Loader>
+        </div>
       </div>)
   } else if (error) {
+
     return (
       <LoadError
         className={"categories"}
@@ -43,8 +47,11 @@ export const Categories = (props) => {
 
           <div className={'left menu'}>
             {categories.map((category, index) => (
-              <Link key={index} to='/activities' className={category.active ? 'ui active item' : 'ui item'}
-                    onClick={() => onCategorySelect(category.id)}>
+              <Link key={index}
+                    to='/activities'
+                    className={category.active ? 'ui active item' : 'ui item'}
+                    onClick={() => onCategorySelect(category.id)}
+              >
                 {category.name}
               </Link>
             ))}
@@ -99,7 +106,7 @@ export const Categories = (props) => {
 const { string, func, arrayOf, bool, object, shape } = PropTypes;
 
 Categories.propTypes = {
-  onCategorySelect: func.isRequired,
+  category: object,
   categories: arrayOf(shape({
     id: string.isRequired,
     name: string,
@@ -108,7 +115,7 @@ Categories.propTypes = {
   loading: bool.isRequired,
   error: bool.isRequired,
   actions: object.isRequired,
-  category: object,
+  onCategorySelect: func.isRequired,
   handleCategoryCreate: func.isRequired,
   onCategoryDelete: func.isRequired,
   onCategoryActionSet: func.isRequired,

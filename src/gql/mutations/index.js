@@ -10,10 +10,9 @@ export const categoryCreate = gql`
   }`;
 
 export const categoryDelete = gql`
-  mutation DELETE_CATEGORY_MUTATION($id: ID!, $activities: String) {
-    DELETE_CATEGORY_MUTATION(id: $id, activities: $activities) {
+  mutation DELETE_CATEGORY_MUTATION($id: ID!, $activityIds: String) {
+    DELETE_CATEGORY_MUTATION(id: $id, activityIds: $activityIds) {
       __typename
-      id
     }
   }`;
 
@@ -40,12 +39,12 @@ export const createActivity = gql`
   }`;
 
 export const activityDelete = gql`
-  mutation DELETE_ACTIVITY_MUTATION($id: ID!) {
-    DELETE_ACTIVITY_MUTATION(id: $id) {
+  mutation DELETE_ACTIVITY_MUTATION($id: ID!, $categoryId: ID!) {
+    DELETE_ACTIVITY_MUTATION(id: $id, categoryId: $categoryId) {
       __typename
-      id
     }
   }`;
+
 
 export const activityUpdate = gql`
   mutation UPDATE_ACTIVITY_MUTATION($id: ID!, $name: String, $categoryId: String, $about: String, $location: String, $date: String) {

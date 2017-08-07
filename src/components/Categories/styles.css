@@ -1,5 +1,16 @@
 .categories {
   margin: 15px 0 10px 0; }
+  .categories .categories-loading {
+    margin-bottom: 100px; }
+    .categories .categories-loading .loader {
+      position: absolute;
+      top: 12%;
+      left: 7.5%;
+      min-width: 10rem !important; }
+  .categories .error {
+    padding: 25px;
+    height: 200px;
+    margin-bottom: 60px; }
   .categories .right.menu .button:hover {
     color: #337ab7; }
   .categories .right.menu .button .add.circle.icon {
@@ -20,9 +31,5 @@
     display: none; }
   .categories .edit.active {
     display: block; }
-  .categories .error {
-    padding: 25px;
-    height: 200px;
-    margin-bottom: 60px; }
 
 /*# sourceMappingURL=styles.css.map */

@@ -1,7 +1,9 @@
-import activitiesReducer from './activities';
+import {activitiesReducer} from './activities';
 import categoryReducer from './category';
-import activityReducer from './activity';
-import {isInteger, splitNodeId, getCategoryIndexByActivity, getIndex} from '../utils'
+
+import {
+  isInteger, splitNodeId, getCategoryIndexByActivity, getIndex, getEdgeIndex
+} from '../utils'
 
 const ADD_ACTIVITY = "ADD_ACTIVITY";
 const DELETE_ACTIVITY = "DELETE_ACTIVITY";
@@ -10,35 +12,26 @@ const UPDATE_ACTIVITY = "UPDATE_ACTIVITY";
 const APOLLO_QUERY_RESULT = "APOLLO_QUERY_RESULT";
 const APOLLO_MUTATION_INIT = "APOLLO_MUTATION_INIT";
 const APOLLO_MUTATION_RESULT = "APOLLO_MUTATION_RESULT";
+const APOLLO_UPDATE_QUERY_RESULT = "APOLLO_UPDATE_QUERY_RESULT";
 
-const APOLLO_CATEGORIES_QUERY = "CATEGORIES_QUERY";
-const APOLLO_ACTIVITIES_QUERY = "ACTIVITIES_QUERY";
-
-const APOLLO_DELETE_ACTIVITY_MUTATION = "DELETE_ACTIVITY_MUTATION";
-const APOLLO_CREATE_ACTIVITY_MUTATION = "CREATE_ACTIVITY_MUTATION";
-const APOLLO_UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
-
+const CATEGORIES_QUERY = "CATEGORIES_QUERY";
+export const ACTIVITIES_QUERY = "ACTIVITIES_QUERY";
+export const FETCH_MORE_ACTIVITIES = "FETCH_MORE_ACTIVITIES";
+const DELETE_ACTIVITY_MUTATION = "DELETE_ACTIVITY_MUTATION";
+const CREATE_ACTIVITY_MUTATION = "CREATE_ACTIVITY_MUTATION";
+const UPDATE_ACTIVITY_MUTATION = "UPDATE_ACTIVITY_MUTATION";
 const CREATE_CATEGORY_MUTATION = "CREATE_CATEGORY_MUTATION";
 const UPDATE_CATEGORY_MUTATION = "UPDATE_CATEGORY_MUTATION";
 const DELETE_CATEGORY_MUTATION = "DELETE_CATEGORY_MUTATION";
 
-function categorySetup(state, action, index) {
-  const previousCategory = state[index];
-  const activities = activitiesReducer(previousCategory.activities, action);
-
-  return {
-    ...previousCategory,
-    activities
-  };
-}
-
-export function stateSetup(state, index, category, operation) {
+function stateSetup(state, index, category, operation) {
   if (DELETE_CATEGORY_MUTATION === operation) {
     return [
       ...state.slice(0, index),
       ...state.slice(index + 1, state.length)
     ];
   }
+
   return [
     ...state.slice(0, index),
     category,
@@ -46,50 +39,78 @@ export function stateSetup(state, index, category, operation) {
   ]
 }
 
+function categorySetup(state, { type, ...action }, index) {
+  const previousCategory = state[ index ];
+  const activityEdges = activitiesReducer(previousCategory.activityEdges, type, action);
+  let pageInfo;
+  if (FETCH_MORE_ACTIVITIES === type) {
+    pageInfo = action.activitiesPage.pageInfo;
+  } else {
+    pageInfo = previousCategory.pageInfo;
+  }
+
+  return {
+    ...previousCategory,
+    activityEdges,
+    pageInfo
+  };
+}
+
 function apolloCategoriesStateSetup(action) {
   const { result: { data: { categoryList: { categories } } } } = action;
+
   return categories;
 }
 
 function categoryActivitiesQueryResultStateSetup(state, action) {
-    const { result: { data: { categoryInterface: { activities, id } } } } = action;
-    const index = getIndex(state, splitNodeId(id));
-    const previousCategory = state[index];
-    const category = {
-      ...previousCategory,
-      activities
-    };
+  const {
+    result: { data: { categoryInterface: { id, activitiesPage: { edges, pageInfo } } } }
+  } = action;
 
-    return stateSetup(state, index, category);
+  const index = getIndex(state, splitNodeId(id));
+  const previousCategory = state[ index ];
+  const category = {
+    ...previousCategory,
+    activityEdges: edges,
+    pageInfo
+  };
+
+  return stateSetup(state, index, category);
 }
 
-function moveCategoryStateSetup(state, activity, previousActivity) {
-  const previousIndex = getIndex(state, previousActivity.categoryId);
-  const deleteAction = { id: previousActivity.id, type: DELETE_ACTIVITY };
-  const categoryWithActivityRemoved = categorySetup(state, deleteAction, previousIndex);
-  const stateWithActivityRemoved = stateSetup(state, previousIndex, categoryWithActivityRemoved);
-  const newIndex = getIndex(stateWithActivityRemoved, activity.categoryId);
-  const addAction = { ...previousActivity, ...activity, type: ADD_ACTIVITY };
-  const categoryWithActivityAdded = categorySetup(stateWithActivityRemoved, addAction, newIndex);
+function moveActivityStateSetup(state, activity, previousCategoryIndex, updatedCategoryIndex) {
+  const deleteAction = { id: activity.id, type: DELETE_ACTIVITY };
+  const categoryWithActivityRemoved = categorySetup(state, deleteAction, previousCategoryIndex);
+  const stateWithActivityRemoved = stateSetup(state, previousCategoryIndex, categoryWithActivityRemoved);
 
-  return stateSetup(stateWithActivityRemoved, newIndex, categoryWithActivityAdded);
+  const { activityEdges: previousActivityEdges } = state[ previousCategoryIndex ];
+  const previousActivityIndex = getEdgeIndex(previousActivityEdges, activity.id);
+  const { node: previousActivityNode } = previousActivityEdges[ previousActivityIndex ];
+  const addAction = { ...previousActivityNode, ...activity, type: ADD_ACTIVITY };
+  const categoryWithActivityAdded = categorySetup(stateWithActivityRemoved, addAction, updatedCategoryIndex);
+
+  return stateSetup(stateWithActivityRemoved, updatedCategoryIndex, categoryWithActivityAdded);
 }
 
 function updateCategoryStateSetup(state, action) {
-  const { optimisticResponse: { activity, previousActivity } } = action;
-  const index = getCategoryIndexByActivity(state, activity.id);
-  if (index < 0) {
-    activityReducer(activity, action);
+  const { optimisticResponse: { activity: updatedActivity, previousCategoryId } } = action;
+  const { categoryId: updatedActivityCategoryId } = updatedActivity;
 
+  const categoryIndex = getIndex(state, updatedActivityCategoryId || previousCategoryId);
+  const { activityEdges: categoryActivities } = state[ categoryIndex ];
+
+  if (!categoryActivities) {
     return state;
   }
-  if (activity.categoryId && activity.categoryId !== previousActivity.categoryId) {
-    return moveCategoryStateSetup(state, activity, previousActivity);
-  }
-  const updateAction = { ...activity, type: UPDATE_ACTIVITY };
-  const category = categorySetup(state, updateAction, index);
 
-  return stateSetup(state, index, category);
+  if (updatedActivityCategoryId && updatedActivityCategoryId !== previousCategoryId) {
+    return moveActivityStateSetup(state, updatedActivity, getIndex(state, previousCategoryId), categoryIndex);
+  }
+
+  const updateAction = { ...updatedActivity, type: UPDATE_ACTIVITY };
+  const category = categorySetup(state, updateAction, categoryIndex);
+
+  return stateSetup(state, categoryIndex, category);
 }
 
 function newActivityStateSetup(state, action) {
@@ -101,9 +122,9 @@ function newActivityStateSetup(state, action) {
 }
 
 function optimisticActivityAddedStateSetup(state, optimisticResponse) {
-  const { createActivity, createActivity: { categoryId } } = optimisticResponse;
-  const index = getIndex(state, categoryId);
-  const updatedCategory = categorySetup(state, { ...createActivity, type: ADD_ACTIVITY }, index);
+  const { createActivity: activity } = optimisticResponse;
+  const index = getIndex(state, activity.categoryId);
+  const updatedCategory = categorySetup(state, { ...activity, type: ADD_ACTIVITY }, index);
 
   return stateSetup(state, index, updatedCategory);
 }
@@ -116,36 +137,67 @@ function optimisticActivityRemovedStateSetup(state, optimisticResponse) {
   return stateSetup(state, index, updatedCategory);
 }
 
+function fetchMoreActivitiesStateSetup(state, action) {
+  const { result: { data: { categoryInterface } }, operationName } = action;
+  const index = getIndex(state, splitNodeId(categoryInterface.id));
+  const fetchMoreAction = { type: operationName, ...categoryInterface };
+  const updatedCategory = categorySetup(state, fetchMoreAction, index);
+
+  return stateSetup(state, index, updatedCategory);
+}
+
 const initialState = [];
 export default function categoriesReducer(state = initialState, action) {
   const { type, operationName, optimisticResponse } = action;
-  const optimisticMutation = type === APOLLO_MUTATION_INIT;
-  const mutationResult = type === APOLLO_MUTATION_RESULT;
+  const optimisticMutation = APOLLO_MUTATION_INIT === type;
+  const mutationResult = APOLLO_MUTATION_RESULT === type;
 
-  if (optimisticMutation && APOLLO_CREATE_ACTIVITY_MUTATION === operationName) {
+  if (optimisticMutation && CREATE_ACTIVITY_MUTATION === operationName) {
 
     return optimisticActivityAddedStateSetup(state, optimisticResponse);
-  } else if (optimisticMutation && APOLLO_DELETE_ACTIVITY_MUTATION === operationName) {
+  } else if (optimisticMutation && DELETE_ACTIVITY_MUTATION === operationName) {
 
     return optimisticActivityRemovedStateSetup(state, optimisticResponse);
-  } else if (optimisticMutation && APOLLO_UPDATE_ACTIVITY_MUTATION === operationName) {
+  } else if (optimisticMutation && UPDATE_ACTIVITY_MUTATION === operationName) {
 
     return updateCategoryStateSetup(state, action);
-  } else if (mutationResult && APOLLO_CREATE_ACTIVITY_MUTATION === operationName) {
+  } else if (mutationResult && CREATE_ACTIVITY_MUTATION === operationName) {
 
     return newActivityStateSetup(state, action);
-  } else if (APOLLO_CATEGORIES_QUERY === operationName) {
+  } else if (CATEGORIES_QUERY === operationName) {
 
     return apolloCategoriesStateSetup(action)
-  } else if (APOLLO_ACTIVITIES_QUERY === operationName) {
+  } else if (ACTIVITIES_QUERY === operationName) {
 
     return categoryActivitiesQueryResultStateSetup(state, action);
-  } else if ([CREATE_CATEGORY_MUTATION, DELETE_CATEGORY_MUTATION, UPDATE_CATEGORY_MUTATION].indexOf(operationName) > -1) {
+  } else if (FETCH_MORE_ACTIVITIES === operationName) {
+
+    return fetchMoreActivitiesStateSetup(state, action);
+  } else if ([ CREATE_CATEGORY_MUTATION, DELETE_CATEGORY_MUTATION, UPDATE_CATEGORY_MUTATION ].indexOf(operationName) > -1) {
 
     return crudCategoryStateSetup(operationName, optimisticMutation, mutationResult, action, state);
   } else {
 
     return state;
+  }
+}
+
+function crudCategoryStateSetup(operationName, optimisticMutation, mutationResult, action, state) {
+  const { category, index } = categoryReducer(operationName, optimisticMutation, mutationResult, action, state);
+
+  switch (operationName) {
+    case CREATE_CATEGORY_MUTATION:
+
+      return addedCategoryStateSetup(state, category, index, optimisticMutation);
+    case DELETE_CATEGORY_MUTATION:
+
+      return removedCategoryStateSetUp(state, index);
+    case UPDATE_CATEGORY_MUTATION:
+
+      return updatedCategoryStateSetup(state, category, index, optimisticMutation);
+    default:
+
+      return state;
   }
 }
 
@@ -168,24 +220,5 @@ function removedCategoryStateSetUp(state, index) {
     return stateSetup(state, index, null, DELETE_CATEGORY_MUTATION)
   } else {
     return state;
-  }
-}
-
-function crudCategoryStateSetup(operationName, optimisticMutation, mutationResult, action, state) {
-  const { category, index } = categoryReducer(operationName, optimisticMutation, mutationResult, action, state);
-
-  switch (operationName) {
-    case CREATE_CATEGORY_MUTATION:
-
-      return addedCategoryStateSetup(state, category, index, optimisticMutation);
-    case DELETE_CATEGORY_MUTATION:
-
-      return removedCategoryStateSetUp(state, index);
-    case UPDATE_CATEGORY_MUTATION:
-
-      return updatedCategoryStateSetup(state, category, index, optimisticMutation);
-    default:
-
-      return state;
   }
 }

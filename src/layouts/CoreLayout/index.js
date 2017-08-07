@@ -15,15 +15,11 @@ export const CoreLayout = ({ children }) => {
   );
 };
 
-const { arrayOf, shape, object, any } = PropTypes;
+const { arrayOf, shape, object } = PropTypes;
 
 CoreLayout.propTypes = {
   children: arrayOf(shape({
-    props: object.isRequired,
-    key: any,
-    ref: any,
-    _owner: any,
-    _store: object
+    props: object.isRequired
   })).isRequired
 };
 

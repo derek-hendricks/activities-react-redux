@@ -1,8 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import ApolloClient, {
-  createNetworkInterface
-} from 'apollo-client'
+import ApolloClient, {createNetworkInterface} from 'apollo-client'
 
 import createStore from './store/createStore'
 import AppContainer from './containers/AppContainer'
@@ -15,12 +13,6 @@ const client = new ApolloClient({
     },
     ssrForceFetchDelay: 100,
     connectToDevTools: __DEV__,
-    dataIdFromObject: (result) => {
-      if (result.id && result.__typename) {
-        return result.__typename + result.id;
-      }
-      return null;
-    }
   })
 });
 
@@ -31,7 +23,6 @@ const MOUNT_NODE = document.getElementById('root');
 
 let render = () => {
   const routes = require('./routes/index').default(store);
-
   ReactDOM.render(
     <AppContainer store={store} client={client} routes={routes}/>,
     MOUNT_NODE

@@ -2,20 +2,27 @@ import {connect} from 'react-redux'
 import {graphql, compose} from 'react-apollo'
 
 import Category from '../components/Category/index'
-import {activitiesQuery} from '../../../gql/queries'
+import {gqlActivities} from '../../../gql/queries'
 import {createActivity} from '../../../gql/mutations'
+import {OPTIMISTIC_ACTIVITY_ID} from '../../../store/activities'
+import {ACTIVITIES_QUERY, FETCH_MORE_ACTIVITIES} from '../../../store/categories'
+
 import {
   setProperties,
   clearFormFields,
   getCategory,
-  sortCategories
+  sortCategories,
+  splitNodeId
 } from '../../../utils/index';
 
-const initialState = { error: false, loading: false, category: {}, activity: {}, categories: [] };
+const initialState = {
+  error: false, loading: false,
+  category: {}, activity: {}, categories: []
+};
 
 const mapStateToCategoryProps = (state = initialState) => {
   const { activeCategoryId, categories: categoryList }  = state;
-  const category = getCategory({categories: categoryList}, activeCategoryId);
+  const category = getCategory({ categories: categoryList }, activeCategoryId);
   const categories = sortCategories(categoryList, activeCategoryId);
 
   return {
@@ -40,44 +47,78 @@ const mergeCategoryProps = (stateProps, dispatchProps) => ({
   }
 });
 
-const queryOptions = {
-  options: (props) => {
-    const { category = {}, activeCategoryId } = props;
-    const { activities } = category;
+const updateActivitiesQuery = (previousResult, result) => {
+  const { fetchMoreResult: { data: { categoryInterface: { activitiesPage, id } } } } = result;
+  const { pageInfo, edges } = activitiesPage;
 
+  return {
+    data: {
+      activitiesPage: {
+        pageInfo,
+        edges
+      },
+      categoryId: splitNodeId(id)
+    }
+  };
+};
+
+const fetchMoreActivities = (props, { before, first }) => {
+  const { data: { fetchMore }, ownProps: { category } } = props;
+
+  return fetchMore({
+    variables: {
+      id: `categories: ${category.id}`,
+      first,
+      before
+    },
+    query: gqlActivities(FETCH_MORE_ACTIVITIES),
+    updateQuery: updateActivitiesQuery
+  });
+};
+
+const activitiesQueryOptions = {
+  options: ({ activeCategoryId }) => {
     return {
-      skip: !activeCategoryId || !!activities,
+      skip: +activeCategoryId < 0,
       variables: {
-        "id": `categories: ${activeCategoryId}`
+        id: `categories: ${activeCategoryId}`,
+        first: 10
       }
     };
   },
-  props: ({ data: { loading, error = false } }) => {
+  props: (props) => {
+    const { data:  { loading, error = false } } = props;
+
     return {
       loading,
-      error
-    };
+      error,
+      loadMoreActivities: (cursor) => (
+        fetchMoreActivities(props, cursor)
+      )
+    }
   }
 };
 
 const createActivityOptions = {
-  props: ({ mutate }) => ({
-    onActivitySubmit: (activity) => {
-      return (
-        mutate({
-          variables: { ...activity },
-          optimisticResponse: {
-            __typename: "Mutation",
-            createActivity: {
-              ...activity,
-              id: `${activity.categoryId}:${activity.name}`,
-              __typename: "Activity"
-            }
-          }
-        })
-      );
-    }
-  })
+  props: ({ mutate }) => {
+    const mutateOptions = (activity) => ({
+      variables: { ...activity },
+      optimisticResponse: {
+        __typename: "Mutation",
+        createActivity: {
+          ...activity,
+          id: OPTIMISTIC_ACTIVITY_ID,
+          __typename: "Activity"
+        }
+      }
+    });
+
+    return {
+      onActivitySubmit: (activity) => (
+        mutate(mutateOptions(activity))
+      )
+    };
+  }
 };
 
 export default compose(
@@ -85,6 +126,6 @@ export default compose(
     (state) => mapStateToCategoryProps(state),
     (dispatch) => mapDispatchToCategoryProps(dispatch),
     (stateProps, dispatchProps) => mergeCategoryProps(stateProps, dispatchProps)),
-  graphql(activitiesQuery, queryOptions),
+  graphql(gqlActivities(ACTIVITIES_QUERY), activitiesQueryOptions),
   graphql(createActivity, createActivityOptions)
 )(Category);

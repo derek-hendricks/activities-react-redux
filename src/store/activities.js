@@ -1,57 +1,89 @@
-import {getIndex} from '../utils'
+import {getEdgeIndex} from '../utils'
+import {FETCH_MORE_ACTIVITIES} from './categories'
+
+export const OPTIMISTIC_ACTIVITY_ID = -1;
 
 const ADD_ACTIVITY = 'ADD_ACTIVITY';
 const DELETE_ACTIVITY = 'DELETE_ACTIVITY';
 const UPDATE_ACTIVITY = 'UPDATE_ACTIVITY';
 const APOLLO_MUTATION_RESULT = 'APOLLO_MUTATION_RESULT';
 
-const initialState = [];
-
-export default function activitiesReducer(state = initialState, action) {
-  switch (action.type) {
+export function activitiesReducer(state = [], type, action) {
+  switch (type) {
     case ADD_ACTIVITY:
 
-      return activitiesAdded(state, action);
+      return activityAdded(state, action);
     case UPDATE_ACTIVITY:
-      const activityIndex = getIndex(state, action.id);
+      const activityIndex = getEdgeIndex(state, action.id);
 
       return activityUpdated(state, action, activityIndex);
     case DELETE_ACTIVITY:
 
       return activitiesDeleted(state, action);
     case APOLLO_MUTATION_RESULT:
-      const { result: { data: { CREATE_ACTIVITY_MUTATION: { id, name, categoryId } } } } = action;
-      const index = getIndex(state, `${categoryId}:${name}`);
+      const { result: { data: { CREATE_ACTIVITY_MUTATION: activity } } } = action;
+      const index = getEdgeIndex(state, OPTIMISTIC_ACTIVITY_ID);
 
-      return activityUpdated(state, { id }, index);
+      return activityUpdated(state, activity, index);
+    case FETCH_MORE_ACTIVITIES:
+
+      return fetchedActivitiesAdded(state, action);
     default:
+
       return state;
   }
 }
 
-function activitiesAdded(state, { type, __typename, ...activity }) {
-  return [].concat(activity, state);
+function fetchedActivitiesAdded(state, action) {
+  const { activitiesPage: { edges } } = action;
+
+  return [
+    ...state,
+    ...edges
+  ];
 }
 
-function activityUpdated(state, activity, activityIndex) {
-  const previousActivity = state[activityIndex];
-  const modifiedActivity = {
-    ...previousActivity,
-    ...activity
+function activityAdded(state, activity) {
+  const optimisticActivity = {
+    node: {
+      ...activity
+    }
   };
 
   return [
+    ...state,
+    optimisticActivity
+  ]
+}
+
+export const updateActivity = (edge, updatedNodeProps) => {
+  const { node: previousNode, ...activityEdge } = edge;
+  const node = {
+    ...previousNode,
+    ...updatedNodeProps
+  };
+
+  return {
+    ...activityEdge,
+    node
+  };
+};
+
+function activityUpdated(state, activity, activityIndex) {
+  const updatedActivity = updateActivity(state[ activityIndex ], activity);
+
+  return [
     ...state.slice(0, activityIndex),
-    modifiedActivity,
+    updatedActivity,
     ...state.slice(activityIndex + 1, state.length)
   ]
 }
 
-function activitiesDeleted(state, {id}) {
-  const activityIndex = getIndex(state, id);
+function activitiesDeleted(state, { id }) {
+  const index = getEdgeIndex(state, id);
 
   return [
-    ...state.slice(0, activityIndex),
-    ...state.slice(activityIndex + 1, state.length)
+    ...state.slice(0, index),
+    ...state.slice(index + 1, state.length)
   ];
 }

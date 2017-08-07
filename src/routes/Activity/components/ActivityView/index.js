@@ -1,4 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+
 import './styles.scss'
 import Activity from '../../containers/Activity'
 
@@ -10,10 +12,12 @@ export const ActivityView = ({ id, store, props }) => {
   )
 };
 
+const { string, object } = PropTypes;
+
 ActivityView.propTypes = {
-  id: React.PropTypes.string.isRequired,
-  store: React.PropTypes.object.isRequired,
-  props: React.PropTypes.object.isRequired
+  id: string.isRequired,
+  store: object.isRequired,
+  props: object.isRequired
 };
 
 export default ActivityView

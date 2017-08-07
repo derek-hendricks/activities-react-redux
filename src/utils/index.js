@@ -1,22 +1,26 @@
-export const getIndex = (items, id) => {
-  return items.findIndex(item => item.id === id);
+export const getIndex = (items, itemId) => {
+  return items.findIndex(({ id }) => itemId === id);
+};
+
+export const getEdgeIndex = (edges, edgeId) => {
+  return edges.findIndex(({ node: { id } }) => edgeId === id)
 };
 
 export const getCategoryIndexByActivity = (categories, activityId) => {
-  return categories.slice().findIndex(({ activities = [] }) => {
-    if (!activities.length) {
+  return categories.findIndex(({ activityEdges = [] }) => {
+    if (!activityEdges.length) {
       return false;
     }
 
-    return activities.find((activity) => (
-      activityId === activity.id
+    return activityEdges.find(({ node: { id } }) => (
+      activityId === id
     ))
   })
 };
 
 export const sortCategories = (categories, categoryId) => {
-  return categories.slice().sort((activity) => {
-    if (activity.id !== categoryId) {
+  return categories.slice().sort(({ id }) => {
+    if (categoryId !== id) {
       return 1
     } else {
       return -1
@@ -25,14 +29,18 @@ export const sortCategories = (categories, categoryId) => {
 };
 
 export const getActivityByCategoryId = (categoryId, activityId, categories = []) => {
-  const id = String(activityId);
-  const index = categories.findIndex(category => category.id === categoryId);
-  const { activities = [] } = categories[index] || {};
-  if (!activities.length) {
+  const index = categories.findIndex(({ id }) => categoryId === id);
+  if (index < 0) {
+    return;
+  }
+  const { activityEdges = [] } = categories[ index ];
+  if (!activityEdges.length) {
     return;
   }
 
-  return activities.find(activity => activity.id === id);
+  return activityEdges.find(({ node: { id } }) => (
+    activityId === id
+  ));
 };
 
 export const getCategory = ({ categories = [] }, id) => {
@@ -52,18 +60,8 @@ export const getCategoriesWithActiveSet = ({ categories = [] }, id) => {
 
   return categories.slice().map((category) => ({
     ...category,
-    active: category.id === id
+    active: id === category.id
   }));
-};
-
-export const getCategoryDeleteVariables = (id, deletedActivities) => {
-  const deleteVariables = { "id": `categories: ${id}` };
-  let variables = { ...deleteVariables };
-  if (deletedActivities.length >= 1) {
-    const activities = deletedActivities.map((activity) => (activity.id)).join(",");
-    variables = { ...deleteVariables, activities };
-  }
-  return variables;
 };
 
 export const setProperties = (obj, property) => {
@@ -71,12 +69,12 @@ export const setProperties = (obj, property) => {
   const inputObj = { ...obj };
   const keys = Object.keys(inputObj);
   for (const key of keys) {
-    const inputValue = (((inputObj[key] || {}).inputRef || {}).value || '').trim();
-    if (inputObj[key] === property || !inputValue) {
+    const inputValue = (((inputObj[ key ] || {}).inputRef || {}).value || '').trim();
+    if (inputObj[ key ] === property || !inputValue) {
       continue;
     }
-    data[key] = inputValue;
-    inputReferences.push(obj[key].inputRef);
+    data[ key ] = inputValue;
+    inputReferences.push(obj[ key ].inputRef);
   }
 
   return {
@@ -87,11 +85,15 @@ export const setProperties = (obj, property) => {
 
 export const clearFormFields = (inputReferences, selectReference) => {
   for (let i = 0, len = inputReferences.length; i < len; i++) {
-    inputReferences[i].value = '';
+    inputReferences[ i ].value = '';
   }
   if (selectReference) {
     selectReference.selectedIndex = 0;
   }
+};
+
+export const sqliteDate = (date) => {
+  return date.toISOString().split('.')[0].replace(/T/, ' ');
 };
 
 export const isInteger = (x) => {
@@ -99,7 +101,7 @@ export const isInteger = (x) => {
 };
 
 export const splitNodeId = (nodeId) => {
-  return nodeId.split(":")[1].trim();
+  return nodeId.split(":")[ 1 ].trim();
 };
 
 export const classify = (text = " ") => {
@@ -107,6 +109,5 @@ export const classify = (text = " ") => {
 };
 
 export const capitalize = (text) => {
-  return `${text[0].toUpperCase()}${text.slice(1)}`
+  return `${text[ 0 ].toUpperCase()}${text.slice(1)}`
 };
-

@@ -12,22 +12,23 @@ export const Activity = (props) => {
     activity = {},
     activeCategoryId,
     handleActivityDelete,
-    handleActivityUpdate,
-    onActivityUpdate,
-    dispatch,
+    updateActivity,
     categories,
     loading,
     error
   } = props;
 
-  if (loading && !(activity).id) {
+  if (loading && !activity.node) {
+
     return (
       <div>
         <Dimmer active inverted>
           <Loader inverted>Loading</Loader>
         </Dimmer>
-      </div>)
+      </div>
+    )
   } else if (error) {
+
     return (
       <LoadError
         className="activity"
@@ -36,7 +37,7 @@ export const Activity = (props) => {
       />
     )
   } else {
-    const { name, id, about, location, date } = activity;
+    const { node: { name, id, about, location, date } } = activity;
 
     return (
       <div className="activity">
@@ -46,27 +47,19 @@ export const Activity = (props) => {
         <p>Date: {date}</p>
 
         <ActivityForm
-          onSubmit={(activityObject) => {
-            return handleActivityUpdate(
-              { ...activityObject, id },
-              onActivityUpdate,
-              activity,
-              dispatch
-            )
-          }}
+          onSubmit={(updatedValues) => (
+            updateActivity({id, ...updatedValues}, activeCategoryId)
+          )}
           buttonText={"Edit Activity"}
           placeholder={"Edit"}
           categories={categories}
-          activity={activity}
           activeCategoryId={activeCategoryId}
         />
 
         <LinkButton
           text={'Delete'}
           className={'delete-activity'}
-          onClick={() => {
-            return handleActivityDelete(id, activeCategoryId)
-          }}
+          onClick={() => (handleActivityDelete(id, activeCategoryId))}
         />
       </div>
     )
@@ -76,25 +69,25 @@ export const Activity = (props) => {
 const { string, func, bool, arrayOf, shape } = PropTypes;
 
 Activity.propTypes = {
-  activeCategoryId: string,
   handleActivityDelete: func.isRequired,
-  onActivityUpdate: func.isRequired,
-  handleActivityUpdate: func.isRequired,
-  dispatch: func.isRequired,
+  updateActivity: func.isRequired,
   loading: bool.isRequired,
+  error: bool.isRequired,
+  activeCategoryId: string,
   activity: shape({
-    id: string,
-    name: string,
-    about: string,
-    location: string,
-    date: string
-  }).isRequired,
-  categories: arrayOf(
-    shape({
+    node: shape({
       id: string.isRequired,
       name: string.isRequired,
-      description: string
-    })).isRequired
+      about: string,
+      location: string,
+      date: string
+    })
+  }).isRequired,
+  categories: arrayOf(shape({
+    id: string.isRequired,
+    name: string.isRequired,
+    description: string
+  })).isRequired
 };
 
 export default Activity
