@@ -48,7 +48,7 @@
       "env": {
         "DEBUG": "app:*",
         "NODE_ENV": "production",
-        "API_BASE": "https://activity-manager.herokuapp.com/graphql"
+        "API_BASE": "https://category-manager.herokuapp.com/graphql"
       }
     },
     "dev": {
