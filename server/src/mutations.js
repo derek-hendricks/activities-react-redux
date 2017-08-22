@@ -1,12 +1,29 @@
-const GraphQLNonNull = require('graphql').GraphQLNonNull;
-const GraphQLID = require('graphql').GraphQLID;
-const GraphQLString = require('graphql').GraphQLString;
+const {
+  GraphQLString,
+  GraphQLNonNull,
+  GraphQLID
+} = require('graphql');
 
-const types = require('./types');
-const loaders = require('./loaders');
+const { getNodeById } = require('./loaders/nodeLoaders');
+const { updateRow } = require('./loaders/sqlShared');
+
+const {
+  ActivityType,
+  CategoryType
+} = require('./types');
+
+const {
+  createActivity: activityCreate,
+  deleteActivity: activityDelete
+} = require('./loaders/activities');
+
+const {
+  createCategory: categoryCreate,
+  deleteCategory: categoryDelete
+} = require('./loaders/categories');
 
 const createActivity = {
-  type: types.ActivityType,
+  type: ActivityType,
   args: {
     name: {
       type: new GraphQLNonNull(GraphQLString)
@@ -25,14 +42,14 @@ const createActivity = {
     }
   },
   resolve(_, args) {
-    return loaders.createActivity(args).then((nodeId) => {
-      return loaders.getNodeById(nodeId);
+    return activityCreate(args).then((nodeId) => {
+      return getNodeById(nodeId);
     });
   }
 };
 
 const createCategory = {
-  type: types.CategoryType,
+  type: CategoryType,
   args: {
     name: {
       type: new GraphQLNonNull(GraphQLString)
@@ -42,14 +59,14 @@ const createCategory = {
     }
   },
   resolve(_, args) {
-    return loaders.createCategory(args).then((nodeId) => {
-      return loaders.getNodeById(nodeId);
+    return categoryCreate(args).then((nodeId) => {
+      return getNodeById(nodeId);
     });
   }
 };
 
 const updateCategory = {
-  type: types.CategoryType,
+  type: CategoryType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID)
@@ -62,19 +79,17 @@ const updateCategory = {
     }
   },
   resolve(_, args) {
-    return loaders.updateRow(args).then((result) => {
+    return updateRow(args).then((result) => {
       if (result.error) {
         return result.error
       }
-      return (
-        loaders.getNodeById(args.id)
-      )
+      return getNodeById(args.id)
     })
   }
 };
 
 const deleteCategory = {
-  type: types.CategoryType,
+  type: CategoryType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID)
@@ -84,12 +99,12 @@ const deleteCategory = {
     }
   },
   resolve(_, args) {
-    return loaders.deleteCategory(args);
+    return categoryDelete(args);
   }
 };
 
 const deleteActivity = {
-  type: types.CategoryType,
+  type: CategoryType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID),
@@ -99,14 +114,14 @@ const deleteActivity = {
     }
   },
   resolve(_, args) {
-    return loaders.deleteActivity(args).then(() => {
-      return loaders.getNodeById(args.categoryId);
+    return activityDelete(args).then(() => {
+      return getNodeById(args.categoryId);
     })
   }
 };
 
 const updateActivity = {
-  type: types.ActivityType,
+  type: ActivityType,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID)
@@ -128,8 +143,8 @@ const updateActivity = {
     }
   },
   resolve(_, args) {
-    return loaders.updateRow(args).then(() => {
-      return loaders.getNodeById(args.id);
+    return updateRow(args).then(() => {
+      return getNodeById(args.id);
     })
   }
 };

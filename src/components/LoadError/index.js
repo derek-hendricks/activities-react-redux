@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+
 import {
   DimmerDimmable,
   Segment,
   Dimmer,
   Header,
   Icon
-} from 'semantic-ui-react';
+} from 'semantic-ui-react'
 
 import './styles.scss'
 
@@ -33,14 +34,15 @@ export const LoadError = (props) => {
   )
 };
 
-const { string } = PropTypes;
+const { string, bool } = PropTypes;
 
 LoadError.propTypes = {
   errorText: string,
   className: string,
   icon: string,
   dimmed: string,
-  inverted: string
+  inverted: bool
 };
 
 export default LoadError
+

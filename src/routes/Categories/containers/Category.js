@@ -62,8 +62,9 @@ const updateActivitiesQuery = (previousResult, result) => {
   };
 };
 
-const fetchMoreActivities = (props, { before, first }) => {
-  const { data: { fetchMore }, ownProps: { category } } = props;
+const fetchMoreActivities = (props, fetchMore, cursor) => {
+  const { category } = props;
+  const { before, first } = cursor;
 
   return fetchMore({
     variables: {
@@ -77,23 +78,24 @@ const fetchMoreActivities = (props, { before, first }) => {
 };
 
 const activitiesQueryOptions = {
-  options: ({ activeCategoryId }) => {
-    return {
-      skip: +activeCategoryId < 0,
-      variables: {
-        id: `categories: ${activeCategoryId}`,
-        first: 10
-      }
-    };
-  },
+  options: ({ activeCategoryId }) => ({
+    skip: OPTIMISTIC_ACTIVITY_ID === +activeCategoryId,
+    variables: {
+      id: `categories: ${activeCategoryId}`,
+      first: 10
+    }
+  }),
   props: (props) => {
-    const { data:  { loading, error = false } } = props;
+    const {
+      ownProps,
+      data:  { fetchMore, loading, error = false }
+    } = props;
 
     return {
       loading,
       error,
       loadMoreActivities: (cursor) => (
-        fetchMoreActivities(props, cursor)
+        fetchMoreActivities(ownProps, fetchMore, cursor)
       )
     }
   }
@@ -101,17 +103,19 @@ const activitiesQueryOptions = {
 
 const createActivityOptions = {
   props: ({ mutate }) => {
-    const mutateOptions = (activity) => ({
-      variables: { ...activity },
-      optimisticResponse: {
-        __typename: "Mutation",
-        createActivity: {
-          ...activity,
-          id: OPTIMISTIC_ACTIVITY_ID,
-          __typename: "Activity"
+    const mutateOptions = (activity) => {
+      // debugger;
+      // __typename: 'Mutation',
+      return {
+        variables: { ...activity },
+        optimisticResponse: {
+          createActivity: {
+            ...activity,
+            id: OPTIMISTIC_ACTIVITY_ID
+          }
         }
-      }
-    });
+      };
+    };
 
     return {
       onActivitySubmit: (activity) => (

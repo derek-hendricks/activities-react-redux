@@ -63,6 +63,7 @@ export const ActivityForm = (props) => {
       <Button
         onClick={() => {
           const activity = { ...activityObject, categoryId };
+          {/*debugger;*/}
           return onSubmit(activity);
         }}
       >

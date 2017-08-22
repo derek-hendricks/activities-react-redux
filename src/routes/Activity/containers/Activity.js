@@ -2,8 +2,10 @@ import {connect} from "react-redux"
 import {graphql, compose} from "react-apollo";
 import Activity from "../components/Activity/index"
 
-import {activityQuery} from '../../../gql/queries'
+import {activityQuery, categoriesQuery} from '../../../gql/queries'
 import {activityDelete, activityUpdate} from '../../../gql/mutations'
+import {categoriesQueryOptions} from '../../../containers/Categories'
+
 import {
   setProperties,
   clearFormFields,
@@ -69,7 +71,10 @@ const updatedActivity = (id, updatedValues) => {
 const activityUpdateOptions = {
   props: ({ ownProps, mutate }) => ({
     updateActivity: ({ id, ...updatedValues }, previousCategoryId) => {
-      const activity = updatedActivity(id, updatedValues);
+      const { categoryId, ...activity } = updatedActivity(id, updatedValues);
+      if (categoryId !== previousCategoryId) {
+        activity.categoryId = categoryId
+      }
 
       return (
         mutate({
@@ -107,6 +112,7 @@ const activityQueryOptions = {
 };
 
 export default compose(
+  graphql(categoriesQuery, categoriesQueryOptions),
   graphql(activityQuery, activityQueryOptions),
   connect(
     (state, ownProps) => mapStateToActivityProps(state, ownProps),

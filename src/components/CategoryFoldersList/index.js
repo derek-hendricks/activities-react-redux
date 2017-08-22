@@ -21,18 +21,18 @@ export const CategoryFoldersList = (props) => {
     listItemIconName = "file"
   } = props;
 
-  const listItem = (data) => {
-    const { id, categoryId, name, __typename, ...item } = data;
-    const listItemAttributes = Object.keys(item).filter((attr) => item[attr]);
+  const listItem = (itemData, itemIndex) => {
+    const { id, categoryId, name, __typename, ...item } = itemData;
+    const listItemAttributes = Object.keys(item).filter((attr) => item[ attr ]);
 
     return (
-      <ListItem key={id} className={classify(__typename)}>
+      <ListItem key={itemIndex} className={classify(__typename)}>
         <ListIcon name={listItemIconName}/>
         <ListContent>
           <ListHeader>{name}</ListHeader>
           {listItemAttributes.map((attr, index) => (
             <ListDescription key={index}>
-              <strong>{`${capitalize(attr)}: `}</strong>{`${item[attr]}`}
+              <strong>{`${capitalize(attr)}: `}</strong>{`${item[ attr ]}`}
             </ListDescription>
           ))}
         </ListContent>
@@ -48,7 +48,7 @@ export const CategoryFoldersList = (props) => {
           <ListHeader>{listHeader}</ListHeader>
           <ListDescription>{listDescription}</ListDescription>
           <List>
-            {listItems.map(({node}) => listItem(node))}
+            {listItems.map(({ node }, index) => listItem(node, index))}
           </List>
         </ListContent>
       </ListItem>
@@ -56,21 +56,25 @@ export const CategoryFoldersList = (props) => {
   );
 };
 
-const { string, shape, arrayOf } = PropTypes;
+const {
+  string, number, shape, arrayOf, oneOfType
+} = PropTypes;
 
 CategoryFoldersList.propTypes = {
   listHeader: string.isRequired,
-  listItems: arrayOf(shape({
-    node: shape({
-      id: string.isRequired,
-      name: string.isRequired,
-      categoryId: string,
-      about: string,
-      location: string,
-      date: string,
-      createdAt: string
-    }).isRequired
-  })),
+  listItems: arrayOf(
+    shape({
+      node: shape({
+        name: string.isRequired,
+        id: oneOfType([ string, number ]).isRequired,
+        categoryId: string,
+        about: string,
+        location: string,
+        date: string,
+        createdAt: string
+      }).isRequired
+    })
+  ),
   listDescription: string,
   listTitle: string,
   listIconName: string,
@@ -78,3 +82,6 @@ CategoryFoldersList.propTypes = {
 };
 
 export default CategoryFoldersList
+
+
+

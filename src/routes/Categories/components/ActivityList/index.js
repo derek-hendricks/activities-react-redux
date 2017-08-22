@@ -20,14 +20,16 @@ export const ActivityList = ({ edges }) => {
   );
 };
 
-const { string, arrayOf, shape, any } = PropTypes;
+const {
+  string, number, arrayOf, shape, oneOfType
+} = PropTypes;
 
 ActivityList.propTypes = {
   edges: arrayOf(shape({
     cursor: string,
     node: shape({
-      id: string.isRequired,
-      name: string.isRequired
+      name: string.isRequired,
+      id: oneOfType([ string, number ]).isRequired
     })
   })).isRequired
 };

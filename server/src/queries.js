@@ -1,25 +1,32 @@
-const GraphQLNonNull = require('graphql').GraphQLNonNull;
-const GraphQLID = require('graphql').GraphQLID;
+const {
+  GraphQLNonNull,
+  GraphQLID
+} = require('graphql');
 
-const types = require('./types');
-const loaders = require('./loaders');
+const {
+  CategoriesType,
+  CategoryInterface
+} = require('./types');
+
+const { getNodeById } = require('./loaders/nodeLoaders');
+const { getCategories } = require('./loaders/categories');
 
 const categoryList = {
-  type: types.CategoriesType,
+  type: CategoriesType,
   resolve() {
-    return loaders.getCategories();
+    return getCategories();
   }
 };
 
 const categoryInterface = {
-  type: types.CategoryInterface,
+  type: CategoryInterface,
   args: {
     id: {
       type: new GraphQLNonNull(GraphQLID)
     }
   },
   resolve(_, args) {
-    return loaders.getNodeById(args.id);
+    return getNodeById(args.id);
   }
 };
 

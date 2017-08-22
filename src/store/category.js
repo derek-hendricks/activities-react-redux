@@ -1,7 +1,7 @@
 import {splitNodeId, getIndex} from "../utils"
 
 export const OPTIMISTIC_ACTIVITY_ID = -1;
-export const TYPE_NAME = "Category";
+export const CATEGORY_TYPE_NAME = "Category";
 
 const CREATE_CATEGORY_MUTATION = "CREATE_CATEGORY_MUTATION";
 const UPDATE_CATEGORY_MUTATION = "UPDATE_CATEGORY_MUTATION";

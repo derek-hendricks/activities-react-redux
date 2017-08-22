@@ -25,6 +25,7 @@ const UPDATE_CATEGORY_MUTATION = "UPDATE_CATEGORY_MUTATION";
 const DELETE_CATEGORY_MUTATION = "DELETE_CATEGORY_MUTATION";
 
 function stateSetup(state, index, category, operation) {
+
   if (DELETE_CATEGORY_MUTATION === operation) {
     return [
       ...state.slice(0, index),
@@ -97,9 +98,9 @@ function updateCategoryStateSetup(state, action) {
   const { categoryId: updatedActivityCategoryId } = updatedActivity;
 
   const categoryIndex = getIndex(state, updatedActivityCategoryId || previousCategoryId);
-  const { activityEdges: categoryActivities } = state[ categoryIndex ];
+  const {activityEdges} = state[ categoryIndex ] || {};
 
-  if (!categoryActivities) {
+  if (!activityEdges) {
     return state;
   }
 
@@ -216,6 +217,7 @@ function updatedCategoryStateSetup(state, category, index, optimisticMutation) {
 }
 
 function removedCategoryStateSetUp(state, index) {
+  debugger;
   if (isInteger(index)) {
     return stateSetup(state, index, null, DELETE_CATEGORY_MUTATION)
   } else {

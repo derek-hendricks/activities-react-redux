@@ -12,11 +12,10 @@ export const Category = (props) => {
   const {
     loading, error,
     category, activeCategoryId, categories,
-    onActivitySubmit, handleActivitySubmit, loadMoreActivities, updateActivity
+    onActivitySubmit, handleActivitySubmit, loadMoreActivities
   } = props;
 
   if (loading) {
-
     return (
       <div>
         <Dimmer active inverted>
@@ -50,6 +49,7 @@ export const Category = (props) => {
           hasNextPage={hasNextPage}
           endCursor={endCursor}
           loadItems={loadMoreActivities}
+          first={15}
         />
 
         <ActivityForm
@@ -66,12 +66,17 @@ export const Category = (props) => {
   }
 };
 
-const { string, bool, shape, arrayOf, func } = PropTypes;
+const {
+  string, bool, object, shape, arrayOf, func, oneOfType
+} = PropTypes;
 
 Category.propTypes = {
   activeCategoryId: string,
+  error: oneOfType([
+    bool,
+    object
+  ]),
   loading: bool.isRequired,
-  error: bool,
   loadMoreActivities: func.isRequired,
   onActivitySubmit: func.isRequired,
   handleActivitySubmit: func.isRequired,
@@ -82,8 +87,7 @@ Category.propTypes = {
       cursor: string,
       node: shape({
         id: string.isRequired,
-        name: string.isRequired,
-        bob: string.isRequired
+        name: string.isRequired
       })
     }))
   }),

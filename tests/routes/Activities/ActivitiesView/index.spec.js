@@ -17,7 +17,7 @@ describe('(Route) Activities', () => {
     expect(_component().type).to.equal('div');
   });
 
-  describe('(Activity Component) ActivitiesView', () => {
+  describe('(Activity Component) CategoriesView', () => {
     let _component;
 
     let _props, _spies, _wrapper;

@@ -1,14 +1,17 @@
-"use strict";
-const GraphQLString = require('graphql').GraphQLString;
-const GraphQLObjectType = require('graphql').GraphQLObjectType;
-const GraphQLNonNull = require('graphql').GraphQLNonNull;
-const GraphQLList = require('graphql').GraphQLList;
-const GraphQLID = require('graphql').GraphQLID;
-const GraphQLBoolean = require('graphql').GraphQLBoolean;
-const GraphQLInt = require('graphql').GraphQLInt;
-const GraphQLInterfaceType = require('graphql').GraphQLInterfaceType;
+const {
+  GraphQLString,
+  GraphQLObjectType,
+  GraphQLNonNull,
+  GraphQLList,
+  GraphQLID,
+  GraphQLBoolean,
+  GraphQLInt,
+  GraphQLInterfaceType
+} = require('graphql');
 
-const loaders = require('./loaders');
+const getActivitiesPage = require('./loaders/activities').getActivitiesPage;
+const { dbIdToNodeId } = require('./loaders/utils');
+const { getNodeById } = require('./loaders/nodeLoaders');
 
 let CategoryType, ActivityType;
 
@@ -29,7 +32,7 @@ const CategoryInterface = new GraphQLInterfaceType({
 
 ActivityType = new GraphQLObjectType({
   name: 'Activity',
-  interfaces: [CategoryInterface],
+  interfaces: [ CategoryInterface ],
   fields: () => {
     return {
       id: {
@@ -107,9 +110,9 @@ const ActivitiesConnectionType = new GraphQLObjectType({
 
 const activityEdges = (rows) => {
   return rows.map((row) => {
-    const nodeId = loaders.dbIdToNodeId(row.id, row.__tableName);
+    const nodeId = dbIdToNodeId(row.id, row.__tableName);
 
-    return loaders.getNodeById(nodeId).then((node) => {
+    return getNodeById(nodeId).then((node) => {
       return {
         node,
         cursor: row.__cursor,
@@ -120,13 +123,13 @@ const activityEdges = (rows) => {
 
 CategoryType = new GraphQLObjectType({
   name: 'Category',
-  interfaces: [CategoryInterface],
+  interfaces: [ CategoryInterface ],
   fields: () => {
     return {
       id: {
         type: new GraphQLNonNull(GraphQLID),
         resolve({ __tableName, id }) {
-          return loaders.dbIdToNodeId(id, __tableName);
+          return dbIdToNodeId(id, __tableName);
         }
       },
       name: {
@@ -152,20 +155,17 @@ CategoryType = new GraphQLObjectType({
           }
         },
         resolve(source, args) {
-          return loaders.getActivitiesPage(source, args).then(({rows, pageInfo}) => {
-            return Promise.all(activityEdges(rows)).then((edges) => {
-              return {
-                edges,
-                pageInfo
-              }
-            })
-          })
+          return getActivitiesPage(source, args).then(({ rows, pageInfo }) => (
+            Promise.all(activityEdges(rows)).then((edges) => ({
+              edges,
+              pageInfo
+            }))
+          ))
         }
       }
     }
   }
 });
-
 
 const CategoryWithoutInterfaceType = new GraphQLObjectType({
   name: 'CategoryWithoutInterface',
@@ -203,5 +203,8 @@ module.exports = {
   CategoriesType,
   CategoryInterface,
   ActivityType,
-  CategoryWithoutInterfaceType
+  ActivityEdgeType,
+  CategoryWithoutInterfaceType,
+  CategoryListInfoType,
+  ActivitiesConnectionType
 };

@@ -19,7 +19,6 @@ export const Activity = (props) => {
   } = props;
 
   if (loading && !activity.node) {
-
     return (
       <div>
         <Dimmer active inverted>
@@ -28,7 +27,6 @@ export const Activity = (props) => {
       </div>
     )
   } else if (error) {
-
     return (
       <LoadError
         className="activity"
@@ -37,7 +35,9 @@ export const Activity = (props) => {
       />
     )
   } else {
-    const { node: { name, id, about, location, date } } = activity;
+    const {
+      node: { name, id, about, location, date }
+    } = activity;
 
     return (
       <div className="activity">
@@ -48,7 +48,7 @@ export const Activity = (props) => {
 
         <ActivityForm
           onSubmit={(updatedValues) => (
-            updateActivity({id, ...updatedValues}, activeCategoryId)
+            updateActivity({ id, ...updatedValues }, activeCategoryId)
           )}
           buttonText={"Edit Activity"}
           placeholder={"Edit"}
@@ -66,7 +66,9 @@ export const Activity = (props) => {
   }
 };
 
-const { string, func, bool, arrayOf, shape } = PropTypes;
+const {
+  string, func, bool, arrayOf, shape
+} = PropTypes;
 
 Activity.propTypes = {
   handleActivityDelete: func.isRequired,
@@ -83,11 +85,13 @@ Activity.propTypes = {
       date: string
     })
   }).isRequired,
-  categories: arrayOf(shape({
-    id: string.isRequired,
-    name: string.isRequired,
-    description: string
-  })).isRequired
+  categories: arrayOf(
+    shape({
+      id: string.isRequired,
+      name: string.isRequired,
+      description: string
+    }).isRequired
+  ).isRequired
 };
 
 export default Activity

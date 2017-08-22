@@ -1,21 +1,23 @@
-'use strict';
 const data = require('./data');
 const tables = require('./tables');
 const database = require('./database');
 
 function sequencePromises(promises) {
-  return promises.reduce(function (promise, promiseFunction) {
-    return promise.then(function () {
+  return promises.reduce((promise, promiseFunction) => {
+    return promise.then(() => {
       return promiseFunction();
     });
   }, Promise.resolve());
 }
 
 function createDatabase() {
-  const promises = [tables.categories, tables.activities].map(function (table) {
-    return function () {
-      return database.getSql(table.create().toQuery());
-    }
+  const dataList = [ tables.categories, tables.activities ];
+  const promises = dataList.map((table) => {
+    return () => {
+      const query = table.create().toQuery();
+
+      return database.getSql(query);
+    };
   });
 
   return sequencePromises(promises);
@@ -27,8 +29,8 @@ function insertData() {
     tables.activities.insert(data.activities).toQuery()
   ];
 
-  const promises = queries.map(function (query) {
-    return function () {
+  const promises = queries.map((query) => {
+    return () => {
       return database.getSql(query);
     };
   });
@@ -38,8 +40,8 @@ function insertData() {
 
 createDatabase().then(function () {
   return insertData();
-}).then(function () {
-  console.log({ done: true });
-}).catch(function (error) {
-  console.log({ done: false, error });
+}).then(() => {
+  console.log({ created: true })
+}).catch((error) => {
+  console.log({ error });
 });

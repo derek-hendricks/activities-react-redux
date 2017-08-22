@@ -83,6 +83,21 @@ export const setProperties = (obj, property) => {
   };
 };
 
+export const setInput = (obj, property) => {
+  const data = {};
+  const inputObj = { ...obj };
+  const keys = Object.keys(inputObj);
+  for (const key of keys) {
+    const inputValue = (((inputObj[ key ] || {}).inputRef || {}).value || '').trim();
+    if (inputObj[ key ] === property || !inputValue) {
+      continue;
+    }
+    data[ key ] = inputValue;
+
+  }
+  return data;
+};
+
 export const clearFormFields = (inputReferences, selectReference) => {
   for (let i = 0, len = inputReferences.length; i < len; i++) {
     inputReferences[ i ].value = '';
@@ -93,7 +108,7 @@ export const clearFormFields = (inputReferences, selectReference) => {
 };
 
 export const sqliteDate = (date) => {
-  return date.toISOString().split('.')[0].replace(/T/, ' ');
+  return date.toISOString().split('.')[ 0 ].replace(/T/, ' ');
 };
 
 export const isInteger = (x) => {

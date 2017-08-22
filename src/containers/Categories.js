@@ -1,20 +1,27 @@
 import {connect} from 'react-redux'
 import {graphql, compose} from 'react-apollo'
 
-import {OPTIMISTIC_ACTIVITY_ID, TYPE_NAME} from '../store/category'
+import Categories from '../components/Categories'
+import {categoriesQuery} from '../gql/queries'
 import {openCategory} from '../store/activeCategory'
 import {setButtonMethod} from '../store/actions'
-import Categories from '../components/Categories'
 
-import {categoriesQuery} from '../gql/queries'
-import {categoryCreate, categoryDelete, categoryUpdate} from '../gql/mutations'
+import {
+  OPTIMISTIC_ACTIVITY_ID,
+  CATEGORY_TYPE_NAME
+} from '../store/category'
+
+import {
+  categoryCreate,
+  categoryDelete,
+  categoryUpdate
+} from '../gql/mutations'
 
 import {
   setProperties,
   clearFormFields,
   getCategory,
-  getCategoriesWithActiveSet,
-  getCategoryDeleteVariables
+  getCategoriesWithActiveSet
 } from '../utils/index';
 
 const initialState = {};
@@ -42,8 +49,12 @@ const mapDispatchToTabsProps = (dispatch) => (
   }
 );
 
-const queryOptions = {
-  props: ({ data: { loading = true, error = false } }) => {
+export const categoriesQueryOptions = {
+  props: (props) => {
+    const {
+      data: { loading = true, error }
+    } = props;
+
     return {
       loading,
       error
@@ -57,19 +68,16 @@ const categoryCreateOptions = {
       const { data: variables, inputReferences } = setProperties(category);
       clearFormFields(inputReferences);
 
-      return (
-        mutate({
-          variables,
-          optimisticResponse: {
-            __typename: "Mutation",
-            category: {
-              ...variables,
-              id: OPTIMISTIC_ACTIVITY_ID,
-              __typename: TYPE_NAME
-            }
+      return (mutate({
+        variables,
+        optimisticResponse: {
+          category: {
+            ...variables,
+            id: OPTIMISTIC_ACTIVITY_ID,
+            __typename: CATEGORY_TYPE_NAME
           }
-        })
-      );
+        }
+      }));
     }
   })
 };
@@ -77,17 +85,18 @@ const categoryCreateOptions = {
 const categoryDeleteOptions = {
   props: ({ mutate }) => ({
     onCategoryDelete: (id, activities = []) => {
+      const cachedIds = activities.map(({ node }) => node.id).join(",");
+
       return (
         mutate({
           variables: {
             id: `categories: ${id}`,
-            activityIds: activities.map(({ node }) => node.id).join(",")
+            cachedIds
           },
           optimisticResponse: {
-            __typename: "Mutation",
             category: {
               id,
-              __typename: TYPE_NAME
+              __typename: CATEGORY_TYPE_NAME
             }
           }
         })
@@ -109,10 +118,9 @@ const categoryUpdateOptions = {
             id: `categories: ${id}`
           },
           optimisticResponse: {
-            __typename: "Mutation",
             category: {
               ...categoryVariables,
-              __typename: TYPE_NAME,
+              __typename: CATEGORY_TYPE_NAME,
               id
             }
           }
@@ -123,7 +131,7 @@ const categoryUpdateOptions = {
 };
 
 export default compose(
-  graphql(categoriesQuery, queryOptions),
+  graphql(categoriesQuery, categoriesQueryOptions),
   connect(
     (state) => mapStateToTabsProps(state),
     (dispatch) => mapDispatchToTabsProps(dispatch)),

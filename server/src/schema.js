@@ -1,5 +1,7 @@
-const GraphQLSchema = require('graphql').GraphQLSchema;
-const GraphQLObjectType = require('graphql').GraphQLObjectType;
+const {
+  GraphQLSchema,
+  GraphQLObjectType
+} = require('graphql');
 
 const types = require('./types');
 const queries = require('./queries');
@@ -28,15 +30,14 @@ const RootMutation = new GraphQLObjectType({
 });
 
 const schema = new GraphQLSchema({
+  query: RootQuery,
+  mutation: RootMutation,
   types: [
     types.CategoriesType,
     types.CategoryType,
     types.CategoryInterface,
-    types.ActivityType,
-    types.ActivityEdgeType
-  ],
-  query: RootQuery,
-  mutation: RootMutation
+    types.ActivityType
+  ]
 });
 
 module.exports = schema;

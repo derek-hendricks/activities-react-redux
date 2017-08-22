@@ -103,7 +103,9 @@ export const Categories = (props) => {
   }
 };
 
-const { string, func, arrayOf, bool, object, shape } = PropTypes;
+const {
+  string, func, arrayOf, bool, object, shape
+} = PropTypes;
 
 Categories.propTypes = {
   category: object,
@@ -112,8 +114,8 @@ Categories.propTypes = {
     name: string,
     description: string
   })),
+  error: bool,
   loading: bool.isRequired,
-  error: bool.isRequired,
   actions: object.isRequired,
   onCategorySelect: func.isRequired,
   handleCategoryCreate: func.isRequired,
