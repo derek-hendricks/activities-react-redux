@@ -6,6 +6,8 @@ import createStore from './store/createStore'
 import AppContainer from './containers/AppContainer'
 
 const client = new ApolloClient({
+  ssrMode: true,
+  queryDeduplication: true,
   networkInterface: createNetworkInterface({
     uri: __API_BASE__,
     opts: {

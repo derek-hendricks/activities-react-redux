@@ -217,7 +217,6 @@ function updatedCategoryStateSetup(state, category, index, optimisticMutation) {
 }
 
 function removedCategoryStateSetUp(state, index) {
-  debugger;
   if (isInteger(index)) {
     return stateSetup(state, index, null, DELETE_CATEGORY_MUTATION)
   } else {
